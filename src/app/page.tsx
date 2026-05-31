@@ -37,24 +37,30 @@ export default function WelcomePage() {
 
       {/* Hero Section */}
       <main className="flex-1">
-        <section className="relative overflow-hidden py-20 lg:py-32 bg-radial from-primary/10 via-transparent to-transparent">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <section 
+          className="relative overflow-hidden py-24 lg:py-36 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/onboarding_bg.jpg')" }}
+        >
+          {/* Glassmorphic dark gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-black/60 backdrop-blur-[3px]" />
+
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10 text-center text-white">
             {/* Tagline */}
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-bold text-primary mb-6 animate-pulse">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/20 border border-primary/30 px-4 py-1.5 text-sm font-bold text-primary mb-6 animate-pulse backdrop-blur-md">
               🎉 Yangi Avlod Marosim Platformasi
             </div>
 
             {/* Title */}
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl text-foreground max-w-4xl mx-auto leading-tight sm:leading-none">
-              Orzuingizdagi marosimni{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-500">
-                osongina bron qiling!
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl max-w-4xl mx-auto leading-tight sm:leading-none text-white">
+              Bazmlarni oson{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">
+                rejalashtiring!
               </span>
             </h1>
 
             {/* Subtext */}
-            <p className="mt-6 text-lg sm:text-xl text-foreground/75 max-w-2xl mx-auto leading-relaxed">
-              BAZMLY yordamida to'yxonalar, shinam restoranlar va katering xizmatlarini birgina bosish orqali band qiling. Marosimingizni unutilmas qiling!
+            <p className="mt-6 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
+              Qidiruv va oson band qilish uchun ilovadan ro'yxatdan o'ting. To'yxonalar, shinam restoranlar va katering xizmatlarini birgina bosish orqali band qiling!
             </p>
 
             {/* CTAs */}
@@ -63,7 +69,7 @@ export default function WelcomePage() {
                 href="/login"
                 className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl bg-primary px-8 py-4 text-base font-bold text-white shadow-xl shadow-primary/30 hover:bg-primary-hover hover:scale-[1.02] transition-all duration-200"
               >
-                Tizimga Kirish
+                Ro'yxatdan o'tish
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -77,7 +83,7 @@ export default function WelcomePage() {
               </Link>
               <Link
                 href="/feed"
-                className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 px-8 py-4 text-base font-bold text-foreground hover:bg-foreground/10 dark:hover:bg-white/10 hover:scale-[1.02] transition-all duration-200"
+                className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl bg-white/10 border border-white/20 backdrop-blur-md px-8 py-4 text-base font-bold text-white hover:bg-white/20 hover:scale-[1.02] transition-all duration-200"
               >
                 Zallarni Ko'rish
               </Link>
