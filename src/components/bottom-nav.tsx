@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, CheckCircle, Aperture, AlertCircle } from "lucide-react";
@@ -11,20 +11,69 @@ export default function BottomNav() {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [loadingScan, setLoadingScan] = useState(false);
 
+  // Real Camera Streaming Refs and States
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+
   // Triggered when Scan button is clicked
   const handleScanClick = () => {
     setIsScanning(true);
     setScanResult(null);
     setLoadingScan(true);
 
-    // Simulate scanning delay of 2.5 seconds
+    // Simulate scanning/decoding delay of 2.8 seconds
     setTimeout(() => {
       setLoadingScan(false);
       setScanResult("BZ-90214"); // Simulated valid ticket ID
-    }, 2500);
+    }, 2800);
   };
 
+  // Camera stream activation and release effect
+  useEffect(() => {
+    let activeStream: MediaStream | null = null;
+
+    if (isScanning && !scanResult) {
+      // Request access to rear environment camera
+      navigator.mediaDevices
+        .getUserMedia({
+          video: {
+            facingMode: "environment",
+            width: { ideal: 640 },
+            height: { ideal: 640 },
+          },
+          audio: false,
+        })
+        .then((stream) => {
+          activeStream = stream;
+          setMediaStream(stream);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            videoRef.current.play().catch((err) => console.log("Video play error:", err));
+          }
+        })
+        .catch((err) => {
+          console.warn("Camera blocked or unavailable, falling back to simulation:", err);
+        });
+    }
+
+    return () => {
+      // Stop all tracks to release camera hardware immediately on close or success
+      if (activeStream) {
+        activeStream.getTracks().forEach((track) => track.stop());
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+      }
+      setMediaStream(null);
+    };
+  }, [isScanning, scanResult]);
+
   const closeScanner = () => {
+    // Release camera tracks
+    if (mediaStream) {
+      mediaStream.getTracks().forEach((track) => track.stop());
+      setMediaStream(null);
+    }
     setIsScanning(false);
     setScanResult(null);
     setLoadingScan(false);
@@ -77,7 +126,7 @@ export default function BottomNav() {
     activeIdx = activeItemIndex;
   }
 
-  // Slightly shifted horizontal centers at the edges (52 and 348) to guarantee full U-notch shoulders
+  // Horizontal centers coordinates in 400px viewBox
   const centers = [52, 120, 200, 280, 348];
   const cX = centers[activeIdx];
 
@@ -113,7 +162,7 @@ export default function BottomNav() {
           fill="currentColor"
         >
           <path
-            d={getDynamicPath(cX)}
+            d={getDynamicPath(activeIdx)}
             className="transition-all duration-300"
           />
         </svg>
@@ -205,7 +254,7 @@ export default function BottomNav() {
 
       </div>
 
-      {/* ==================== Simulated High-Fidelity QR Scanner Overlay ==================== */}
+      {/* ==================== High-Fidelity QR Scanner Overlay with Live Video ==================== */}
       {isScanning && (
         <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col justify-between p-6 max-w-md mx-auto shadow-2xl animate-fade-in text-white">
           
@@ -226,26 +275,37 @@ export default function BottomNav() {
           {/* Scanner View Area */}
           <div className="flex-1 flex flex-col items-center justify-center relative py-10">
             {loadingScan ? (
-              /* Simulation of active scanning */
-              <div className="relative w-64 h-64 border-2 border-white/20 rounded-3xl overflow-hidden flex items-center justify-center bg-zinc-950/50 shadow-inner">
-                {/* Glowing target corners */}
-                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-xl" />
-                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-xl" />
-                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-xl" />
-                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-xl" />
+              /* Simulation of active scanning with real live video feed */
+              <div className="relative w-64 h-64 border-2 border-white/20 rounded-3xl overflow-hidden flex items-center justify-center bg-zinc-950 shadow-2xl">
+                
+                {/* Real-time HTML5 Back Camera Feed */}
+                <video
+                  ref={videoRef}
+                  playsInline
+                  autoPlay
+                  muted
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
 
-                {/* Laser scan line */}
-                <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_12px_rgba(255,107,0,0.8)] animate-laser" />
+                {/* Glowing target corners */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-xl z-10" />
+                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-xl z-10" />
+                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-xl z-10" />
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-xl z-10" />
+
+                {/* Laser scan line over the video feed */}
+                <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_12px_rgba(255,107,0,0.8)] animate-laser z-10" />
 
                 {/* Simulated live viewfinder grids */}
-                <div className="grid grid-cols-3 grid-rows-3 w-full h-full opacity-10">
+                <div className="grid grid-cols-3 grid-rows-3 w-full h-full opacity-10 absolute inset-0 z-10 pointer-events-none">
                   {Array.from({ length: 9 }).map((_, i) => (
                     <div key={i} className="border border-white" />
                   ))}
                 </div>
 
-                <div className="absolute text-[10px] uppercase font-bold tracking-widest text-white/40 animate-pulse">
-                  Kamerani yo'naltiring...
+                {/* Loading indicator */}
+                <div className="absolute text-[10px] uppercase font-bold tracking-widest text-white/60 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm z-20 animate-pulse">
+                  Kameraga yo'naltiring...
                 </div>
               </div>
             ) : (
