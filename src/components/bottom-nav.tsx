@@ -1,40 +1,271 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, Ticket, User, Home } from "lucide-react";
+import { X, CheckCircle, Aperture, AlertCircle } from "lucide-react";
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<string | null>(null);
+  const [loadingScan, setLoadingScan] = useState(false);
+
+  // Triggered when Scan button in the center is clicked
+  const handleScanClick = () => {
+    setIsScanning(true);
+    setScanResult(null);
+    setLoadingScan(true);
+
+    // Simulate scanning delay of 2.5 seconds
+    setTimeout(() => {
+      setLoadingScan(false);
+      setScanResult("BZ-90214"); // Simulated valid ticket ID
+    }, 2500);
+  };
+
+  const closeScanner = () => {
+    setIsScanning(false);
+    setScanResult(null);
+    setLoadingScan(false);
+  };
 
   const navItems = [
-    { name: "Bosh sahifa", path: "/", icon: Home },
-    { name: "Qidiruv", path: "/feed", icon: Compass },
-    { name: "Chiptalarim", path: "/tickets", icon: Ticket },
-    { name: "Profil", path: "/login", icon: User },
+    {
+      name: "Asosiy",
+      path: "/",
+      icon: "/logo-loading.png",
+      isActive: pathname === "/",
+    },
+    {
+      name: "Voucher",
+      path: "/tickets",
+      icon: "/icons/discount-shape.png",
+      isActive: pathname.startsWith("/tickets"),
+    },
+    {
+      name: "Joylar",
+      path: "/feed",
+      icon: "/icons/receipt.png",
+      isActive: pathname.startsWith("/feed") || pathname.startsWith("/venue") || pathname.startsWith("/booking") || pathname.startsWith("/payment"),
+    },
+    {
+      name: "Profilim",
+      path: "/login",
+      icon: "/icons/user.png",
+      isActive: pathname.startsWith("/login"),
+    },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-brand-light-card/85 dark:bg-brand-dark-card/85 backdrop-blur-md border-t border-brand-light-border dark:border-brand-dark-border px-4 py-2 flex justify-around items-center max-w-md mx-auto shadow-2xl">
-      {navItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path));
+    <>
+      {/* ==================== Figmatic Bottom Navigation Bar ==================== */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 h-20 max-w-md mx-auto backdrop-blur-md">
+        
+        {/* Custom SVG Background with curved cutout notch */}
+        <svg
+          className="absolute inset-0 w-full h-full text-[#1C1C1E]/85 dark:text-[#121212]/85 drop-shadow-[0_-8px_20px_rgba(0,0,0,0.45)] transition-colors duration-300 pointer-events-none"
+          viewBox="0 0 400 80"
+          preserveAspectRatio="none"
+          fill="currentColor"
+        >
+          <path d="M0,28 C0,12.5 12.5,0 28,0 L140,0 C155,0 160,5 168,14 C176,24 185,32 200,32 C215,32 224,24 232,14 C240,5 245,0 260,0 L372,0 C387.5,0 400,12.5 400,28 L400,80 L0,80 Z" />
+        </svg>
 
-        return (
-          <Link
-            key={item.path}
-            href={item.path}
-            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-2xl transition-all duration-200 ${
-              isActive
-                ? "text-primary scale-105"
-                : "text-foreground/50 hover:text-primary"
-            }`}
-          >
-            <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 2} />
-            <span className="text-[10px] font-bold tracking-wide">{item.name}</span>
-          </Link>
-        );
-      })}
-    </div>
+        {/* Navigation Actions Layer */}
+        <div className="absolute inset-0 flex justify-between items-center px-4 z-10">
+          
+          {/* Left Side Navigation Items (Asosiy, Voucher) */}
+          <div className="flex-1 flex justify-around pr-8">
+            {navItems.slice(0, 2).map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                className="flex flex-col items-center gap-1 py-1 px-3 transition-all duration-200"
+              >
+                <img
+                  src={item.icon}
+                  alt={item.name}
+                  className={`h-5 w-5 object-contain transition-all ${
+                    item.isActive
+                      ? "brightness-100 opacity-100 scale-110"
+                      : "brightness-75 opacity-40 hover:opacity-75"
+                  }`}
+                />
+                <span
+                  className={`text-[10px] font-bold tracking-wide transition-colors ${
+                    item.isActive
+                      ? "text-white font-black"
+                      : "text-zinc-500 hover:text-white/80"
+                  }`}
+                >
+                  {item.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          {/* Centered Floating Barcode Scan Button (aligned with cutout dip) */}
+          <div className="relative w-16 h-16 shrink-0 flex items-center justify-center -mt-6">
+            <button
+              onClick={handleScanClick}
+              className="w-14 h-14 rounded-full bg-[#2A2A2A] border-4 border-[#1C1C1E] dark:border-[#121212] flex items-center justify-center shadow-xl z-50 transition-all duration-300 hover:scale-105 active:scale-95 group"
+              aria-label="Scan Ticket"
+            >
+              <img
+                src="/icons/scan-barcode.png"
+                alt="Scan Barcode"
+                className="h-6 w-6 object-contain brightness-0 invert group-hover:scale-115 transition-transform"
+              />
+            </button>
+          </div>
+
+          {/* Right Side Navigation Items (Joylar, Profilim) */}
+          <div className="flex-1 flex justify-around pl-8">
+            {navItems.slice(2, 4).map((item) => (
+              <Link
+                key={item.path}
+                href={item.path}
+                className="flex flex-col items-center gap-1 py-1 px-3 transition-all duration-200"
+              >
+                <img
+                  src={item.icon}
+                  alt={item.name}
+                  className={`h-5 w-5 object-contain transition-all ${
+                    item.isActive
+                      ? "brightness-100 opacity-100 scale-110"
+                      : "brightness-75 opacity-40 hover:opacity-75"
+                  }`}
+                />
+                <span
+                  className={`text-[10px] font-bold tracking-wide transition-colors ${
+                    item.isActive
+                      ? "text-white font-black"
+                      : "text-zinc-500 hover:text-white/80"
+                  }`}
+                >
+                  {item.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* ==================== Simulated High-Fidelity QR Scanner Overlay ==================== */}
+      {isScanning && (
+        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col justify-between p-6 max-w-md mx-auto shadow-2xl animate-fade-in text-white">
+          
+          {/* Header */}
+          <div className="flex justify-between items-center py-4 border-b border-white/10">
+            <div className="flex items-center gap-2">
+              <Aperture className="h-5 w-5 text-primary animate-spin" style={{ animationDuration: "3s" }} />
+              <span className="text-sm font-black tracking-wider uppercase">Chipta Skanerlash</span>
+            </div>
+            <button
+              onClick={closeScanner}
+              className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Scanner View Area */}
+          <div className="flex-1 flex flex-col items-center justify-center relative py-10">
+            {loadingScan ? (
+              /* Simulation of active scanning */
+              <div className="relative w-64 h-64 border-2 border-white/20 rounded-3xl overflow-hidden flex items-center justify-center bg-zinc-950/50 shadow-inner">
+                {/* Glowing target corners */}
+                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-xl" />
+                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-xl" />
+                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-xl" />
+                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-xl" />
+
+                {/* Laser scan line */}
+                <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_12px_rgba(255,107,0,0.8)] animate-laser" />
+
+                {/* Simulated live viewfinder grids */}
+                <div className="grid grid-cols-3 grid-rows-3 w-full h-full opacity-10">
+                  {Array.from({ length: 9 }).map((_, i) => (
+                    <div key={i} className="border border-white" />
+                  ))}
+                </div>
+
+                <div className="absolute text-[10px] uppercase font-bold tracking-widest text-white/40 animate-pulse">
+                  Kamerani yo'naltiring...
+                </div>
+              </div>
+            ) : (
+              /* Scanning Completed / Success Alert card */
+              <div className="w-full max-w-sm p-6 rounded-3xl bg-zinc-900 border border-white/10 space-y-4 shadow-2xl animate-scale-up text-center">
+                {scanResult ? (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center mx-auto shadow-md">
+                      <CheckCircle className="h-8 w-8" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-black tracking-tight text-white">
+                        Chipta tasdiqlandi!
+                      </h4>
+                      <p className="text-xs text-emerald-400 font-bold mt-1 uppercase tracking-wide">
+                        Bron ID: {scanResult}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-white/5 border border-white/5 rounded-xl text-left text-xs space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-white/40">Zal/Restoran:</span>
+                        <span className="font-bold text-white">Oltin Saroy</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-white/40">Tadbir kuni:</span>
+                        <span className="font-bold text-white">12 Iyun, 2026</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-white/40">Status:</span>
+                        <span className="font-bold text-emerald-400">To'langan</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={closeScanner}
+                      className="w-full py-3 rounded-xl bg-primary text-xs font-bold text-white shadow-lg hover:bg-primary-hover transition-colors"
+                    >
+                      Tayyor
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center mx-auto shadow-md">
+                      <AlertCircle className="h-8 w-8" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-black tracking-tight text-white">
+                        Xato yuz berdi
+                      </h4>
+                      <p className="text-xs text-red-400 font-bold mt-1">
+                        Skaner chiptani aniqlay olmadi.
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleScanClick}
+                      className="w-full py-3 rounded-xl bg-primary text-xs font-bold text-white shadow-lg hover:bg-primary-hover transition-colors"
+                    >
+                      Qaytadan urinish
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Footer Instruction Text */}
+          <div className="pb-6 text-center text-xs text-white/50 px-6 leading-relaxed">
+            BAZMLY tadbiri yoki marosim zalining QR-kodli taklifnoma chiptasini to'rtburchak maydonga yo'naltiring.
+          </div>
+
+        </div>
+      )}
+    </>
   );
 }
