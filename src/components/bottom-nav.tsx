@@ -162,7 +162,7 @@ export default function BottomNav() {
           fill="currentColor"
         >
           <path
-            d={getDynamicPath(activeIdx)}
+            d={getDynamicPath(cX)}
             className="transition-all duration-300"
           />
         </svg>

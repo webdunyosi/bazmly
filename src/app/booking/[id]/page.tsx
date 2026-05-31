@@ -58,7 +58,7 @@ export default function BookingPage({ params }: Props) {
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full px-4 py-6 pb-24">
         
         {/* Breadcrumb Back */}
         <Link
@@ -80,10 +80,10 @@ export default function BookingPage({ params }: Props) {
           Marosim sozlamalari: <span className="text-primary">{venue.name}</span>
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="flex flex-col gap-8">
           
           {/* Calendar & Configs Panel */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="space-y-8">
             
             {/* Custom Interactive Calendar */}
             <div className="rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-card dark:bg-brand-dark-card p-6 shadow-lg">
@@ -241,7 +241,7 @@ export default function BookingPage({ params }: Props) {
 
           {/* Checkout Invoice Receipt panel */}
           <div className="space-y-6">
-            <div className="sticky top-24 rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-card dark:bg-brand-dark-card p-6 shadow-2xl space-y-6">
+            <div className="rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-card dark:bg-brand-dark-card p-6 shadow-xl space-y-6">
               <h3 className="text-xl font-bold text-foreground">Hisob varag'i</h3>
               
               <div className="space-y-3 text-sm border-b border-brand-light-border dark:border-brand-dark-border pb-4">
@@ -266,7 +266,7 @@ export default function BookingPage({ params }: Props) {
               {/* Total Summary */}
               <div className="space-y-1">
                 <span className="text-xs uppercase font-bold text-foreground/50 tracking-wider">Jami To'lov summasi</span>
-                <div className="text-2xl sm:text-3xl font-black text-primary">
+                <div className="text-2xl font-black text-primary">
                   {totalAmount.toLocaleString()} UZS
                 </div>
               </div>

@@ -28,7 +28,7 @@ export default function VenueDetailPage({ params }: Props) {
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full px-4 py-6 pb-24">
         {/* Back Button */}
         <Link
           href="/feed"
@@ -46,13 +46,13 @@ export default function VenueDetailPage({ params }: Props) {
         </Link>
 
         {/* Layout Column */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="flex flex-col gap-8">
           
           {/* Main Info */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="space-y-8">
             
             {/* Visual Header Graphic */}
-            <div className="h-64 sm:h-96 rounded-3xl overflow-hidden shadow-lg border border-brand-light-border dark:border-brand-dark-border bg-brand-dark-surface relative">
+            <div className="h-64 rounded-3xl overflow-hidden shadow-lg border border-brand-light-border dark:border-brand-dark-border bg-brand-dark-surface relative">
               {venue.imageUrl ? (
                 <img
                   src={venue.imageUrl}
@@ -69,7 +69,7 @@ export default function VenueDetailPage({ params }: Props) {
             {/* Title & Metadata */}
             <div className="space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-4">
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+                <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
                   {venue.name}
                 </h1>
                 <div className="flex items-center gap-2 rounded-2xl bg-yellow-500/10 px-4 py-2 border border-yellow-500/20">
@@ -164,7 +164,7 @@ export default function VenueDetailPage({ params }: Props) {
 
           {/* Booking Card panel */}
           <div className="space-y-6">
-            <div className="sticky top-24 rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-card dark:bg-brand-dark-card p-6 shadow-2xl space-y-6">
+            <div className="rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-card dark:bg-brand-dark-card p-6 shadow-xl space-y-6">
               <h3 className="text-xl font-bold text-foreground">Band Qilish</h3>
               
               <div className="space-y-2">

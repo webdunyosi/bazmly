@@ -51,7 +51,7 @@ export default function TicketsPage() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full px-4 py-6 pb-24">
         <h1 className="text-3xl font-extrabold text-foreground mb-8">
           Mening Chiptalarim
         </h1>
@@ -108,7 +108,7 @@ export default function TicketsPage() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="font-extrabold text-base sm:text-lg text-foreground">
+                          <h3 className="font-extrabold text-base text-foreground">
                             {ticket.venueName}
                           </h3>
                           <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-primary/10 text-primary">
@@ -122,7 +122,7 @@ export default function TicketsPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <span className="hidden sm:inline-block font-extrabold text-sm text-foreground/80">
+                      <span className="font-extrabold text-sm text-foreground/80">
                         {ticket.totalPrice}
                       </span>
                       <svg
@@ -141,9 +141,9 @@ export default function TicketsPage() {
                   {/* Expandable detail section (Ticket Card) */}
                   {isExpanded && (
                     <div className="border-t border-brand-light-border dark:border-brand-dark-border bg-foreground/3 dark:bg-white/3 p-6 animate-fadeIn">
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                      <div className="flex flex-col items-center justify-between gap-8">
                         {/* Details */}
-                        <div className="space-y-4 text-sm w-full md:w-auto">
+                        <div className="space-y-4 text-sm w-full">
                           <h4 className="font-extrabold text-primary text-xs uppercase tracking-wider">
                             Tashrif tafsilotlari
                           </h4>
@@ -168,8 +168,8 @@ export default function TicketsPage() {
                           </div>
                         </div>
 
-                        {/* Dashed divider for mobile */}
-                        <div className="w-full border-t border-dashed border-brand-light-border dark:border-brand-dark-border md:hidden" />
+                        {/* Dashed divider */}
+                        <div className="w-full border-t border-dashed border-brand-light-border dark:border-brand-dark-border" />
 
                         {/* Interactive QR code */}
                         <div className="flex flex-col items-center justify-center gap-2">

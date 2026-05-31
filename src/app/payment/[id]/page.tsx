@@ -72,10 +72,10 @@ function PaymentContent({ id }: { id: string }) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="flex flex-col gap-8">
       
       {/* Card Form & Interactive Preview */}
-      <div className="lg:col-span-2 space-y-8">
+      <div className="space-y-8">
         
         {/* Animated 3D Credit Card (Figma style) */}
         <div className="flex justify-center py-4">
@@ -148,7 +148,7 @@ function PaymentContent({ id }: { id: string }) {
         </div>
 
         {/* Input Form */}
-        <form onSubmit={handlePaymentSubmit} className="rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-card dark:bg-brand-dark-card p-6 sm:p-8 shadow-lg space-y-6">
+        <form onSubmit={handlePaymentSubmit} className="rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-card dark:bg-brand-dark-card p-6 shadow-lg space-y-6">
           <h3 className="font-extrabold text-lg text-foreground">Karta ma'lumotlari</h3>
           
           {error && (
@@ -276,7 +276,7 @@ function PaymentContent({ id }: { id: string }) {
 
           <div className="space-y-1">
             <span className="text-xs uppercase font-bold text-foreground/50 tracking-wider">Jami to'lov</span>
-            <div className="text-2xl sm:text-3xl font-black text-primary">
+            <div className="text-2xl font-black text-primary">
               {totalAmount.toLocaleString()} UZS
             </div>
           </div>
@@ -293,7 +293,7 @@ export default function PaymentPage({ params }: Props) {
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full px-4 py-6 pb-24">
         
         {/* Breadcrumb Back */}
         <Link

@@ -137,11 +137,11 @@ export default function FeedPage() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full px-4 py-6 pb-24">
         
         {/* Search and Filters Section */}
         <div className="mb-8 space-y-4">
-          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+          <div className="flex gap-2.5 items-center justify-between">
             {/* Search Bar */}
             <div className="flex-1 relative">
               <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-foreground/45">
@@ -168,7 +168,7 @@ export default function FeedPage() {
             {/* Filter Toggle Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border font-bold transition-all duration-200 hover:scale-[1.02] ${
+              className={`flex items-center justify-center gap-2 px-4 py-4 rounded-2xl border font-bold transition-all duration-200 active:scale-95 ${
                 showFilters
                   ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
                   : "bg-brand-light-surface dark:bg-brand-dark-surface text-foreground border-brand-light-border dark:border-brand-dark-border hover:bg-foreground/5 dark:hover:bg-white/5"
@@ -193,7 +193,7 @@ export default function FeedPage() {
             <div className="rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-surface dark:bg-brand-dark-surface p-6 shadow-xl space-y-6 transition-all duration-300 animate-fadeIn">
               <h3 className="font-bold text-lg text-foreground mb-4">Qidiruv parametrlari</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 gap-5">
                 {/* Budget Slider */}
                 <div className="space-y-2">
                   <div className="flex justify-between font-semibold text-sm">
@@ -266,7 +266,7 @@ export default function FeedPage() {
 
         {/* Grid List */}
         {filteredVenues.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6">
             {filteredVenues.map((venue) => (
               <div
                 key={venue.id}
