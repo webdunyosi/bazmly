@@ -30,6 +30,7 @@ export default function BottomNav() {
     setLoadingScan(false);
   };
 
+  // 5 navigation items including the central Scan button
   const navItems = [
     {
       name: "Asosiy",
@@ -69,11 +70,56 @@ export default function BottomNav() {
     },
   ];
 
+  // Calculate the active index to position the sliding notch dynamically
+  let activeIdx = 2; // Default center
+  const activeItemIndex = navItems.findIndex((item) => item.isActive);
+  if (activeItemIndex !== -1) {
+    activeIdx = activeItemIndex;
+  }
+
+  // Slightly shifted horizontal centers at the edges (52 and 348) to guarantee full U-notch shoulders
+  const centers = [52, 120, 200, 280, 348];
+  const cX = centers[activeIdx];
+
+  // Generate dynamic path with a concentric 40px depth U-notch
+  const getDynamicPath = (center: number) => {
+    const leftStart = center - 46;
+    const leftEnd = center - 34;
+    const rightEnd = center + 34;
+    const rightStart = center + 46;
+    const depth = 40; // concentric 10px bottom gap
+
+    return `M0,28 C0,12.5 12.5,0 28,0 
+            L${leftStart},0 
+            C${leftStart + 8},0 ${leftEnd},6 ${leftEnd + 2},16 
+            C${leftEnd + 6},26 ${center - 18},${depth} ${center},${depth} 
+            C${center + 18},${depth} ${rightEnd - 6},26 ${rightEnd - 2},16 
+            C${rightEnd},6 ${rightStart - 8},0 ${rightStart},0 
+            L372,0 
+            C387.5,0 400,12.5 400,28 
+            L400,80 L0,80 Z`;
+  };
+
   return (
     <>
-      {/* ==================== Figmatic Bottom Navigation Bar ==================== */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 h-20 max-w-md mx-auto bg-[#1C1C1E] dark:bg-[#121212] border-t border-white/5 rounded-t-[28px] shadow-[0_-8px_24px_rgba(0,0,0,0.4)] transition-colors duration-300">
-        <div className="flex h-full items-center justify-around px-2 relative">
+      {/* ==================== Figmatic Dynamic Sliding Notch Bottom Bar ==================== */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 h-20 max-w-md mx-auto">
+        
+        {/* Dynamic Curved SVG Background with sliding notch */}
+        <svg
+          className="absolute inset-0 w-full h-full text-[#1C1C1E] dark:text-[#121212] drop-shadow-[0_-8px_20px_rgba(0,0,0,0.45)] transition-colors duration-300 pointer-events-none"
+          viewBox="0 0 400 80"
+          preserveAspectRatio="none"
+          fill="currentColor"
+        >
+          <path
+            d={getDynamicPath(cX)}
+            className="transition-all duration-300"
+          />
+        </svg>
+
+        {/* Content Navigation Actions Layer */}
+        <div className="absolute inset-0 flex justify-between items-center px-2 z-10">
           
           {navItems.map((item, index) => {
             const isActive = item.isActive;
@@ -84,32 +130,8 @@ export default function BottomNav() {
                 className="relative flex-1 flex flex-col items-center justify-center h-full"
               >
                 {isActive ? (
-                  /* ==================== FLOATING ACTIVE STATE: PERFECT CIRCLE ==================== */
-                  <div className="absolute -top-5 w-14 h-14 rounded-full bg-[#2A2A2A] border-4 border-[#1C1C1E] dark:border-[#121212] flex items-center justify-center shadow-2xl z-50 animate-scale-up transition-all duration-300">
-                    {item.isAction ? (
-                      <button
-                        onClick={item.action}
-                        className="w-full h-full flex items-center justify-center"
-                      >
-                        <img
-                          src={item.icon}
-                          alt={item.name}
-                          className="h-6 w-6 object-contain brightness-0 invert"
-                        />
-                      </button>
-                    ) : (
-                      <Link
-                        href={item.path}
-                        className="w-full h-full flex items-center justify-center"
-                      >
-                        <img
-                          src={item.icon}
-                          alt={item.name}
-                          className="h-6 w-6 object-contain brightness-0 invert"
-                        />
-                      </Link>
-                    )}
-                  </div>
+                  /* Spacer to keep flex layout intact while active item is rendered absolutely below */
+                  <div className="w-10 h-10" />
                 ) : (
                   /* ==================== NORMAL FLAT INACTIVE STATE ==================== */
                   item.isAction ? (
@@ -147,6 +169,40 @@ export default function BottomNav() {
           })}
 
         </div>
+
+        {/* ==================== SLIDING ACTIVE CIRCLE WITH CONCENTRIC GAP ==================== */}
+        <div
+          className="absolute -top-5 w-[50px] h-[50px] rounded-full bg-[#2A2A2A] border border-white/10 flex items-center justify-center shadow-2xl z-50 transition-all duration-300"
+          style={{
+            left: `${(cX / 400) * 100}%`,
+            transform: "translateX(-50%)",
+          }}
+        >
+          {navItems[activeIdx].isAction ? (
+            <button
+              onClick={navItems[activeIdx].action}
+              className="w-full h-full flex items-center justify-center"
+            >
+              <img
+                src={navItems[activeIdx].icon}
+                alt={navItems[activeIdx].name}
+                className="h-5.5 w-5.5 object-contain brightness-0 invert animate-scale-up"
+              />
+            </button>
+          ) : (
+            <Link
+              href={navItems[activeIdx].path}
+              className="w-full h-full flex items-center justify-center"
+            >
+              <img
+                src={navItems[activeIdx].icon}
+                alt={navItems[activeIdx].name}
+                className="h-5.5 w-5.5 object-contain brightness-0 invert animate-scale-up"
+              />
+            </Link>
+          )}
+        </div>
+
       </div>
 
       {/* ==================== Simulated High-Fidelity QR Scanner Overlay ==================== */}
