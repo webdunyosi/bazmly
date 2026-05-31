@@ -11,7 +11,7 @@ export default function BottomNav() {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [loadingScan, setLoadingScan] = useState(false);
 
-  // Triggered when Scan button in the center is clicked
+  // Triggered when Scan button is clicked
   const handleScanClick = () => {
     setIsScanning(true);
     setScanResult(null);
@@ -36,122 +36,117 @@ export default function BottomNav() {
       path: "/",
       icon: "/logo-loading.png",
       isActive: pathname === "/",
+      isAction: false,
     },
     {
       name: "Voucher",
       path: "/tickets",
       icon: "/icons/discount-shape.png",
-      isActive: pathname.startsWith("/tickets"),
+      isActive: pathname.startsWith("/tickets") || pathname.startsWith("/payment-success"),
+      isAction: false,
+    },
+    {
+      name: "Skaner",
+      path: "#scan",
+      icon: "/icons/scan-barcode.png",
+      isActive: isScanning,
+      isAction: true,
+      action: handleScanClick,
     },
     {
       name: "Joylar",
       path: "/feed",
       icon: "/icons/receipt.png",
       isActive: pathname.startsWith("/feed") || pathname.startsWith("/venue") || pathname.startsWith("/booking") || pathname.startsWith("/payment"),
+      isAction: false,
     },
     {
       name: "Profilim",
       path: "/login",
       icon: "/icons/user.png",
       isActive: pathname.startsWith("/login"),
+      isAction: false,
     },
   ];
 
   return (
     <>
       {/* ==================== Figmatic Bottom Navigation Bar ==================== */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 h-20 max-w-md mx-auto backdrop-blur-md">
-        
-        {/* Custom SVG Background with curved cutout notch */}
-        <svg
-          className="absolute inset-0 w-full h-full text-[#1C1C1E]/85 dark:text-[#121212]/85 drop-shadow-[0_-8px_20px_rgba(0,0,0,0.45)] transition-colors duration-300 pointer-events-none"
-          viewBox="0 0 400 80"
-          preserveAspectRatio="none"
-          fill="currentColor"
-        >
-          <path d="M0,28 C0,12.5 12.5,0 28,0 L140,0 C155,0 160,5 168,14 C176,24 185,32 200,32 C215,32 224,24 232,14 C240,5 245,0 260,0 L372,0 C387.5,0 400,12.5 400,28 L400,80 L0,80 Z" />
-        </svg>
-
-        {/* Navigation Actions Layer */}
-        <div className="absolute inset-0 flex justify-between items-center px-4 z-10">
+      <div className="fixed bottom-0 left-0 right-0 z-50 h-20 max-w-md mx-auto bg-[#1C1C1E] dark:bg-[#121212] border-t border-white/5 rounded-t-[28px] shadow-[0_-8px_24px_rgba(0,0,0,0.4)] transition-colors duration-300">
+        <div className="flex h-full items-center justify-around px-2 relative">
           
-          {/* Left Side Navigation Items (Asosiy, Voucher) */}
-          <div className="flex-1 flex justify-around pr-8">
-            {navItems.slice(0, 2).map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                className="flex flex-col items-center gap-1 py-1 px-3 transition-all duration-200"
-              >
-                <img
-                  src={item.icon}
-                  alt={item.name}
-                  className={`h-5 w-5 object-contain transition-all ${
-                    item.isActive
-                      ? "brightness-100 opacity-100 scale-110"
-                      : "brightness-75 opacity-40 hover:opacity-75"
-                  }`}
-                />
-                <span
-                  className={`text-[10px] font-bold tracking-wide transition-colors ${
-                    item.isActive
-                      ? "text-white font-black"
-                      : "text-zinc-500 hover:text-white/80"
-                  }`}
-                >
-                  {item.name}
-                </span>
-              </Link>
-            ))}
-          </div>
+          {navItems.map((item, index) => {
+            const isActive = item.isActive;
 
-          {/* Centered Floating Barcode Scan Button (aligned with cutout dip) */}
-          <div className="relative w-16 h-16 shrink-0 flex items-center justify-center -mt-6">
-            <button
-              onClick={handleScanClick}
-              className="w-14 h-14 rounded-full bg-[#2A2A2A] border-4 border-[#1C1C1E] dark:border-[#121212] flex items-center justify-center shadow-xl z-50 transition-all duration-300 hover:scale-105 active:scale-95 group"
-              aria-label="Scan Ticket"
-            >
-              <img
-                src="/icons/scan-barcode.png"
-                alt="Scan Barcode"
-                className="h-6 w-6 object-contain brightness-0 invert group-hover:scale-115 transition-transform"
-              />
-            </button>
-          </div>
-
-          {/* Right Side Navigation Items (Joylar, Profilim) */}
-          <div className="flex-1 flex justify-around pl-8">
-            {navItems.slice(2, 4).map((item) => (
-              <Link
-                key={item.path}
-                href={item.path}
-                className="flex flex-col items-center gap-1 py-1 px-3 transition-all duration-200"
+            return (
+              <div
+                key={index}
+                className="relative flex-1 flex flex-col items-center justify-center h-full"
               >
-                <img
-                  src={item.icon}
-                  alt={item.name}
-                  className={`h-5 w-5 object-contain transition-all ${
-                    item.isActive
-                      ? "brightness-100 opacity-100 scale-110"
-                      : "brightness-75 opacity-40 hover:opacity-75"
-                  }`}
-                />
-                <span
-                  className={`text-[10px] font-bold tracking-wide transition-colors ${
-                    item.isActive
-                      ? "text-white font-black"
-                      : "text-zinc-500 hover:text-white/80"
-                  }`}
-                >
-                  {item.name}
-                </span>
-              </Link>
-            ))}
-          </div>
+                {isActive ? (
+                  /* ==================== FLOATING ACTIVE STATE: PERFECT CIRCLE ==================== */
+                  <div className="absolute -top-5 w-14 h-14 rounded-full bg-[#2A2A2A] border-4 border-[#1C1C1E] dark:border-[#121212] flex items-center justify-center shadow-2xl z-50 animate-scale-up transition-all duration-300">
+                    {item.isAction ? (
+                      <button
+                        onClick={item.action}
+                        className="w-full h-full flex items-center justify-center"
+                      >
+                        <img
+                          src={item.icon}
+                          alt={item.name}
+                          className="h-6 w-6 object-contain brightness-0 invert"
+                        />
+                      </button>
+                    ) : (
+                      <Link
+                        href={item.path}
+                        className="w-full h-full flex items-center justify-center"
+                      >
+                        <img
+                          src={item.icon}
+                          alt={item.name}
+                          className="h-6 w-6 object-contain brightness-0 invert"
+                        />
+                      </Link>
+                    )}
+                  </div>
+                ) : (
+                  /* ==================== NORMAL FLAT INACTIVE STATE ==================== */
+                  item.isAction ? (
+                    <button
+                      onClick={item.action}
+                      className="flex flex-col items-center gap-1.5 py-1 px-3 transition-all duration-200"
+                    >
+                      <img
+                        src={item.icon}
+                        alt={item.name}
+                        className="h-5 w-5 object-contain brightness-75 opacity-40 hover:opacity-75 transition-opacity"
+                      />
+                      <span className="text-[10px] font-bold text-zinc-500 hover:text-white/80">
+                        {item.name}
+                      </span>
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.path}
+                      className="flex flex-col items-center gap-1.5 py-1 px-3 transition-all duration-200"
+                    >
+                      <img
+                        src={item.icon}
+                        alt={item.name}
+                        className="h-5 w-5 object-contain brightness-75 opacity-40 hover:opacity-75 transition-opacity"
+                      />
+                      <span className="text-[10px] font-bold text-zinc-500 hover:text-white/80">
+                        {item.name}
+                      </span>
+                    </Link>
+                  )
+                )}
+              </div>
+            );
+          })}
 
         </div>
-
       </div>
 
       {/* ==================== Simulated High-Fidelity QR Scanner Overlay ==================== */}
