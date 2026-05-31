@@ -15,6 +15,7 @@ export interface Venue {
   rating: number;
   category: "toyxona" | "restoran" | "katering" | "bezaklar";
   emoji: string;
+  imageUrl?: string;
   tags: string[];
 }
 
@@ -30,6 +31,7 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.9,
     category: "toyxona",
     emoji: "🏰",
+    imageUrl: "/images/oltin_saroy.png",
     tags: ["Avtoturargoh", "Sahna", "Chiroqlar shousi"],
   },
   {
@@ -43,6 +45,7 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.8,
     category: "toyxona",
     emoji: "🌟",
+    imageUrl: "/images/versal_hall.png",
     tags: ["Premium", "Konditsioner", "Ovoz tizimi"],
   },
   {
@@ -56,6 +59,7 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.7,
     category: "restoran",
     emoji: "🍽️",
+    imageUrl: "/images/shoroq_restaurant.png",
     tags: ["Milliy & Yevropa", "Jonli ijro", "Shinam"],
   },
   {
@@ -69,6 +73,7 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.9,
     category: "katering",
     emoji: "🍢",
+    imageUrl: "/images/party_hero.png",
     tags: ["Furshet", "Shirinliklar", "Professional xizmat"],
   },
   {
@@ -82,6 +87,7 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.6,
     category: "bezaklar",
     emoji: "🎈",
+    imageUrl: "/images/party_hero.png",
     tags: ["Geliy sharlar", "Gullar", "Fotozona"],
   },
   {
@@ -95,9 +101,11 @@ export const MOCK_VENUES: Venue[] = [
     rating: 4.8,
     category: "restoran",
     emoji: "🥘",
+    imageUrl: "/images/minor_restaurant.png",
     tags: ["Osh", "Milliy taomlar", "Oilaviy"],
   },
 ];
+
 
 export default function FeedPage() {
   const [search, setSearch] = useState("");
@@ -264,9 +272,19 @@ export default function FeedPage() {
                 key={venue.id}
                 className="group relative rounded-3xl bg-brand-light-card dark:bg-brand-dark-card border border-brand-light-border dark:border-brand-dark-border shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
               >
-                {/* Visual mockup of Banquet Hall (BAZMLY dark-orange premium layout) */}
-                <div className="h-48 relative bg-gradient-to-br from-primary/30 via-orange-500/10 to-brand-dark flex items-center justify-center text-7xl select-none group-hover:scale-105 transition-transform duration-500">
-                  {venue.emoji}
+                {/* Visual image display of Venue */}
+                <div className="h-48 relative overflow-hidden group-hover:scale-105 transition-transform duration-500 bg-brand-dark-surface">
+                  {venue.imageUrl ? (
+                    <img
+                      src={venue.imageUrl}
+                      alt={venue.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/30 to-brand-dark flex items-center justify-center text-7xl select-none">
+                      {venue.emoji}
+                    </div>
+                  )}
                   {/* Glass indicator for capacity */}
                   {venue.capacity !== "N/A" && (
                     <span className="absolute bottom-3 right-3 text-xs font-bold rounded-lg px-2.5 py-1 glass-effect border border-brand-light-border/20 dark:border-brand-dark-border/20">

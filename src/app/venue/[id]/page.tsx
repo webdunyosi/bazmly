@@ -52,8 +52,18 @@ export default function VenueDetailPage({ params }: Props) {
           <div className="lg:col-span-2 space-y-8">
             
             {/* Visual Header Graphic */}
-            <div className="h-64 sm:h-96 rounded-3xl bg-gradient-to-br from-primary/45 via-orange-500/25 to-brand-dark flex items-center justify-center text-9xl shadow-lg select-none border border-brand-light-border dark:border-brand-dark-border">
-              {venue.emoji}
+            <div className="h-64 sm:h-96 rounded-3xl overflow-hidden shadow-lg border border-brand-light-border dark:border-brand-dark-border bg-brand-dark-surface relative">
+              {venue.imageUrl ? (
+                <img
+                  src={venue.imageUrl}
+                  alt={venue.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-primary/45 to-brand-dark flex items-center justify-center text-9xl select-none">
+                  {venue.emoji}
+                </div>
+              )}
             </div>
 
             {/* Title & Metadata */}
