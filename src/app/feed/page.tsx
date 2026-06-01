@@ -1,8 +1,342 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
+import {
+  ChevronLeft,
+  ChevronDown,
+  MapPin,
+  Phone,
+  Clock,
+  CheckCircle,
+  X,
+} from "lucide-react";
 import Navbar from "@/components/navbar";
+
+export default function FeedPage() {
+  const [mounted, setMounted] = useState(false);
+  const [showLocationSelect, setShowLocationSelect] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState("Toshkent");
+  
+  // Location States
+  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
+  const [isDistrictDropdownOpen, setIsDistrictDropdownOpen] = useState(false);
+  
+  const [toastMessage, setToastMessage] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+    const loc = localStorage.getItem("feedLocation") || "Toshkent";
+    setCurrentLocation(loc);
+  }, []);
+
+  // Dynamic bottom navigation bar visibility controller
+  useEffect(() => {
+    const bottomNav = document.getElementById("global-bottom-nav");
+    if (bottomNav) {
+      if (showLocationSelect) {
+        bottomNav.style.transform = "translateY(100%)";
+        bottomNav.style.opacity = "0";
+        bottomNav.style.pointerEvents = "none";
+      } else {
+        bottomNav.style.transform = "translateY(0)";
+        bottomNav.style.opacity = "1";
+        bottomNav.style.pointerEvents = "auto";
+      }
+    }
+    return () => {
+      if (bottomNav) {
+        bottomNav.style.transform = "translateY(0)";
+        bottomNav.style.opacity = "1";
+        bottomNav.style.pointerEvents = "auto";
+      }
+    };
+  }, [showLocationSelect]);
+
+  // Toast auto-dismiss helper
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => setToastMessage(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
+
+  if (!mounted) {
+    return <div className="flex flex-col flex-1 bg-[#121212] animate-pulse" />;
+  }
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+  };
+
+  const handleConfirmLocation = () => {
+    if (selectedRegion && selectedDistrict) {
+      const formattedLoc = `${selectedRegion}, ${selectedDistrict.replace(" tumani", "")}`;
+      setCurrentLocation(formattedLoc);
+      localStorage.setItem("feedLocation", formattedLoc);
+      setShowLocationSelect(false);
+      showToast("Manzil muvaffaqiyatli tasdiqlandi!");
+    }
+  };
+
+  const REGIONS = ["Toshkent", "Navoiy", "Samarqand", "Buxoro"];
+  const DISTRICTS_MAP: Record<string, string[]> = {
+    "Toshkent": ["Yashnobod tumani", "Olmazor tumani", "Mirzo Ulug'bek tumani", "Toshkent shahri", "Yunusobod tumani", "Chilonzor tumani"],
+    "Navoiy": ["Navoiy shahri", "Karmana tumani", "Qiziltepa tumani", "Xatirchi tumani", "Nurota tumani"],
+    "Samarqand": ["Samarqand shahri", "Bulung'ur tumani", "Jomboy tumani", "Urgut tumani", "Payariq tumani", "Ishtixon tumani"],
+    "Buxoro": ["Buxoro shahri", "Gijduvon tumani", "Kogon tumani", "Qorako'l tumani", "Vobkent tumani", "Shofirkon tumani"]
+  };
+  const districts = selectedRegion ? (DISTRICTS_MAP[selectedRegion] || []) : [];
+
+  return (
+    <div
+      className={`flex flex-col flex-1 bg-[#121212] text-white transition-all duration-300 relative ${
+        showLocationSelect ? "-mb-16" : ""
+      }`}
+    >
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-xl animate-fade-in flex items-center gap-2 max-w-xs text-center border border-white/20">
+          <CheckCircle className="h-4 w-4 shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {showLocationSelect ? (
+        /* ==================== HIGH-FIDELITY REGISTERED MANZIL (LOCATION SELECT) VIEW ==================== */
+        <div className="flex flex-col flex-1 bg-[#121212] text-white animate-fade-in">
+          {/* Top Bar Header */}
+          <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+            <h1 className="text-xl font-bold text-white tracking-wide">Manzil</h1>
+            <div className="w-9 h-9" />
+          </div>
+
+          {/* Form Content */}
+          <main className="flex-1 px-6 py-6 pb-8 flex flex-col justify-between max-w-md mx-auto w-full">
+            <div className="space-y-6">
+              {/* Qaysi viloyat */}
+              <div className="space-y-2 text-left">
+                <label className="block text-xs font-semibold text-zinc-400">Qaysi viloyat</label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsRegionDropdownOpen(!isRegionDropdownOpen);
+                      setIsDistrictDropdownOpen(false);
+                    }}
+                    className="w-full px-5 py-4 rounded-2xl border border-white/5 bg-[#1C1C1E] text-sm text-white font-semibold flex justify-between items-center outline-none transition-colors hover:border-white/10"
+                  >
+                    <span>{selectedRegion || "Belgilash"}</span>
+                    <ChevronDown
+                      className={`h-4.5 w-4.5 text-white/40 transition-transform duration-300 ${
+                        isRegionDropdownOpen ? "rotate-180 text-primary" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isRegionDropdownOpen && (
+                    <div className="absolute left-0 right-0 mt-2 z-30 bg-[#1C1C1E] border border-white/5 rounded-2xl shadow-2xl overflow-hidden py-1 max-h-56 overflow-y-auto">
+                      {REGIONS.map((region) => (
+                        <button
+                          key={region}
+                          type="button"
+                          onClick={() => {
+                            setSelectedRegion(region);
+                            setSelectedDistrict(""); // Reset district
+                            setIsRegionDropdownOpen(false);
+                          }}
+                          className="w-full px-5 py-3.5 text-left text-xs font-bold text-white/90 hover:bg-white/5 active:bg-white/10 transition-colors border-b border-white/5 last:border-b-0"
+                        >
+                          {region}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Tumanni kiriting */}
+              <div className="space-y-2 text-left">
+                <label className="block text-xs font-semibold text-zinc-400">Tumanni kiriting</label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    disabled={!selectedRegion}
+                    onClick={() => {
+                      setIsDistrictDropdownOpen(!isDistrictDropdownOpen);
+                      setIsRegionDropdownOpen(false);
+                    }}
+                    className={`w-full px-5 py-4 rounded-2xl border border-white/5 bg-[#1C1C1E] text-sm text-white font-semibold flex justify-between items-center outline-none transition-colors ${
+                      selectedRegion
+                        ? "hover:border-white/10 cursor-pointer"
+                        : "opacity-40 cursor-not-allowed"
+                    }`}
+                  >
+                    <span>{selectedDistrict || "Belgilash"}</span>
+                    <ChevronDown
+                      className={`h-4.5 w-4.5 text-white/40 transition-transform duration-300 ${
+                        isDistrictDropdownOpen ? "rotate-180 text-primary" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isDistrictDropdownOpen && selectedRegion && (
+                    <div className="absolute left-0 right-0 mt-2 z-30 bg-[#1C1C1E] border border-white/5 rounded-2xl shadow-2xl overflow-hidden py-1 max-h-56 overflow-y-auto">
+                      {districts.map((district) => (
+                        <button
+                          key={district}
+                          type="button"
+                          onClick={() => {
+                            setSelectedDistrict(district);
+                            setIsDistrictDropdownOpen(false);
+                          }}
+                          className="w-full px-5 py-3.5 text-left text-xs font-bold text-white/90 hover:bg-white/5 active:bg-white/10 transition-colors border-b border-white/5 last:border-b-0"
+                        >
+                          {district}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Button */}
+            <div>
+              {selectedRegion && selectedDistrict ? (
+                <button
+                  type="button"
+                  onClick={handleConfirmLocation}
+                  className="w-full py-4 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20"
+                >
+                  Tasdiqlash
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowLocationSelect(false)}
+                  className="w-full py-4 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20"
+                >
+                  Ortga
+                </button>
+              )}
+            </div>
+          </main>
+        </div>
+      ) : (
+        /* ==================== HIGH-FIDELITY REGISTERED BOOKINGS HISTORY VIEW ==================== */
+        <div className="flex flex-col flex-1 bg-[#121212] text-white">
+          {/* Top Bar Header */}
+          <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+            <h1 className="text-xl font-bold text-white tracking-wide">Band qilingan</h1>
+            
+            {/* Location selector trigger button */}
+            <button
+              onClick={() => {
+                setSelectedRegion("");
+                setSelectedDistrict("");
+                setIsRegionDropdownOpen(false);
+                setIsDistrictDropdownOpen(false);
+                setShowLocationSelect(true);
+              }}
+              className="flex items-center gap-1.5 text-xs text-white/80 font-semibold bg-white/5 px-3 py-1.5 rounded-full border border-white/5 hover:bg-white/10 active:scale-95 transition-all"
+            >
+              <MapPin className="h-4 w-4 text-primary shrink-0" />
+              <span>{currentLocation.split(", ").pop()}</span>
+            </button>
+          </div>
+
+          {/* Scrollable Bookings List */}
+          <main className="flex-1 overflow-y-auto px-6 py-6 pb-10 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+            {[
+              { id: "1", showBanner: true },
+              { id: "2", showBanner: false }
+            ].map((item) => (
+              <div
+                key={item.id}
+                className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl transition-all duration-300 hover:border-white/10"
+              >
+                {/* Top Restaurant Detail */}
+                <div className="flex items-start gap-4">
+                  {/* Rounded restaurant image */}
+                  <img
+                    src="/images/restaurant.png"
+                    alt="Rest One"
+                    className="w-20 h-20 rounded-2xl object-cover shrink-0 border border-white/5 shadow-md"
+                  />
+                  
+                  <div className="space-y-1 pr-1 w-full min-w-0">
+                    <h2 className="text-base font-bold text-white tracking-wide truncate">Rest One</h2>
+                    
+                    {/* Distance & Status info */}
+                    <div className="flex items-center gap-1.5 text-xs text-white/50 font-medium">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      <span>1 km</span>
+                      <span className="text-white/20">|</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] shrink-0" />
+                      <span className="text-[#10B981] font-bold">Ochiq</span>
+                    </div>
+
+                    {/* Phone */}
+                    <div className="flex items-center gap-1.5 text-xs text-white/60 font-medium">
+                      <Phone className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                      <span>+998 99 123 45 67</span>
+                    </div>
+
+                    {/* Address */}
+                    <div className="flex items-center gap-1.5 text-xs text-white/60 font-medium truncate">
+                      <MapPin className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                      <span className="truncate">Umid qo'rg'oni 765 - uy</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Horizontal Divider */}
+                <hr className="border-t border-white/5" />
+
+                {/* Booking metadata table */}
+                <div className="space-y-2.5 text-xs font-semibold">
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/40">Holat</span>
+                    <span className="text-white font-bold">Band qilish tasdiqlandi</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/40">Chek raqami:</span>
+                    <span className="text-white/90 font-mono">0789 091172</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/40">Belgilandi:</span>
+                    <span className="text-white/90">11:00 • 26/02/2024</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/40">Stol raqami:</span>
+                    <span className="text-white/90">4 - stol</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white/40">Restoran raqami:</span>
+                    <span className="text-white/90">+998 99 123 45 67</span>
+                  </div>
+                </div>
+
+                {/* Bottom orange banner with clock for Card 1 */}
+                {item.showBanner && (
+                  <div className="w-full bg-[#FF6B00] rounded-2xl py-3.5 px-4 flex items-center justify-center gap-2 text-white font-bold text-sm shadow-md animate-pulse">
+                    <span>Qoldi:</span>
+                    <Clock className="h-4.5 w-4.5 shrink-0" />
+                    <span>2 soat 25 daqiqa</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </main>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export interface Venue {
   id: string;
@@ -11,7 +345,7 @@ export interface Venue {
   capacity: string;
   capacityNum: number;
   priceText: string;
-  priceNum: number; // in UZS (millions) or per person
+  priceNum: number;
   rating: number;
   category: "toyxona" | "restoran" | "katering" | "bezaklar";
   emoji: string;
@@ -69,7 +403,7 @@ export const MOCK_VENUES: Venue[] = [
     capacity: "Cheksiz",
     capacityNum: 1000,
     priceText: "150,000 UZS / kishi",
-    priceNum: 3, // mapped to budget range
+    priceNum: 3,
     rating: 4.9,
     category: "katering",
     emoji: "🍢",
@@ -105,275 +439,3 @@ export const MOCK_VENUES: Venue[] = [
     tags: ["Osh", "Milliy taomlar", "Oilaviy"],
   },
 ];
-
-
-export default function FeedPage() {
-  const [search, setSearch] = useState("");
-  const [selectedCat, setSelectedCat] = useState<string>("all");
-  const [showFilters, setShowFilters] = useState(false);
-  const [minRating, setMinRating] = useState<number>(0);
-  const [maxBudget, setMaxBudget] = useState<number>(20); // in millions UZS
-
-  const filteredVenues = MOCK_VENUES.filter((venue) => {
-    const matchesSearch =
-      venue.name.toLowerCase().includes(search.toLowerCase()) ||
-      venue.location.toLowerCase().includes(search.toLowerCase());
-    const matchesCat = selectedCat === "all" || venue.category === selectedCat;
-    const matchesRating = venue.rating >= minRating;
-    const matchesBudget = venue.category === "katering" || venue.category === "bezaklar" || venue.priceNum <= maxBudget;
-
-    return matchesSearch && matchesCat && matchesRating && matchesBudget;
-  });
-
-  const categories = [
-    { id: "all", name: "Barchasi", icon: "✨" },
-    { id: "toyxona", name: "To'yxonalar", icon: "🏰" },
-    { id: "restoran", name: "Restoranlar", icon: "🍽️" },
-    { id: "katering", name: "Katering", icon: "🍢" },
-    { id: "bezaklar", name: "Bezaklar", icon: "🎈" },
-  ];
-
-  return (
-    <div className="flex flex-col flex-1">
-      <Navbar />
-
-      <main className="flex-1 w-full px-4 py-6 pb-24">
-        
-        {/* Search and Filters Section */}
-        <div className="mb-8 space-y-4">
-          <div className="flex gap-2.5 items-center justify-between">
-            {/* Search Bar */}
-            <div className="flex-1 relative">
-              <span className="absolute inset-y-0 left-0 pl-4 flex items-center text-foreground/45">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="h-5 w-5"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
-                </svg>
-              </span>
-              <input
-                type="text"
-                placeholder="To'yxona, restoran yoki manzilni qidiring..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-2xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-surface dark:bg-brand-dark-surface text-foreground placeholder-foreground/35 outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
-              />
-            </div>
-
-            {/* Filter Toggle Button */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center justify-center gap-2 px-4 py-4 rounded-2xl border font-bold transition-all duration-200 active:scale-95 ${
-                showFilters
-                  ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
-                  : "bg-brand-light-surface dark:bg-brand-dark-surface text-foreground border-brand-light-border dark:border-brand-dark-border hover:bg-foreground/5 dark:hover:bg-white/5"
-              }`}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="h-5 w-5"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-              </svg>
-              Filtrlar
-            </button>
-          </div>
-
-          {/* Advanced Filter Panel */}
-          {showFilters && (
-            <div className="rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-surface dark:bg-brand-dark-surface p-6 shadow-xl space-y-6 transition-all duration-300 animate-fadeIn">
-              <h3 className="font-bold text-lg text-foreground mb-4">Qidiruv parametrlari</h3>
-              
-              <div className="grid grid-cols-1 gap-5">
-                {/* Budget Slider */}
-                <div className="space-y-2">
-                  <div className="flex justify-between font-semibold text-sm">
-                    <span>Maksimal Byudjet (To'yxonalar uchun)</span>
-                    <span className="text-primary">{maxBudget} mln UZS</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="3"
-                    max="30"
-                    step="1"
-                    value={maxBudget}
-                    onChange={(e) => setMaxBudget(Number(e.target.value))}
-                    className="w-full accent-primary bg-foreground/10 dark:bg-white/10 h-2 rounded-lg cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-foreground/50">
-                    <span>3 mln UZS</span>
-                    <span>30 mln UZS</span>
-                  </div>
-                </div>
-
-                {/* Rating Filter */}
-                <div className="space-y-2">
-                  <span className="block font-semibold text-sm">Minimal Reyting</span>
-                  <div className="flex gap-2">
-                    {[0, 4.5, 4.7, 4.8, 4.9].map((ratingVal) => (
-                      <button
-                        key={ratingVal}
-                        onClick={() => setMinRating(ratingVal)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 ${
-                          minRating === ratingVal
-                            ? "bg-primary text-white"
-                            : "bg-foreground/5 dark:bg-white/5 text-foreground hover:bg-foreground/10 dark:hover:bg-white/10"
-                        }`}
-                      >
-                        {ratingVal === 0 ? "Barchasi" : `★ ${ratingVal}+`}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Categories Horizontal Tabs */}
-          <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-none">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCat(cat.id)}
-                className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold whitespace-nowrap border transition-all duration-200 ${
-                  selectedCat === cat.id
-                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/10"
-                    : "bg-brand-light-surface dark:bg-brand-dark-surface text-foreground border-brand-light-border dark:border-brand-dark-border hover:bg-foreground/5 dark:hover:bg-white/5"
-                }`}
-              >
-                <span>{cat.icon}</span>
-                <span>{cat.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Results Info */}
-        <div className="flex items-center justify-between mb-6">
-          <span className="text-sm font-semibold text-foreground/60">
-            Natijalar: {filteredVenues.length} ta topildi
-          </span>
-        </div>
-
-        {/* Grid List */}
-        {filteredVenues.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6">
-            {filteredVenues.map((venue) => (
-              <div
-                key={venue.id}
-                className="group relative rounded-3xl bg-brand-light-card dark:bg-brand-dark-card border border-brand-light-border dark:border-brand-dark-border shadow-md overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
-              >
-                {/* Visual image display of Venue */}
-                <div className="h-48 relative overflow-hidden group-hover:scale-105 transition-transform duration-500 bg-brand-dark-surface">
-                  {venue.imageUrl ? (
-                    <img
-                      src={venue.imageUrl}
-                      alt={venue.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary/30 to-brand-dark flex items-center justify-center text-7xl select-none">
-                      {venue.emoji}
-                    </div>
-                  )}
-                  {/* Glass indicator for capacity */}
-                  {venue.capacity !== "N/A" && (
-                    <span className="absolute bottom-3 right-3 text-xs font-bold rounded-lg px-2.5 py-1 glass-effect border border-brand-light-border/20 dark:border-brand-dark-border/20">
-                      👥 {venue.capacity}
-                    </span>
-                  )}
-                </div>
-
-                {/* Info body */}
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                      {venue.category.toUpperCase()}
-                    </span>
-                    <span className="flex items-center gap-1 text-sm font-bold text-yellow-500">
-                      ★ {venue.rating}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200 line-clamp-1">
-                    {venue.name}
-                  </h3>
-                  
-                  <p className="text-sm text-foreground/50 mt-1 flex items-center gap-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-4 h-4 text-primary/70"
-                    >
-                      <path fillRule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.381 7.587-.83.799-1.655 1.38-2.274 1.765-.31.193-.57.337-.757.433a5.742 5.742 0 0 0-.281.14l-.018.008-.006.003ZM10 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clipRule="evenodd" />
-                    </svg>
-                    {venue.location}
-                  </p>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1.5 mt-4">
-                    {venue.tags.map((tag, i) => (
-                      <span
-                        key={i}
-                        className="text-[10px] font-bold rounded-md bg-foreground/5 dark:bg-white/5 border border-brand-light-border dark:border-brand-dark-border px-2 py-0.5 text-foreground/75"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Divider */}
-                  <div className="border-t border-brand-light-border dark:border-brand-dark-border my-4" />
-
-                  {/* Price & CTA */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] uppercase font-bold text-foreground/40">Band qilish narxi</p>
-                      <p className="font-extrabold text-foreground">{venue.priceText}</p>
-                    </div>
-                    
-                    <Link
-                      href={`/venue/${venue.id}`}
-                      className="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-primary/15 hover:bg-primary-hover hover:scale-[1.02] transition-all duration-200"
-                    >
-                      Batafsil
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16 rounded-3xl bg-brand-light-card dark:bg-brand-dark-card border border-brand-light-border dark:border-brand-dark-border max-w-lg mx-auto">
-            <span className="text-5xl">🔍</span>
-            <h3 className="mt-4 text-xl font-bold">Hech narsa topilmadi</h3>
-            <p className="text-sm text-foreground/50 mt-2">
-              Boshqa mezonlarni kiritib yoki qidiruv so'zini tozalab ko'ring.
-            </p>
-            <button
-              onClick={() => {
-                setSearch("");
-                setSelectedCat("all");
-                setMinRating(0);
-                setMaxBudget(20);
-              }}
-              className="mt-6 inline-flex items-center justify-center rounded-xl bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 text-sm font-bold transition-colors"
-            >
-              Filtrlarni tozalash
-            </button>
-          </div>
-        )}
-      </main>
-    </div>
-  );
-}
