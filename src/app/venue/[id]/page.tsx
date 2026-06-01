@@ -15,6 +15,7 @@ import {
   Star,
   CheckCircle,
   Wallet,
+  Plus,
 } from "lucide-react";
 
 interface Props {
@@ -132,6 +133,33 @@ export default function VenueDetailPage({ params }: Props) {
   const [activeImage, setActiveImage] = useState(venue.image);
   const [isSaved, setIsSaved] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedItems, setSelectedItems] = useState<Record<string, number>>({});
+
+  const FOODS = [
+    { name: "Jizz", img: "/images/home/food1.png", price: "500 000 so'm", priceVal: 500000 },
+    { name: "Qozon kabob", img: "/images/home/food2.png", price: "300 000 so'm", priceVal: 300000 },
+    { name: "Manti", img: "/images/home/food3.png", price: "100 000 so'm", priceVal: 100000 },
+    { name: "Stake", img: "/images/home/food4.png", price: "180 000 so'm", priceVal: 180000 },
+    { name: "Tandir go'sht", img: "/images/home/top.png", price: "250 000 so'm", priceVal: 250000 },
+    { name: "Somsa", img: "/images/home/tuyxona1.png", price: "15 000 so'm", priceVal: 15000 }
+  ];
+
+  const handleAddItem = (name: string) => {
+    setSelectedItems(prev => ({
+      ...prev,
+      [name]: (prev[name] || 0) + 1
+    }));
+  };
+
+  const cartTotal = Object.entries(selectedItems).reduce((sum, [name, qty]) => {
+    const item = FOODS.find(f => f.name === name);
+    return sum + (item ? item.priceVal * qty : 0);
+  }, 0);
+
+  const formatPrice = (val: number) => {
+    return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " so'm";
+  };
   const [showReviews, setShowReviews] = useState(false);
   const [newReviewText, setNewReviewText] = useState("");
   const [userName, setUserName] = useState("Shahzod");
@@ -406,12 +434,14 @@ export default function VenueDetailPage({ params }: Props) {
           </div>
 
           {/* Search bar inside section */}
-          <div className="flex items-center bg-[#1C1C1E] border border-white/5 rounded-2xl overflow-hidden focus-within:border-primary/50 transition-all duration-300">
+          <div className="flex items-center bg-[#1C1C1E] border border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/50 transition-all duration-300">
             <span className="pl-4 text-white/40">
               <Search className="h-5 w-5" />
             </span>
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Qidirish"
               className="w-full pl-3 pr-4 py-4 bg-transparent text-sm text-white font-medium outline-none placeholder:text-white/30"
             />
@@ -419,30 +449,44 @@ export default function VenueDetailPage({ params }: Props) {
 
           {/* Food Grid Display */}
           <div className="grid grid-cols-2 gap-4 pt-1">
-            {[
-              { name: "Jizz", img: "/images/home/food1.png", price: "500 000 so'm" },
-              { name: "Qozon kabob", img: "/images/home/food2.png", price: "300 000 so'm" }
-            ].map((food, idx) => (
-              <div
-                key={idx}
-                className="bg-[#1C1C1E] border border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg relative text-left"
-              >
-                {/* Image Viewport */}
-                <div className="w-full aspect-[1.15/1] rounded-2xl overflow-hidden relative border border-white/5 bg-zinc-800">
-                  <img
-                    src={food.img}
-                    alt={food.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+            {FOODS.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase())).map((food, idx) => {
+              const qty = selectedItems[food.name] || 0;
+              return (
+                <div
+                  key={idx}
+                  className="bg-[#1C1C1E] border border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg relative text-left animate-fade-in"
+                >
+                  {/* Image Viewport */}
+                  <div className="w-full aspect-[1.15/1] rounded-2xl overflow-hidden relative border border-white/5 bg-zinc-800">
+                    <img
+                      src={food.img}
+                      alt={food.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAddItem(food.name)}
+                      className={`absolute bottom-2 right-2 w-8 h-8 rounded-full shadow-md flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-all z-10 ${
+                        qty > 0 ? "bg-[#FF6B00] text-white" : "bg-white text-zinc-950"
+                      }`}
+                    >
+                      {qty > 0 ? <span className="text-xs">{qty}</span> : <Plus className="h-4 w-4 stroke-[3]" />}
+                    </button>
+                  </div>
 
-                {/* Details */}
-                <div className="space-y-1 pr-0.5">
-                  <p className="text-sm font-black text-white tracking-wide">{food.price}</p>
-                  <p className="text-xs font-semibold text-white/50">{food.name}</p>
+                  {/* Details */}
+                  <div className="space-y-1 pr-0.5">
+                    <p className="text-sm font-black text-white tracking-wide">{food.price}</p>
+                    <p className="text-xs font-semibold text-white/50">{food.name}</p>
+                  </div>
                 </div>
+              );
+            })}
+            {FOODS.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+              <div className="col-span-2 py-8 text-center text-xs text-white/40 font-semibold">
+                Mahsulot topilmadi
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -454,7 +498,7 @@ export default function VenueDetailPage({ params }: Props) {
           href={`/booking/${id}`}
           className="w-full py-4 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20"
         >
-          <span>Keyingisi</span>
+          <span>{cartTotal > 0 ? formatPrice(cartTotal) : "Keyingisi"}</span>
         </Link>
       </div>
 
