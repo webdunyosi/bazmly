@@ -69,6 +69,7 @@ export default function LoginPage() {
   const [showCards, setShowCards] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [tempLanguage, setTempLanguage] = useState("uz");
 
   // Cards Management States
@@ -311,7 +312,7 @@ export default function LoginPage() {
     {
       label: "Tarix",
       icon: Clock,
-      action: () => setActiveModal("history"),
+      action: () => setShowHistory(true),
     },
     {
       label: "Tillar",
@@ -876,6 +877,112 @@ export default function LoginPage() {
                     </div>
                   </div>
                 </div>
+              </main>
+            </div>
+          ) : showHistory ? (
+            /* ==================== HIGH-FIDELITY REGISTERED BOOKINGS HISTORY VIEW ==================== */
+            <div className="flex flex-col flex-1 bg-[#121212] text-white">
+              {/* Top Bar Header */}
+              <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowHistory(false)}
+                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <h1 className="text-xl font-bold text-white tracking-wide">Band qilingan</h1>
+                </div>
+                
+                {/* Location pin with Toshkent */}
+                <div className="flex items-center gap-1.5 text-xs text-white/80 font-semibold bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                  <MapPin className="h-4 w-4 text-primary shrink-0" />
+                  <span>Toshkent</span>
+                </div>
+              </div>
+
+              {/* Scrollable Bookings List */}
+              <main className="flex-1 overflow-y-auto px-6 py-6 pb-28 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+                {[
+                  { id: "1", showBanner: true },
+                  { id: "2", showBanner: false }
+                ].map((item) => (
+                  <div
+                    key={item.id}
+                    className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl transition-all duration-300 hover:border-white/10"
+                  >
+                    {/* Top Restaurant Detail */}
+                    <div className="flex items-start gap-4">
+                      {/* Rounded restaurant image */}
+                      <img
+                        src="/images/restaurant.png"
+                        alt="Rest One"
+                        className="w-20 h-20 rounded-2xl object-cover shrink-0 border border-white/5 shadow-md"
+                      />
+                      
+                      <div className="space-y-1 pr-1 w-full min-w-0">
+                        <h2 className="text-base font-bold text-white tracking-wide truncate">Rest One</h2>
+                        
+                        {/* Distance & Status info */}
+                        <div className="flex items-center gap-1.5 text-xs text-white/50 font-medium">
+                          <MapPin className="h-3.5 w-3.5 shrink-0" />
+                          <span>1 km</span>
+                          <span className="text-white/20">|</span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] shrink-0" />
+                          <span className="text-[#10B981] font-bold">Ochiq</span>
+                        </div>
+
+                        {/* Phone */}
+                        <div className="flex items-center gap-1.5 text-xs text-white/60 font-medium">
+                          <Phone className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                          <span>+998 99 123 45 67</span>
+                        </div>
+
+                        {/* Address */}
+                        <div className="flex items-center gap-1.5 text-xs text-white/60 font-medium truncate">
+                          <MapPin className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                          <span className="truncate">Umid qo'rg'oni 765 - uy</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Horizontal Divider */}
+                    <hr className="border-t border-white/5" />
+
+                    {/* Booking metadata table */}
+                    <div className="space-y-2.5 text-xs font-semibold">
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/40">Holat</span>
+                        <span className="text-white font-bold">Band qilish tasdiqlandi</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/40">Chek raqami:</span>
+                        <span className="text-white/90 font-mono">0789 091172</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/40">Belgilandi:</span>
+                        <span className="text-white/90">11:00 • 26/02/2024</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/40">Stol raqami:</span>
+                        <span className="text-white/90">4 - stol</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-white/40">Restoran raqami:</span>
+                        <span className="text-white/90">+998 99 123 45 67</span>
+                      </div>
+                    </div>
+
+                    {/* Bottom orange banner with clock for Card 1 */}
+                    {item.showBanner && (
+                      <div className="w-full bg-[#FF6B00] rounded-2xl py-3.5 px-4 flex items-center justify-center gap-2 text-white font-bold text-sm shadow-md animate-pulse">
+                        <span>Qoldi:</span>
+                        <Clock className="h-4.5 w-4.5 shrink-0" />
+                        <span>2 soat 25 daqiqa</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </main>
             </div>
           ) : isEditing ? (
