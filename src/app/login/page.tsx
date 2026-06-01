@@ -23,6 +23,8 @@ import {
   Share2,
   CheckCircle,
   X,
+  ChevronDown,
+  Trash2,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 
@@ -63,6 +65,8 @@ export default function LoginPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editLocation, setEditLocation] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [showCards, setShowCards] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -107,8 +111,10 @@ export default function LoginPage() {
     const cleanLocation = editLocation.trim() || "Tashkent, Tashkent city";
     setFullName(editName);
     setLocation(cleanLocation);
+    setPhone(editPhone);
     localStorage.setItem("fullName", editName);
     localStorage.setItem("location", cleanLocation);
+    localStorage.setItem("phone", editPhone);
     setIsEditing(false);
     showToast("Profil muvaffaqiyatli saqlandi!");
   };
@@ -214,7 +220,7 @@ export default function LoginPage() {
     {
       label: "Mening kartalarim",
       icon: CreditCard,
-      action: () => router.push("/tickets"),
+      action: () => setShowCards(true),
     },
     {
       label: "Tarix",
@@ -257,137 +263,253 @@ export default function LoginPage() {
 
       {isRegistered ? (
         /* ==================== REGISTERED PROFILE VIEW ==================== */
-        <div className="flex flex-col flex-1 pb-10">
-          <Navbar />
-
-          <main className="flex-1 flex flex-col items-center justify-start py-8 px-4 max-w-md mx-auto w-full">
-            {/* Header Title */}
-            <h1 className="text-xl font-black text-foreground dark:text-white mb-6">
-              Sozlamalar
-            </h1>
-
-            {/* Profile Card Info */}
-            <div className="w-full flex flex-col items-center text-center mb-8">
-              {/* Circle Avatar with custom styling */}
-              <div className="relative">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl relative bg-zinc-200 dark:bg-zinc-800">
-                  <img
-                    src="/images/profil.jpg"
-                    alt="User Portrait"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute bottom-0 right-1 bg-primary text-white p-2.5 rounded-full shadow-lg border-2 border-brand-light dark:border-brand-dark">
-                  <User className="h-4.5 w-4.5" />
-                </div>
+        <div className="flex flex-col flex-1 pb-10 bg-[#121212] text-white">
+          {showCards ? (
+            /* ==================== HIGH-FIDELITY REGISTERED MY CARDS VIEW ==================== */
+            <div className="flex flex-col flex-1 bg-[#121212] text-white">
+              {/* Custom Top Bar Header matching screenshot */}
+              <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+                <button
+                  onClick={() => setShowCards(false)}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <h1 className="text-base font-bold text-white tracking-wide">Sozlamalar</h1>
+                <div className="w-9 h-9" />
               </div>
 
-              {/* Editable Name & Location */}
-              {isEditing ? (
-                <div className="mt-4 w-full max-w-xs space-y-3 bg-foreground/5 dark:bg-white/5 p-4 rounded-2xl border border-foreground/10 dark:border-white/10 glass-effect">
-                  <div className="text-left">
-                    <label className="block text-[10px] font-bold text-foreground/45 dark:text-white/40 uppercase tracking-wider mb-1">
-                      To'liq ismingiz
-                    </label>
+              {/* Content Container */}
+              <main className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-6 max-w-md mx-auto w-full">
+                {/* Card 1: Humo Card with golden wave pattern and Humo logo */}
+                <div className="w-full border border-white/10 bg-[#1C1C1E] rounded-[24px] p-6 flex flex-col justify-between h-44 shadow-2xl relative overflow-hidden transition-all duration-300 hover:border-primary/55">
+                  <div className="flex justify-between items-start">
+                    <img
+                      src="/images/humo.png"
+                      alt="Humo Card"
+                      className="h-9 object-contain rounded"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-white text-base font-semibold tracking-wide capitalize">{fullName}</p>
+                    <p className="text-white text-base font-mono tracking-widest font-semibold">**** **** **** 1234</p>
+                  </div>
+                </div>
+
+                {/* Card 2: Empty Card with Add Button */}
+                <div className="w-full border border-white/10 bg-[#1C1C1E]/20 rounded-[24px] p-6 flex flex-col justify-between h-44 transition-all duration-300 hover:bg-[#1C1C1E]/30">
+                  <div className="flex justify-between items-start text-white/60">
+                    <CreditCard className="h-7 w-7" />
+                  </div>
+                  <div className="flex justify-start">
+                    <button
+                      type="button"
+                      onClick={() => showToast("Karta qo'shish xizmati tez kunda ishga tushadi!")}
+                      className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all active:scale-95"
+                    >
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-primary text-xs font-black">+</span>
+                      <span>Karta qo'shish</span>
+                    </button>
+                  </div>
+                </div>
+              </main>
+            </div>
+          ) : isEditing ? (
+            /* ==================== HIGH-FIDELITY REGISTERED EDIT PROFILE VIEW ==================== */
+            <div className="flex flex-col flex-1">
+              {/* Custom Top Bar Header matching screenshot */}
+              <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+                <button
+                  onClick={handleSaveProfile}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <h1 className="text-base font-bold text-white tracking-wide">Sozlamalar</h1>
+                <div className="w-9 h-9" />
+              </div>
+
+              {/* Content Container */}
+              <main className="flex-1 overflow-y-auto px-6 py-8 flex flex-col items-center max-w-md mx-auto w-full">
+                {/* Circle Avatar with Camera/Plus icon */}
+                <div className="relative mb-8 mt-2">
+                  <div className="w-36 h-36 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl bg-zinc-800">
+                    <img
+                      src="/images/profil.jpg"
+                      alt="User Portrait"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute bottom-1 right-1 bg-white text-zinc-800 p-2.5 rounded-full shadow-lg border border-white/10 cursor-pointer hover:bg-zinc-100 transition-colors flex items-center justify-center">
+                    <svg className="h-4.5 w-4.5 text-zinc-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                      <circle cx="12" cy="13" r="4"/>
+                      <line x1="21" y1="10" x2="21" y2="6"/>
+                      <line x1="19" y1="8" x2="23" y2="8"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Form Fields */}
+                <div className="w-full space-y-5">
+                  {/* Name field */}
+                  <div className="space-y-2 text-left">
+                    <label className="block text-xs font-semibold text-zinc-400">Ism/Familiya</label>
                     <input
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      placeholder="Masalan: Alisher Raimov"
-                      className="w-full px-3 py-2 rounded-xl border border-foreground/10 dark:border-white/10 bg-brand-light dark:bg-brand-dark text-sm text-foreground dark:text-white font-bold outline-none focus:border-primary"
+                      placeholder="Alisher Raimov"
+                      className="w-full px-4 py-3.5 rounded-xl border border-white/10 bg-[#1C1C1E] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
-                  <div className="text-left">
-                    <label className="block text-[10px] font-bold text-foreground/45 dark:text-white/40 uppercase tracking-wider mb-1">
-                      Sizning shahringiz
-                    </label>
+
+                  {/* Phone field */}
+                  <div className="space-y-2 text-left">
+                    <label className="block text-xs font-semibold text-zinc-400">Telefon raqam</label>
                     <input
                       type="text"
-                      value={editLocation}
-                      onChange={(e) => setEditLocation(e.target.value)}
-                      placeholder="Masalan: Tashkent, Tashkent city"
-                      className="w-full px-3 py-2 rounded-xl border border-foreground/10 dark:border-white/10 bg-brand-light dark:bg-brand-dark text-xs text-foreground dark:text-white outline-none focus:border-primary"
+                      value={editPhone}
+                      onChange={(e) => setEditPhone(e.target.value)}
+                      placeholder="+998 99 219 19 55"
+                      className="w-full px-4 py-3.5 rounded-xl border border-white/10 bg-[#1C1C1E] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
-                  <div className="flex gap-2 justify-end pt-1">
-                    <button
-                      onClick={() => setIsEditing(false)}
-                      className="px-3.5 py-1.5 rounded-xl bg-foreground/10 dark:bg-white/10 hover:bg-foreground/15 text-xs font-bold text-foreground dark:text-white transition-colors"
-                    >
-                      Bekor qilish
-                    </button>
-                    <button
-                      onClick={handleSaveProfile}
-                      className="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-hover text-xs font-bold text-white transition-colors shadow-md"
-                    >
-                      Saqlash
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-5 space-y-1">
-                  <h2 className="text-2xl font-black text-foreground dark:text-white tracking-tight">
-                    {fullName || "Alisher Raimov"}
-                  </h2>
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-foreground/60 dark:text-white/60 font-medium">
-                    <MapPin className="h-4 w-4 text-primary" />
-                    <span>{location}</span>
-                  </div>
-                </div>
-              )}
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-center gap-3.5 w-full max-w-xs mt-6">
-                <button
-                  onClick={() => {
-                    setEditName(fullName);
-                    setEditLocation(location);
-                    setIsEditing(true);
-                  }}
-                  className="flex-1 py-3 px-4 rounded-xl bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 text-xs font-bold text-foreground dark:text-white hover:bg-foreground/10 dark:hover:bg-white/10 transition-all active:scale-95 shadow-sm"
-                >
-                  Edit profile
-                </button>
-                <button
-                  onClick={() => setActiveModal("friends")}
-                  className="flex-1 py-3 px-4 rounded-xl bg-primary text-xs font-bold text-white shadow-lg hover:bg-primary-hover transition-all active:scale-95"
-                >
-                  Add friends
-                </button>
-              </div>
-            </div>
-
-            {/* Options List Dashboard Container */}
-            <div className="w-full border border-foreground/10 dark:border-white/10 rounded-2xl bg-brand-light-card/80 dark:bg-black/80 shadow-2xl overflow-hidden p-2 space-y-1 glass-effect">
-              {menuItems.map((item, index) => {
-                const Icon = item.icon;
-                const isChiqish = item.label === "Chiqish";
-                return (
-                  <button
-                    key={index}
-                    onClick={item.action}
-                    className="w-full flex items-center justify-between p-3.5 rounded-xl text-foreground dark:text-white/90 hover:bg-foreground/5 dark:hover:bg-white/5 active:bg-foreground/10 dark:active:bg-white/10 transition-all text-left group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className={`p-2 rounded-xl border transition-colors ${
-                        isChiqish
-                          ? "bg-red-500/10 border-red-500/20 text-red-500"
-                          : "bg-foreground/5 dark:bg-white/5 border-foreground/5 dark:border-white/5 text-foreground/80 dark:text-white/80 group-hover:text-primary group-hover:border-primary/20"
-                      }`}>
-                        <Icon className="h-4.5 w-4.5" />
-                      </span>
-                      <span className={`text-sm font-bold tracking-wide ${
-                        isChiqish ? "text-red-500/90 font-black" : ""
-                      }`}>{item.label}</span>
+                  {/* Location field */}
+                  <div className="space-y-2 text-left">
+                    <label className="block text-xs font-semibold text-zinc-400">Manzil</label>
+                    <div className="relative">
+                      <select
+                        value={editLocation}
+                        onChange={(e) => setEditLocation(e.target.value)}
+                        className="w-full px-4 py-3.5 pr-10 rounded-xl border border-white/10 bg-[#1C1C1E] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors appearance-none cursor-pointer"
+                      >
+                        <option value="Tashkent, Tashkent city">Toshkent</option>
+                        <option value="Samarkand, Samarkand region">Samarqand</option>
+                        <option value="Bukhara, Bukhara region">Buxoro</option>
+                        <option value="Andijan, Andijan region">Andijon</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-zinc-400">
+                        <ChevronDown className="h-4.5 w-4.5" />
+                      </div>
                     </div>
-                    <ChevronRight className={`h-4 w-4 text-foreground/30 dark:text-white/30 group-hover:translate-x-0.5 transition-transform ${
-                      isChiqish ? "text-red-500/40 group-hover:text-red-500" : ""
-                    }`} />
-                  </button>
-                );
-              })}
+                  </div>
+
+                  {/* Danger zone */}
+                  <div className="pt-2">
+                    <span className="block text-red-400 text-xs font-semibold uppercase tracking-wider text-left mb-2">
+                      Xavfli zona
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setActiveModal("logout")}
+                      className="w-full bg-[#1C1C1E] border border-white/10 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-[#252528] transition-colors text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center">
+                          <Trash2 className="h-4.5 w-4.5" />
+                        </span>
+                        <span className="text-sm font-bold text-white/90">Akkauntni o'chirish</span>
+                      </div>
+                      <ChevronRight className="h-4.5 w-4.5 text-white/30" />
+                    </button>
+                  </div>
+                </div>
+              </main>
             </div>
-          </main>
+          ) : (
+            /* ==================== REGISTERED DASHBOARD VIEW ==================== */
+            <>
+              <Navbar />
+
+              <main className="flex-1 flex flex-col items-center justify-start py-8 px-4 max-w-md mx-auto w-full">
+                {/* Header Title */}
+                <h1 className="text-xl font-black text-white mb-6">
+                  Sozlamalar
+                </h1>
+
+                {/* Profile Card Info */}
+                <div className="w-full flex flex-col items-center text-center mb-8">
+                  {/* Circle Avatar with custom styling */}
+                  <div className="relative">
+                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl relative bg-zinc-200 dark:bg-zinc-800">
+                      <img
+                        src="/images/profil.jpg"
+                        alt="User Portrait"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="absolute bottom-0 right-1 bg-primary text-white p-2.5 rounded-full shadow-lg border-2 border-brand-light dark:border-brand-dark">
+                      <User className="h-4.5 w-4.5" />
+                    </div>
+                  </div>
+
+                  <div className="mt-5 space-y-1">
+                    <h2 className="text-2xl font-black text-white tracking-tight">
+                      {fullName || "Alisher Raimov"}
+                    </h2>
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-white/60 font-medium">
+                      <MapPin className="h-4 w-4 text-primary" />
+                      <span>{location.split(",")[0]}</span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-center gap-3.5 w-full max-w-xs mt-6">
+                    <button
+                      onClick={() => {
+                        setEditName(fullName);
+                        setEditLocation(location);
+                        setEditPhone(phone || "+998 99 219 19 55");
+                        setIsEditing(true);
+                      }}
+                      className="flex-1 py-3 px-4 rounded-xl bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 text-xs font-bold text-white hover:bg-[#252528] transition-all active:scale-95 shadow-sm"
+                    >
+                      Edit profile
+                    </button>
+                    <button
+                      onClick={() => setActiveModal("friends")}
+                      className="flex-1 py-3 px-4 rounded-xl bg-primary text-xs font-bold text-white shadow-lg hover:bg-primary-hover transition-all active:scale-95"
+                    >
+                      Add friends
+                    </button>
+                  </div>
+                </div>
+
+                {/* Options List Dashboard Container */}
+                <div className="w-full border border-white/10 rounded-2xl bg-black/80 shadow-2xl overflow-hidden p-2 space-y-1 glass-effect">
+                  {menuItems.map((item, index) => {
+                    const Icon = item.icon;
+                    const isChiqish = item.label === "Chiqish";
+                    return (
+                      <button
+                        key={index}
+                        onClick={item.action}
+                        className="w-full flex items-center justify-between p-3.5 rounded-xl text-white/90 hover:bg-white/5 active:bg-white/10 transition-all text-left group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={`p-2 rounded-xl border transition-colors ${
+                            isChiqish
+                              ? "bg-red-500/10 border-red-500/20 text-red-500"
+                              : "bg-white/5 border-white/5 text-white/80 group-hover:text-primary group-hover:border-primary/20"
+                          }`}>
+                            <Icon className="h-4.5 w-4.5" />
+                          </span>
+                          <span className={`text-sm font-bold tracking-wide ${
+                            isChiqish ? "text-red-500/90 font-black" : ""
+                          }`}>{item.label}</span>
+                        </div>
+                        <ChevronRight className={`h-4 w-4 text-white/30 group-hover:translate-x-0.5 transition-transform ${
+                          isChiqish ? "text-red-500/40 group-hover:text-red-500" : ""
+                        }`} />
+                      </button>
+                    );
+                  })}
+                </div>
+              </main>
+            </>
+          )}
 
           {/* ==================== SETTINGS MODALS ==================== */}
           {activeModal && (
@@ -580,6 +702,7 @@ export default function LoginPage() {
           )}
         </div>
       ) : (
+
         /* ==================== ORIGINAL STEPPED REGISTRATION VIEW ==================== */
         <div className="flex flex-col flex-1">
           <Navbar />
