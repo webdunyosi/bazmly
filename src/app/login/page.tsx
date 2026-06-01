@@ -67,6 +67,9 @@ export default function LoginPage() {
   const [editLocation, setEditLocation] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [showCards, setShowCards] = useState(false);
+  const [showLanguages, setShowLanguages] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
+  const [tempLanguage, setTempLanguage] = useState("uz");
 
   // Cards Management States
   const [userCards, setUserCards] = useState([
@@ -146,7 +149,9 @@ export default function LoginPage() {
       if (
         (showCards && (showCardOtp || showAddCard || selectedCardForDelete)) ||
         activeModal === "logout_profile" ||
-        activeModal === "delete_account"
+        activeModal === "delete_account" ||
+        showLanguages ||
+        showMessages
       ) {
         bottomNav.style.transform = "translateY(100%)";
         bottomNav.style.opacity = "0";
@@ -164,7 +169,7 @@ export default function LoginPage() {
         bottomNav.style.pointerEvents = "auto";
       }
     };
-  }, [showCards, showCardOtp, showAddCard, selectedCardForDelete, activeModal]);
+  }, [showCards, showCardOtp, showAddCard, selectedCardForDelete, activeModal, showLanguages, showMessages]);
 
   // Toast auto-dismiss helper
   useEffect(() => {
@@ -296,7 +301,7 @@ export default function LoginPage() {
     {
       label: "Xabarlar",
       icon: Bell,
-      action: () => setActiveModal("messages"),
+      action: () => setShowMessages(true),
     },
     {
       label: "Mening kartalarim",
@@ -311,7 +316,10 @@ export default function LoginPage() {
     {
       label: "Tillar",
       icon: Languages,
-      action: () => setActiveModal("languages"),
+      action: () => {
+        setTempLanguage(selectedLang || "uz");
+        setShowLanguages(true);
+      },
     },
     {
       label: "Yordam",
@@ -652,6 +660,223 @@ export default function LoginPage() {
                   )}
                 </div>
               )}
+            </div>
+          ) : showLanguages ? (
+            /* ==================== HIGH-FIDELITY REGISTERED LANGUAGE SETTINGS VIEW ==================== */
+            <div className="flex flex-col flex-1 bg-[#121212] text-white">
+              {/* Top Bar Header */}
+              <div className="relative flex items-center justify-between px-6 py-5">
+                <button
+                  onClick={() => setShowLanguages(false)}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <h1 className="text-base font-bold text-white tracking-wide">Til sozlamalari</h1>
+                <div className="w-9 h-9" />
+              </div>
+
+              {/* Form Content */}
+              <main className="flex-1 px-6 py-6 flex flex-col justify-between max-w-md mx-auto w-full">
+                <div className="space-y-6">
+                  {/* Subtitle */}
+                  <div className="space-y-1 text-left">
+                    <h2 className="text-xl font-bold text-white tracking-tight leading-tight">Ilovani o'zingizga qulay</h2>
+                    <p className="text-xl font-bold text-white tracking-tight leading-tight text-white/95">tilda boshqaring</p>
+                  </div>
+
+                  {/* Language Options Grid */}
+                  <div className="space-y-4">
+                    {[
+                      { code: "uz", label: "O'zbek tili", icon: "/icons/uzb.png" },
+                      { code: "en", label: "Ingliz tili", icon: "/icons/eng.png" },
+                      { code: "ru", label: "Rus tili", icon: "/icons/ru.png" }
+                    ].map((opt) => {
+                      const isSelected = tempLanguage === opt.code;
+                      return (
+                        <button
+                          key={opt.code}
+                          type="button"
+                          onClick={() => setTempLanguage(opt.code)}
+                          className={`w-full flex items-center justify-between p-5 rounded-[20px] transition-all duration-200 active:scale-98 text-left ${
+                            isSelected
+                              ? "bg-primary text-white shadow-lg shadow-primary/20"
+                              : "bg-[#1C1C1E] text-white hover:bg-zinc-800"
+                          }`}
+                        >
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={opt.icon}
+                              alt={opt.label}
+                              className="w-10 h-10 object-cover rounded-full shadow-sm"
+                            />
+                            <span className="text-base font-bold tracking-wide">{opt.label}</span>
+                          </div>
+                          {isSelected && <Check className="h-5 w-5 text-white" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Bottom Confirm Button */}
+                <div className="pb-8">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedLang(tempLanguage);
+                      setShowLanguages(false);
+                      showToast("Til muvaffaqiyatli o'zgartirildi!");
+                    }}
+                    className="w-full py-4 rounded-2xl bg-primary hover:bg-primary-hover text-white font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg shadow-primary/20"
+                  >
+                    Tasdiqlash
+                  </button>
+                </div>
+              </main>
+            </div>
+          ) : showMessages ? (
+            /* ==================== HIGH-FIDELITY REGISTERED XABARLAR VIEW ==================== */
+            <div className="flex flex-col flex-1 bg-[#121212] text-white animate-fade-in">
+              {/* Top Bar Header */}
+              <div className="relative flex items-center justify-between px-6 py-5">
+                <button
+                  onClick={() => setShowMessages(false)}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <h1 className="text-base font-bold text-white tracking-wide">Xabarlar</h1>
+                <div className="w-9 h-9" />
+              </div>
+
+              {/* Form Content */}
+              <main className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+                {/* Subtitle */}
+                <div className="space-y-1">
+                  <h2 className="text-xl font-bold text-white tracking-tight leading-tight">Ilovamiz bo'yicha yangiliklarni</h2>
+                  <p className="text-xl font-bold text-white/90 tracking-tight leading-tight text-white/95">kuzatib boring</p>
+                </div>
+
+                {/* Notifications Grouped List */}
+                <div className="space-y-6">
+                  {/* Group 1: Today */}
+                  <div className="space-y-3.5">
+                    <h3 className="text-base font-bold text-white tracking-wide">Today</h3>
+                    
+                    {/* Unread Card (warm brown tint, unread red dot) */}
+                    <div className="w-full bg-[#221A15] border border-white/5 rounded-3xl p-5 flex items-start gap-4 relative shadow-lg">
+                      {/* Red unread dot */}
+                      <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#E53E3E]" />
+                      
+                      {/* Stylized Logo circular container */}
+                      <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
+                        <img
+                          src="/logo-loading.png"
+                          alt="B"
+                          className="w-7 h-7 object-contain"
+                        />
+                      </div>
+                      
+                      {/* Content text */}
+                      <div className="space-y-1 pr-2">
+                        <h4 className="text-sm font-bold text-white leading-snug">
+                          Bazmly just got better! 🚀
+                        </h4>
+                        <p className="text-xs text-white/80 leading-normal">
+                          Check out our latest update now
+                        </p>
+                        <p className="text-[10px] text-white/45 font-semibold pt-1">
+                          20.01.2026, 18:00
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr className="border-t border-white/5 my-1" />
+
+                  {/* Group 2: This Week */}
+                  <div className="space-y-3.5">
+                    <h3 className="text-base font-bold text-white tracking-wide">This Week</h3>
+                    
+                    {/* Read Card 1 (dark grey bg) */}
+                    <div className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                      <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
+                        <img
+                          src="/logo-loading.png"
+                          alt="B"
+                          className="w-7 h-7 object-contain"
+                        />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-white leading-snug">
+                          Bazmly just got better! 🚀
+                        </h4>
+                        <p className="text-xs text-white/80 leading-normal">
+                          Check out our latest update now
+                        </p>
+                        <p className="text-[10px] text-white/45 font-semibold pt-1">
+                          20.01.2026, 18:00
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Read Card 2 (dark grey bg) */}
+                    <div className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                      <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
+                        <img
+                          src="/logo-loading.png"
+                          alt="B"
+                          className="w-7 h-7 object-contain"
+                        />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-white leading-snug">
+                          Bazmly just got better! 🚀
+                        </h4>
+                        <p className="text-xs text-white/80 leading-normal">
+                          Check out our latest update now
+                        </p>
+                        <p className="text-[10px] text-white/45 font-semibold pt-1">
+                          20.01.2026, 18:00
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr className="border-t border-white/5 my-1" />
+
+                  {/* Group 3: This Month */}
+                  <div className="space-y-3.5">
+                    <h3 className="text-base font-bold text-white tracking-wide">This Month</h3>
+
+                    {/* Read Card 3 (dark grey bg, different date) */}
+                    <div className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                      <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
+                        <img
+                          src="/logo-loading.png"
+                          alt="B"
+                          className="w-7 h-7 object-contain"
+                        />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-white leading-snug">
+                          Bazmly just got better! 🚀
+                        </h4>
+                        <p className="text-xs text-white/80 leading-normal">
+                          Check out our latest update now
+                        </p>
+                        <p className="text-[10px] text-white/45 font-semibold pt-1">
+                          12.01.2026, 15:30
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </main>
             </div>
           ) : isEditing ? (
             /* ==================== HIGH-FIDELITY REGISTERED EDIT PROFILE VIEW ==================== */
