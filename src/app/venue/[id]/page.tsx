@@ -16,6 +16,7 @@ import {
   CheckCircle,
   Wallet,
   Plus,
+  X,
 } from "lucide-react";
 
 interface Props {
@@ -135,6 +136,105 @@ export default function VenueDetailPage({ params }: Props) {
   const [toastMessage, setToastMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedItems, setSelectedItems] = useState<Record<string, number>>({});
+  
+  // Interactive party/time picker state (2-rasm)
+  const [showPartySheet, setShowPartySheet] = useState(false);
+  const [showLocationSearch, setShowLocationSearch] = useState(false);
+  const [partySize, setPartySize] = useState(5);
+  const [selectedDay, setSelectedDay] = useState("Jum");
+  const [selectedTime, setSelectedTime] = useState("23:30");
+
+  // --- Drag to Scroll Spinner Picker Logic (2-rasm) ---
+  const dayScrollRef = useRef<HTMLDivElement>(null);
+  const [dayDragState, setDayDragState] = useState({ isDown: false, startY: 0, scrollTop: 0 });
+
+  const handleDayMouseDown = (e: React.MouseEvent) => {
+    const el = dayScrollRef.current;
+    if (!el) return;
+    setDayDragState({
+      isDown: true,
+      startY: e.pageY - el.offsetTop,
+      scrollTop: el.scrollTop
+    });
+  };
+
+  const handleDayMouseMove = (e: React.MouseEvent) => {
+    if (!dayDragState.isDown) return;
+    e.preventDefault();
+    const el = dayScrollRef.current;
+    if (!el) return;
+    const y = e.pageY - el.offsetTop;
+    const walk = (y - dayDragState.startY) * 1.5;
+    el.scrollTop = dayDragState.scrollTop - walk;
+  };
+
+  const handleDayMouseUpOrLeave = () => {
+    setDayDragState(prev => ({ ...prev, isDown: false }));
+  };
+
+  const handleDayScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const index = Math.round(el.scrollTop / 40);
+    const days = ["Chor", "Pay", "Jum", "Shan", "Yak"];
+    if (index >= 0 && index < days.length) {
+      setSelectedDay(days[index]);
+    }
+  };
+
+  const timeScrollRef = useRef<HTMLDivElement>(null);
+  const [timeDragState, setTimeDragState] = useState({ isDown: false, startY: 0, scrollTop: 0 });
+
+  const handleTimeMouseDown = (e: React.MouseEvent) => {
+    const el = timeScrollRef.current;
+    if (!el) return;
+    setTimeDragState({
+      isDown: true,
+      startY: e.pageY - el.offsetTop,
+      scrollTop: el.scrollTop
+    });
+  };
+
+  const handleTimeMouseMove = (e: React.MouseEvent) => {
+    if (!timeDragState.isDown) return;
+    e.preventDefault();
+    const el = timeScrollRef.current;
+    if (!el) return;
+    const y = e.pageY - el.offsetTop;
+    const walk = (y - timeDragState.startY) * 1.5;
+    el.scrollTop = timeDragState.scrollTop - walk;
+  };
+
+  const handleTimeMouseUpOrLeave = () => {
+    setTimeDragState(prev => ({ ...prev, isDown: false }));
+  };
+
+  const handleTimeScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const index = Math.round(el.scrollTop / 40);
+    const times = ["22:30", "23:00", "23:30", "00:00"];
+    if (index >= 0 && index < times.length) {
+      setSelectedTime(times[index]);
+    }
+  };
+
+  // Center alignment effect on mount
+  useEffect(() => {
+    if (showPartySheet) {
+      setTimeout(() => {
+        const days = ["Chor", "Pay", "Jum", "Shan", "Yak"];
+        const dayIdx = days.indexOf(selectedDay);
+        if (dayIdx !== -1 && dayScrollRef.current) {
+          dayScrollRef.current.scrollTop = dayIdx * 40;
+        }
+
+        const times = ["22:30", "23:00", "23:30", "00:00"];
+        const timeIdx = times.indexOf(selectedTime);
+        if (timeIdx !== -1 && timeScrollRef.current) {
+          timeScrollRef.current.scrollTop = timeIdx * 40;
+        }
+      }, 50);
+    }
+  }, [showPartySheet]);
 
   const FOODS = [
     { name: "Jizz", img: "/images/home/food1.png", price: "500 000 so'm", priceVal: 500000 },
@@ -494,12 +594,12 @@ export default function VenueDetailPage({ params }: Props) {
 
       {/* Solid Sticky Bottom Action Panel */}
       <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-black/85 backdrop-blur-md border-t border-white/5 px-6 py-4.5 z-40">
-        <Link
-          href={`/booking/${id}`}
-          className="w-full py-4 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20"
+        <button
+          onClick={() => setShowPartySheet(true)}
+          className="w-full py-4 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20 cursor-pointer"
         >
           <span>{cartTotal > 0 ? formatPrice(cartTotal) : "Keyingisi"}</span>
-        </Link>
+        </button>
       </div>
 
       {/* Reviews Screen Overlay */}
@@ -597,6 +697,200 @@ export default function VenueDetailPage({ params }: Props) {
                 </svg>
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Partiya Soni & Kun va Vaqt Bottom Sheet Overlay (2-rasm) */}
+      {showPartySheet && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end max-w-md mx-auto bg-black/60 backdrop-blur-sm transition-all duration-300">
+          <div className="absolute inset-0 z-0" onClick={() => setShowPartySheet(false)} />
+          
+          <div className="w-full bg-[#1C1C1E] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up select-none">
+            
+            <div className="w-10 h-1.5 bg-white/10 rounded-full mx-auto" />
+            
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Partiya sozlamalari</span>
+              <button 
+                onClick={() => setShowPartySheet(false)}
+                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:text-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5 text-left">
+              <h3 className="font-extrabold text-sm text-white">Partiya soni</h3>
+              <div className="flex justify-between items-center gap-3">
+                {[1, 2, 3, 4, 5].map((num) => {
+                  const isSelected = partySize === num;
+                  return (
+                    <button
+                      key={num}
+                      onClick={() => setPartySize(num)}
+                      className={`flex-1 py-3 text-base font-extrabold rounded-2xl transition-all ${
+                        isSelected 
+                          ? "border border-[#FF6B00] bg-[#FF6B00]/5 text-[#FF6B00] scale-105" 
+                          : "border border-white/5 bg-zinc-900 text-white"
+                      }`}
+                    >
+                      {num}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-3.5 text-left">
+              <h3 className="font-extrabold text-sm text-white">Kun va vaqt</h3>
+              
+              <div className="grid grid-cols-2 gap-6 py-4 bg-zinc-900/60 rounded-2xl relative border border-white/5 overflow-hidden h-[120px] select-none">
+                {/* Center Highlight Bar overlay */}
+                <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 h-10 border-y border-zinc-800 pointer-events-none z-20" />
+                
+                {/* Left Column (Days) */}
+                <div 
+                  ref={dayScrollRef}
+                  onMouseDown={handleDayMouseDown}
+                  onMouseMove={handleDayMouseMove}
+                  onMouseUp={handleDayMouseUpOrLeave}
+                  onMouseLeave={handleDayMouseUpOrLeave}
+                  onScroll={handleDayScroll}
+                  style={{ paddingTop: "40px", paddingBottom: "40px" }}
+                  className="h-full overflow-y-auto scrollbar-none flex flex-col snap-y snap-mandatory cursor-grab active:cursor-grabbing text-center z-10"
+                >
+                  {["Chor", "Pay", "Jum", "Shan", "Yak"].map((day) => {
+                    const isActive = selectedDay === day;
+                    return (
+                      <div
+                        key={day}
+                        style={{ height: "40px", lineHeight: "40px" }}
+                        className={`snap-center shrink-0 flex items-center justify-center text-sm font-black transition-all duration-200 ${
+                          isActive ? "text-white scale-110" : "text-zinc-600"
+                        }`}
+                      >
+                        {day}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Right Column (Times) */}
+                <div 
+                  ref={timeScrollRef}
+                  onMouseDown={handleTimeMouseDown}
+                  onMouseMove={handleTimeMouseMove}
+                  onMouseUp={handleTimeMouseUpOrLeave}
+                  onMouseLeave={handleTimeMouseUpOrLeave}
+                  onScroll={handleTimeScroll}
+                  style={{ paddingTop: "40px", paddingBottom: "40px" }}
+                  className="h-full overflow-y-auto scrollbar-none flex flex-col snap-y snap-mandatory cursor-grab active:cursor-grabbing text-center z-10"
+                >
+                  {["22:30", "23:00", "23:30", "00:00"].map((time) => {
+                    const isActive = selectedTime === time;
+                    return (
+                      <div
+                        key={time}
+                        style={{ height: "40px", lineHeight: "40px" }}
+                        className={`snap-center shrink-0 flex items-center justify-center text-sm font-black transition-all duration-200 ${
+                          isActive ? "text-white scale-110" : "text-zinc-600"
+                        }`}
+                      >
+                        {time}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowPartySheet(false);
+                setShowLocationSearch(true);
+              }}
+              className="w-full py-4.5 bg-[#FF6B00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF6B00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+            >
+              Izlash
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Location Search Overlay (2-rasm) */}
+      {showLocationSearch && (
+        <div className="fixed inset-0 z-50 bg-[#121212] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white select-none">
+          {/* Header Row with Search Input */}
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5 bg-[#121212] z-30 sticky top-0">
+            <button
+              onClick={() => {
+                setShowLocationSearch(false);
+                setShowPartySheet(true); // go back to bottom sheet
+              }}
+              className="p-2.5 rounded-xl bg-[#1C1C1E] border border-white/5 text-white/80 hover:text-white transition-all active:scale-90"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+
+            {/* Search Input Field */}
+            <div className="flex-1 flex items-center bg-[#1C1C1E] border border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/40 transition-all px-4 py-3">
+              <Search className="h-4.5 w-4.5 text-zinc-500 shrink-0" />
+              <input
+                type="text"
+                placeholder="Qidirish"
+                className="w-full bg-transparent border-0 p-0 pl-2.5 text-sm font-bold text-white focus:ring-0 outline-none placeholder:text-zinc-600"
+              />
+            </div>
+          </div>
+
+          {/* Action: Manzilni avtomatik aniqlash */}
+          <button
+            onClick={() => {
+              setToastMessage("Manzil avtomatik aniqlandi: Toshkent shahri");
+              setTimeout(() => setToastMessage(""), 3000);
+              setTimeout(() => {
+                setShowLocationSearch(false);
+                router.push(`/booking/${id}?total=${cartTotal}&guests=${partySize}&date=${selectedDay}&time=${selectedTime}&location=Toshkent`);
+              }, 1200);
+            }}
+            className="w-full px-6 py-5 border-b border-white/5 flex items-center gap-3.5 hover:bg-white/5 transition-colors cursor-pointer text-left"
+          >
+            {/* Compass / Navigation Icon */}
+            <div className="text-[#FF6B00]">
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2L2 22l10-4 10 4L12 2z" />
+              </svg>
+            </div>
+            <span className="text-sm font-black text-white">Manzilni avtomatik aniqlash</span>
+          </button>
+
+          {/* Section: Oxirgi manzillar */}
+          <div className="flex-1 px-6 py-6 space-y-4 text-left">
+            <h3 className="text-sm font-black text-zinc-400 tracking-wide">Oxirgi manzillar</h3>
+            
+            <div className="space-y-1">
+              {[
+                { name: "Navoiy shahar, Navoiy" },
+                { name: "Mirzo Ulug'bek, Toshkent" }
+              ].map((loc, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setToastMessage(`${loc.name} tanlandi`);
+                    setTimeout(() => setToastMessage(""), 3000);
+                    setTimeout(() => {
+                      setShowLocationSearch(false);
+                      router.push(`/booking/${id}?total=${cartTotal}&guests=${partySize}&date=${selectedDay}&time=${selectedTime}&location=${encodeURIComponent(loc.name)}`);
+                    }, 1000);
+                  }}
+                  className="w-full py-4 border-b border-white/5 last:border-b-0 flex items-center gap-3.5 hover:bg-white/5 transition-colors cursor-pointer text-left"
+                >
+                  <MapPin className="h-5 w-5 text-zinc-500 shrink-0" />
+                  <span className="text-sm font-bold text-white/90">{loc.name}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}

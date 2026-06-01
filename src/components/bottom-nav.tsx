@@ -7,6 +7,38 @@ import { X, CheckCircle, Aperture, AlertCircle, ChevronLeft } from "lucide-react
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setIsRegistered(localStorage.getItem("isRegistered") === "true");
+  }, []);
+
+  const isHiddenRoute = 
+    pathname.startsWith("/venue/") ||
+    pathname.startsWith("/booking/") ||
+    pathname.startsWith("/payment/") ||
+    pathname.startsWith("/payment-success") ||
+    (pathname === "/" && mounted && !isRegistered);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const parentFrame = document.getElementById("global-bottom-nav")?.parentElement;
+    if (parentFrame) {
+      if (isHiddenRoute) {
+        parentFrame.classList.remove("pb-16");
+      } else {
+        parentFrame.classList.add("pb-16");
+      }
+    }
+    return () => {
+      if (parentFrame) {
+        parentFrame.classList.add("pb-16");
+      }
+    };
+  }, [pathname, isHiddenRoute, mounted]);
+
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [loadingScan, setLoadingScan] = useState(false);
@@ -151,6 +183,10 @@ export default function BottomNav() {
             C387.5,0 400,12.5 400,28 
             L400,80 L0,80 Z`;
   };
+
+  if (isHiddenRoute) {
+    return <div id="global-bottom-nav" className="hidden" />;
+  }
 
   return (
     <>
