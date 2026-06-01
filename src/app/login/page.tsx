@@ -68,6 +68,60 @@ export default function LoginPage() {
   const [editPhone, setEditPhone] = useState("");
   const [showCards, setShowCards] = useState(false);
 
+  // Cards Management States
+  const [userCards, setUserCards] = useState([
+    { id: "1", type: "humo", number: "**** **** **** 1234", name: "" }
+  ]);
+  const [selectedCardForDelete, setSelectedCardForDelete] = useState<any | null>(null);
+  const [showAddCard, setShowAddCard] = useState(false);
+  const [newCardNumber, setNewCardNumber] = useState("");
+  const [newCardExpiry, setNewCardExpiry] = useState("");
+  const [showCardOtp, setShowCardOtp] = useState(false);
+  const [cardOtp, setCardOtp] = useState(["", "", "", "", "", ""]);
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "");
+    const formatted = val.match(/.{1,4}/g)?.join(" ") || val;
+    setNewCardNumber(formatted.substring(0, 19));
+  };
+
+  const handleCardExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/\D/g, "");
+    let formatted = val;
+    if (val.length > 2) {
+      formatted = val.substring(0, 2) + "/" + val.substring(2, 4);
+    }
+    setNewCardExpiry(formatted.substring(0, 5));
+  };
+
+  const handleKeypadPress = (key: string) => {
+    if (key === "⌫") {
+      setCardOtp(prev => {
+        const next = [...prev];
+        for (let i = 5; i >= 0; i--) {
+          if (next[i] !== "") {
+            next[i] = "";
+            break;
+          }
+        }
+        return next;
+      });
+    } else if (key === "+*#" || key === "") {
+      // do nothing
+    } else {
+      setCardOtp(prev => {
+        const next = [...prev];
+        for (let i = 0; i < 6; i++) {
+          if (next[i] === "") {
+            next[i] = key;
+            break;
+          }
+        }
+        return next;
+      });
+    }
+  };
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -84,6 +138,33 @@ export default function LoginPage() {
       setPhone(localStorage.getItem("phone") || "");
     }
   }, []);
+
+  // Dynamic bottom navigation bar visibility controller for cards sub-flows & logout drawers
+  useEffect(() => {
+    const bottomNav = document.getElementById("global-bottom-nav");
+    if (bottomNav) {
+      if (
+        (showCards && (showCardOtp || showAddCard || selectedCardForDelete)) ||
+        activeModal === "logout_profile" ||
+        activeModal === "delete_account"
+      ) {
+        bottomNav.style.transform = "translateY(100%)";
+        bottomNav.style.opacity = "0";
+        bottomNav.style.pointerEvents = "none";
+      } else {
+        bottomNav.style.transform = "translateY(0)";
+        bottomNav.style.opacity = "1";
+        bottomNav.style.pointerEvents = "auto";
+      }
+    }
+    return () => {
+      if (bottomNav) {
+        bottomNav.style.transform = "translateY(0)";
+        bottomNav.style.opacity = "1";
+        bottomNav.style.pointerEvents = "auto";
+      }
+    };
+  }, [showCards, showCardOtp, showAddCard, selectedCardForDelete, activeModal]);
 
   // Toast auto-dismiss helper
   useEffect(() => {
@@ -240,7 +321,7 @@ export default function LoginPage() {
     {
       label: "Chiqish",
       icon: LogOut,
-      action: () => setActiveModal("logout"),
+      action: () => setActiveModal("logout_profile"),
     },
   ];
 
@@ -267,52 +348,310 @@ export default function LoginPage() {
           {showCards ? (
             /* ==================== HIGH-FIDELITY REGISTERED MY CARDS VIEW ==================== */
             <div className="flex flex-col flex-1 bg-[#121212] text-white">
-              {/* Custom Top Bar Header matching screenshot */}
-              <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
-                <button
-                  onClick={() => setShowCards(false)}
-                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <h1 className="text-base font-bold text-white tracking-wide">Sozlamalar</h1>
-                <div className="w-9 h-9" />
-              </div>
+              <style>{`
+                @keyframes slideUp {
+                  from { transform: translateY(100%); }
+                  to { transform: translateY(0); }
+                }
+                .animate-slide-up {
+                  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+              `}</style>
 
-              {/* Content Container */}
-              <main className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-6 max-w-md mx-auto w-full">
-                {/* Card 1: Humo Card with golden wave pattern and Humo logo */}
-                <div className="w-full border border-white/10 bg-[#1C1C1E] rounded-[24px] p-6 flex flex-col justify-between h-44 shadow-2xl relative overflow-hidden transition-all duration-300 hover:border-primary/55">
-                  <div className="flex justify-between items-start">
-                    <img
-                      src="/images/humo.png"
-                      alt="Humo Card"
-                      className="h-9 object-contain rounded"
-                    />
-                  </div>
-                  <div className="space-y-4">
-                    <p className="text-white text-base font-semibold tracking-wide capitalize">{fullName}</p>
-                    <p className="text-white text-base font-mono tracking-widest font-semibold">**** **** **** 1234</p>
-                  </div>
-                </div>
-
-                {/* Card 2: Empty Card with Add Button */}
-                <div className="w-full border border-white/10 bg-[#1C1C1E]/20 rounded-[24px] p-6 flex flex-col justify-between h-44 transition-all duration-300 hover:bg-[#1C1C1E]/30">
-                  <div className="flex justify-between items-start text-white/60">
-                    <CreditCard className="h-7 w-7" />
-                  </div>
-                  <div className="flex justify-start">
+              {showCardOtp ? (
+                /* ==================== SCREEN 4: OTP VERIFICATION VIEW ==================== */
+                <div className="flex flex-col flex-1 bg-[#121212] text-white">
+                  {/* Close Top Bar */}
+                  <div className="relative flex items-center justify-between px-6 py-5">
                     <button
-                      type="button"
-                      onClick={() => showToast("Karta qo'shish xizmati tez kunda ishga tushadi!")}
-                      className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all active:scale-95"
+                      onClick={() => setShowCardOtp(false)}
+                      className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
                     >
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-primary text-xs font-black">+</span>
-                      <span>Karta qo'shish</span>
+                      <X className="h-5 w-5" />
                     </button>
+                    <div className="w-9 h-9" />
                   </div>
+
+                  {/* Verification Form Content */}
+                  <main className="flex-1 px-6 py-4 flex flex-col justify-between max-w-md mx-auto w-full">
+                    <div className="space-y-4">
+                      <h1 className="text-2xl font-black text-white tracking-tight">Send verification code</h1>
+                      <p className="text-xs text-white/60 leading-relaxed">
+                        We'll send a code to your phone number to verify your account.
+                      </p>
+
+                      {/* 6 OTP Code Slots */}
+                      <div className="flex gap-2 justify-center py-4">
+                        {[0, 1, 2, 3, 4, 5].map((idx) => (
+                          <div
+                            key={idx}
+                            className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold bg-[#1C1C1E] transition-all duration-200 ${
+                              cardOtp[idx] ? "border-primary text-white scale-105" : "border-white/10 text-white/30"
+                            }`}
+                          >
+                            {cardOtp[idx] || ""}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Resend Code Link */}
+                      <div className="text-center">
+                        <button
+                          type="button"
+                          onClick={() => showToast("Kod qayta yuborildi!")}
+                          className="text-xs font-bold text-primary hover:text-primary-hover transition-colors"
+                        >
+                          Resent code
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Bottom Next Button & Keypad */}
+                    <div className="space-y-6 pb-2">
+                      <button
+                        type="button"
+                        disabled={cardOtp.some(digit => digit === "")}
+                        onClick={() => {
+                          const firstDigit = newCardNumber.charAt(0);
+                          const cardType = firstDigit === "8" ? "uzcard" : "humo";
+                          const masked = `**** **** **** ${newCardNumber.replace(/\s/g, "").slice(-4)}`;
+                          
+                          setUserCards((prev) => [
+                            ...prev,
+                            {
+                              id: Date.now().toString(),
+                              type: cardType,
+                              number: masked,
+                              name: fullName || "Alisher Raimov"
+                            }
+                          ]);
+                          
+                          // Reset & Success
+                          showToast("Karta muvaffaqiyatli qo'shildi!");
+                          setShowCardOtp(false);
+                          setShowAddCard(false);
+                          setNewCardNumber("");
+                          setNewCardExpiry("");
+                          setCardOtp(["", "", "", "", "", ""]);
+                        }}
+                        className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          cardOtp.every(digit => digit !== "")
+                            ? "bg-primary text-white shadow-primary/20 shadow-lg"
+                            : "bg-primary/20 text-white/30 cursor-not-allowed"
+                        }`}
+                      >
+                        Next
+                      </button>
+
+                      {/* Custom Simulated Numeric Keypad matching screenshot 4 */}
+                      <div className="grid grid-cols-3 gap-y-3.5 gap-x-5 px-4">
+                        {[
+                          { val: "1", sub: "" },
+                          { val: "2", sub: "abc" },
+                          { val: "3", sub: "def" },
+                          { val: "4", sub: "ghi" },
+                          { val: "5", sub: "jkl" },
+                          { val: "6", sub: "mno" },
+                          { val: "7", sub: "pqrs" },
+                          { val: "8", sub: "tuv" },
+                          { val: "9", sub: "wxyz" },
+                          { val: "+*#", sub: "" },
+                          { val: "0", sub: "" },
+                          { val: "⌫", sub: "" }
+                        ].map((btn, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => handleKeypadPress(btn.val)}
+                            className="bg-[#2C2C2E] hover:bg-[#3A3A3C] active:bg-[#48484A] rounded-xl py-3 flex flex-col items-center justify-center transition-all duration-100"
+                          >
+                            <span className="text-xl font-bold leading-tight">{btn.val}</span>
+                            {btn.sub && <span className="text-[9px] font-medium text-white/40 uppercase tracking-widest leading-none">{btn.sub}</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </main>
                 </div>
-              </main>
+              ) : showAddCard ? (
+                /* ==================== SCREEN 2 & 3: ADD CARD DETAILS VIEW ==================== */
+                <div className="flex flex-col flex-1 bg-[#121212] text-white">
+                  {/* Top Bar Header */}
+                  <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+                    <button
+                      onClick={() => setShowAddCard(false)}
+                      className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <h1 className="text-base font-bold text-white tracking-wide">Karta ma'lumotlari</h1>
+                    <div className="w-9 h-9" />
+                  </div>
+
+                  {/* Form Content */}
+                  <main className="flex-1 px-6 py-8 flex flex-col justify-between max-w-md mx-auto w-full">
+                    <div className="space-y-6">
+                      {/* Card Number field with internal orange icon */}
+                      <div className="space-y-2">
+                        <div className="relative flex items-center bg-[#1C1C1E] rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 focus-within:border-primary/50">
+                          <span className="pl-4 text-primary shrink-0">
+                            <CreditCard className="h-5 w-5" />
+                          </span>
+                          <input
+                            type="text"
+                            value={newCardNumber}
+                            onChange={handleCardNumberChange}
+                            placeholder="Karta raqami"
+                            className="w-full pl-3 pr-4 py-4 bg-transparent text-sm text-white font-semibold tracking-wider outline-none placeholder:text-white/30"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Expiry field */}
+                      <div className="space-y-2">
+                        <div className="relative flex items-center bg-[#1C1C1E] rounded-2xl border border-white/5 overflow-hidden w-36 transition-all duration-300 focus-within:border-primary/50">
+                          <input
+                            type="text"
+                            value={newCardExpiry}
+                            onChange={handleCardExpiryChange}
+                            placeholder="OO/YY"
+                            className="w-full px-4 py-4 bg-transparent text-sm text-white font-semibold tracking-widest text-center outline-none placeholder:text-white/30"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Submit Button */}
+                    <div className="pb-8">
+                      <button
+                        type="button"
+                        disabled={newCardNumber.length < 19 || newCardExpiry.length < 5}
+                        onClick={() => {
+                          setCardOtp(["", "", "", "", "", ""]);
+                          setShowCardOtp(true);
+                        }}
+                        className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          newCardNumber.length === 19 && newCardExpiry.length === 5
+                            ? "bg-primary text-white shadow-primary/20 hover:bg-primary-hover"
+                            : "bg-[#E25C00]/10 text-white/20 cursor-not-allowed"
+                        }`}
+                      >
+                        Tasdiqlash
+                      </button>
+                    </div>
+                  </main>
+                </div>
+              ) : (
+                /* ==================== SCREEN 1: CARDS LIST VIEW ==================== */
+                <div className="flex flex-col flex-1 bg-[#121212] text-white">
+                  {/* Top Bar Header */}
+                  <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+                    <button
+                      onClick={() => setShowCards(false)}
+                      className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <h1 className="text-base font-bold text-white tracking-wide">Sozlamalar</h1>
+                    <div className="w-9 h-9" />
+                  </div>
+
+                  {/* Content Container */}
+                  <main className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-6 max-w-md mx-auto w-full">
+                    {/* Render existing cards */}
+                    {userCards.map((card) => (
+                      <div
+                        key={card.id}
+                        onClick={() => setSelectedCardForDelete(card)}
+                        className="w-full border border-white/15 bg-[#1C1C1E] rounded-[24px] p-6 flex flex-col justify-between h-44 shadow-2xl relative overflow-hidden transition-all duration-300 hover:border-primary/55 cursor-pointer active:scale-98"
+                      >
+                        <div className="flex justify-between items-start">
+                          {card.type === "humo" ? (
+                            <img
+                              src="/images/humo.png"
+                              alt="Humo Card"
+                              className="h-9 object-contain rounded"
+                            />
+                          ) : (
+                            <div className="flex items-center gap-2 text-primary font-black uppercase text-sm tracking-widest">
+                              <CreditCard className="h-7 w-7 text-white" />
+                              <span>Uzcard</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="space-y-4">
+                          <p className="text-white text-base font-semibold tracking-wide capitalize">
+                            {card.name || fullName}
+                          </p>
+                          <p className="text-white text-base font-mono tracking-widest font-semibold">
+                            {card.number}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Card 2: Empty Card with Add Button */}
+                    <div className="w-full border border-white/10 bg-[#1C1C1E]/20 rounded-[24px] p-6 flex flex-col justify-between h-44 transition-all duration-300 hover:bg-[#1C1C1E]/30">
+                      <div className="flex justify-between items-start text-white/60">
+                        <CreditCard className="h-7 w-7" />
+                      </div>
+                      <div className="flex justify-start">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNewCardNumber("");
+                            setNewCardExpiry("");
+                            setShowAddCard(true);
+                          }}
+                          className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all active:scale-95"
+                        >
+                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-primary text-xs font-black">+</span>
+                          <span>Karta qo'shish</span>
+                        </button>
+                      </div>
+                    </div>
+                  </main>
+
+                  {/* Card Deletion Bottom Drawer (Sheet) matching Screenshot 1 */}
+                  {selectedCardForDelete && (
+                    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
+                      <div className="absolute inset-0" onClick={() => setSelectedCardForDelete(null)} />
+                      
+                      <div className="w-full max-w-md bg-[#1C1C1E] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+                        {/* Notch indicator */}
+                        <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
+                        
+                        {/* Title */}
+                        <p className="text-white text-base font-bold tracking-wide">Bank kartasi</p>
+                        
+                        {/* Delete Button */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const idToDelete = selectedCardForDelete.id;
+                            setUserCards((prev) => prev.filter((c) => c.id !== idToDelete));
+                            setSelectedCardForDelete(null);
+                            showToast("Karta muvaffaqiyatli o'chirildi!");
+                          }}
+                          className="w-full py-4 rounded-2xl bg-[#E82C2C] hover:bg-red-700 text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-red-600/10"
+                        >
+                          <Trash2 className="h-4.5 w-4.5" />
+                          <span>Kartani olib tashlash</span>
+                        </button>
+                        
+                        {/* Cancel Button */}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCardForDelete(null)}
+                          className="w-full py-4 text-white/60 hover:text-white font-bold text-sm tracking-wide transition-all active:scale-98"
+                        >
+                          Ortga
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ) : isEditing ? (
             /* ==================== HIGH-FIDELITY REGISTERED EDIT PROFILE VIEW ==================== */
@@ -403,7 +742,7 @@ export default function LoginPage() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => setActiveModal("logout")}
+                      onClick={() => setActiveModal("delete_account")}
                       className="w-full bg-[#1C1C1E] border border-white/10 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-[#252528] transition-colors text-left"
                     >
                       <div className="flex items-center gap-3">
@@ -512,7 +851,7 @@ export default function LoginPage() {
           )}
 
           {/* ==================== SETTINGS MODALS ==================== */}
-          {activeModal && (
+          {activeModal && activeModal !== "logout_profile" && activeModal !== "delete_account" && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
               <div className="w-full max-w-sm border border-foreground/10 dark:border-white/10 rounded-3xl shadow-2xl bg-brand-light-card dark:bg-zinc-900 p-6 space-y-5 relative animate-scale-up">
                 
@@ -697,6 +1036,80 @@ export default function LoginPage() {
                   )}
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {/* Profildan Chiqish Bottom Sheet Modal matching Screenshot 2 (left) */}
+          {activeModal === "logout_profile" && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
+              <div className="absolute inset-0" onClick={() => setActiveModal(null)} />
+              
+              <div className="w-full max-w-md bg-[#1C1C1E] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+                {/* Notch indicator */}
+                <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
+                
+                {/* Title */}
+                <p className="text-white text-base font-bold tracking-wide">Profildan chiqmoqchimisiz?</p>
+                
+                {/* Red Profile Logout Button with logout icon */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveModal(null);
+                    handleLogout();
+                  }}
+                  className="w-full py-4 rounded-2xl bg-[#E82C2C] hover:bg-red-700 text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-red-600/10"
+                >
+                  <LogOut className="h-4.5 w-4.5" />
+                  <span>Profildan chiqish</span>
+                </button>
+                
+                {/* Cancel Button */}
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="w-full py-4 text-white/60 hover:text-white font-bold text-sm tracking-wide transition-all active:scale-98"
+                >
+                  Bekor qilish
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Akkauntni O'chirish Bottom Sheet Modal matching Screenshot 2 (right) */}
+          {activeModal === "delete_account" && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
+              <div className="absolute inset-0" onClick={() => setActiveModal(null)} />
+              
+              <div className="w-full max-w-md bg-[#1C1C1E] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+                {/* Notch indicator */}
+                <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
+                
+                {/* Title */}
+                <p className="text-white text-base font-bold tracking-wide">Akkauntdan chiqmoqchimisiz?</p>
+                
+                {/* Red Account Delete Button with trash icon */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveModal(null);
+                    handleLogout();
+                  }}
+                  className="w-full py-4 rounded-2xl bg-[#E82C2C] hover:bg-red-700 text-white font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-red-600/10"
+                >
+                  <Trash2 className="h-4.5 w-4.5" />
+                  <span>Akkauntni o'chirish</span>
+                </button>
+                
+                {/* Cancel Button */}
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  className="w-full py-4 text-white/60 hover:text-white font-bold text-sm tracking-wide transition-all active:scale-98"
+                >
+                  Bekor qilish
+                </button>
               </div>
             </div>
           )}

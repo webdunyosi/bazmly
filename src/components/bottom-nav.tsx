@@ -155,7 +155,7 @@ export default function BottomNav() {
   return (
     <>
       {/* ==================== Figmatic Dynamic Sliding Notch Bottom Bar ==================== */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 h-20 max-w-md mx-auto">
+      <div id="global-bottom-nav" className="fixed bottom-0 left-0 right-0 z-50 h-20 max-w-md mx-auto transition-all duration-300">
         
         {/* Dynamic Curved SVG Background with sliding notch */}
         <svg
