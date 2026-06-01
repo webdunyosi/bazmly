@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, CheckCircle, Aperture, AlertCircle } from "lucide-react";
+import { X, CheckCircle, Aperture, AlertCircle, ChevronLeft } from "lucide-react";
 
 export default function BottomNav() {
   const pathname = usePathname();
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [loadingScan, setLoadingScan] = useState(false);
+  const [scanState, setScanState] = useState<"scanning" | "permission" | "my_qr">("permission");
 
   // Real Camera Streaming Refs and States
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -20,6 +21,7 @@ export default function BottomNav() {
     setIsScanning(true);
     setScanResult(null);
     setLoadingScan(true);
+    setScanState("permission"); // Always start with permission check screen
 
     // Simulate scanning/decoding delay of 2.8 seconds
     setTimeout(() => {
@@ -32,7 +34,7 @@ export default function BottomNav() {
   useEffect(() => {
     let activeStream: MediaStream | null = null;
 
-    if (isScanning && !scanResult) {
+    if (isScanning && scanState === "scanning" && !scanResult) {
       // Request access to rear environment camera
       navigator.mediaDevices
         .getUserMedia({
@@ -66,7 +68,7 @@ export default function BottomNav() {
       }
       setMediaStream(null);
     };
-  }, [isScanning, scanResult]);
+  }, [isScanning, scanState, scanResult]);
 
   const closeScanner = () => {
     // Release camera tracks
@@ -77,6 +79,7 @@ export default function BottomNav() {
     setIsScanning(false);
     setScanResult(null);
     setLoadingScan(false);
+    setScanState("permission");
   };
 
   // 5 navigation items including the central Scan button
@@ -254,125 +257,214 @@ export default function BottomNav() {
 
       </div>
 
-      {/* ==================== High-Fidelity QR Scanner Overlay with Live Video ==================== */}
+      {/* ==================== High-Fidelity QR Scanner Overlay ==================== */}
       {isScanning && (
-        <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col justify-between p-6 max-w-md mx-auto shadow-2xl animate-fade-in text-white">
+        <div className="fixed inset-0 z-[100] bg-[#0F0F0F] flex flex-col justify-between max-w-md mx-auto shadow-2xl animate-fade-in text-white overflow-hidden select-none">
           
           {/* Header */}
-          <div className="flex justify-between items-center py-4 border-b border-white/10">
-            <div className="flex items-center gap-2">
-              <Aperture className="h-5 w-5 text-primary animate-spin" style={{ animationDuration: "3s" }} />
-              <span className="text-sm font-black tracking-wider uppercase">Chipta Skanerlash</span>
-            </div>
-            <button
-              onClick={closeScanner}
-              className="p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
+          <div className="relative py-6 px-6 flex items-center justify-between z-20">
+            {scanState === "my_qr" ? (
+              <>
+                {/* Back Arrow */}
+                <button
+                  onClick={() => setScanState("scanning")}
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition-all flex items-center justify-center text-white cursor-pointer active:scale-90"
+                >
+                  <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+                </button>
+                {/* Centered Bazmly Logo text */}
+                <div className="absolute left-1/2 -translate-x-1/2 font-black text-lg tracking-tighter text-white select-none scale-x-95">
+                  Bazmly
+                </div>
+                {/* Placeholder empty space to balance flex */}
+                <div className="w-9" />
+              </>
+            ) : (
+              <>
+                {/* Centered title for scanning or permission screen */}
+                <div className="absolute left-1/2 -translate-x-1/2 font-semibold text-sm tracking-wide text-white/90">
+                  Scanning QR code
+                </div>
+                {/* Space balance */}
+                <div className="w-9" />
+                {/* Close Scanner Button */}
+                <button
+                  onClick={closeScanner}
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition-all flex items-center justify-center text-white cursor-pointer active:scale-90"
+                >
+                  <X className="w-5 h-5 stroke-[2.5]" />
+                </button>
+              </>
+            )}
           </div>
 
-          {/* Scanner View Area */}
-          <div className="flex-1 flex flex-col items-center justify-center relative py-10">
-            {loadingScan ? (
-              /* Simulation of active scanning with real live video feed */
-              <div className="relative w-64 h-64 border-2 border-white/20 rounded-3xl overflow-hidden flex items-center justify-center bg-zinc-950 shadow-2xl">
-                
-                {/* Real-time HTML5 Back Camera Feed */}
-                <video
-                  ref={videoRef}
-                  playsInline
-                  autoPlay
-                  muted
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
+          {/* Main Area */}
+          <div className="flex-1 flex flex-col items-center justify-center relative px-6 z-10">
+            
+            {scanState === "my_qr" ? (
+              /* State 3: User QR Code View */
+              <div className="flex flex-col items-center justify-center w-full animate-scale-up -mt-8">
+                {/* White Rounded Card */}
+                <div className="w-full max-w-[280px] bg-white rounded-[32px] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col items-center gap-6 text-center">
+                  
+                  {/* Detailed SVG QR Code */}
+                  <div className="p-1 bg-white rounded-2xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="h-44 w-44 text-black">
+                      {/* Top-left position marker */}
+                      <rect x="0" y="0" width="28" height="28" fill="currentColor" rx="4" />
+                      <rect x="4" y="4" width="20" height="20" fill="white" rx="2" />
+                      <rect x="8" y="8" width="12" height="12" fill="currentColor" rx="1" />
 
-                {/* Glowing target corners */}
-                <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-xl z-10" />
-                <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-xl z-10" />
-                <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-xl z-10" />
-                <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-xl z-10" />
+                      {/* Top-right position marker */}
+                      <rect x="72" y="0" width="28" height="28" fill="currentColor" rx="4" />
+                      <rect x="76" y="4" width="20" height="20" fill="white" rx="2" />
+                      <rect x="80" y="8" width="12" height="12" fill="currentColor" rx="1" />
 
-                {/* Laser scan line over the video feed */}
-                <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_12px_rgba(255,107,0,0.8)] animate-laser z-10" />
+                      {/* Bottom-left position marker */}
+                      <rect x="0" y="72" width="28" height="28" fill="currentColor" rx="4" />
+                      <rect x="4" y="76" width="20" height="20" fill="white" rx="2" />
+                      <rect x="8" y="80" width="12" height="12" fill="currentColor" rx="1" />
 
-                {/* Simulated live viewfinder grids */}
-                <div className="grid grid-cols-3 grid-rows-3 w-full h-full opacity-10 absolute inset-0 z-10 pointer-events-none">
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <div key={i} className="border border-white" />
-                  ))}
-                </div>
+                      {/* Mock QR bits */}
+                      <rect x="36" y="0" width="8" height="8" fill="currentColor" rx="1" />
+                      <rect x="52" y="0" width="12" height="4" fill="currentColor" rx="1" />
+                      <rect x="60" y="4" width="4" height="8" fill="currentColor" rx="1" />
+                      
+                      <rect x="36" y="12" width="4" height="12" fill="currentColor" rx="1" />
+                      <rect x="48" y="16" width="8" height="8" fill="currentColor" rx="1" />
+                      <rect x="60" y="16" width="4" height="4" fill="currentColor" rx="1" />
+                      
+                      <rect x="36" y="28" width="16" height="4" fill="currentColor" rx="1" />
+                      <rect x="56" y="24" width="8" height="8" fill="currentColor" rx="1" />
+                      <rect x="84" y="32" width="8" height="8" fill="currentColor" rx="1" />
+                      
+                      <rect x="12" y="36" width="16" height="8" fill="currentColor" rx="1" />
+                      <rect x="0" y="48" width="8" height="16" fill="currentColor" rx="1" />
+                      <rect x="36" y="44" width="8" height="12" fill="currentColor" rx="1" />
+                      <rect x="48" y="40" width="12" height="4" fill="currentColor" rx="1" />
+                      <rect x="52" y="48" width="16" height="16" fill="currentColor" rx="1" />
+                      
+                      <rect x="76" y="48" width="8" height="8" fill="currentColor" rx="1" />
+                      <rect x="88" y="56" width="12" height="4" fill="currentColor" rx="1" />
+                      <rect x="72" y="68" width="8" height="16" fill="currentColor" rx="1" />
+                      <rect x="88" y="72" width="8" height="8" fill="currentColor" rx="1" />
+                      <rect x="84" y="84" width="16" height="16" fill="currentColor" rx="2" />
+                      
+                      <rect x="20" y="60" width="4" height="4" fill="currentColor" rx="0.5" />
+                      <rect x="36" y="68" width="12" height="4" fill="currentColor" rx="0.5" />
+                      <rect x="44" y="76" width="4" height="12" fill="currentColor" rx="0.5" />
+                      <rect x="60" y="76" width="8" height="4" fill="currentColor" rx="0.5" />
+                    </svg>
+                  </div>
 
-                {/* Loading indicator */}
-                <div className="absolute text-[10px] uppercase font-bold tracking-widest text-white/60 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm z-20 animate-pulse">
-                  Kameraga yo'naltiring...
+                  {/* Caption Text */}
+                  <p className="text-[#3A3A3C] text-[13px] font-bold tracking-tight px-4 leading-normal select-none">
+                    Ushbu QR kodni sotuvchiga ko'rsating
+                  </p>
                 </div>
               </div>
             ) : (
-              /* Scanning Completed / Success Alert card */
-              <div className="w-full max-w-sm p-6 rounded-3xl bg-zinc-900 border border-white/10 space-y-4 shadow-2xl animate-scale-up text-center">
-                {scanResult ? (
-                  <>
-                    <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center mx-auto shadow-md">
-                      <CheckCircle className="h-8 w-8" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-black tracking-tight text-white">
-                        Chipta tasdiqlandi!
-                      </h4>
-                      <p className="text-xs text-emerald-400 font-bold mt-1 uppercase tracking-wide">
-                        Bron ID: {scanResult}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-white/5 border border-white/5 rounded-xl text-left text-xs space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-white/40">Zal/Restoran:</span>
-                        <span className="font-bold text-white">Oltin Saroy</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/40">Tadbir kuni:</span>
-                        <span className="font-bold text-white">12 Iyun, 2026</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/40">Status:</span>
-                        <span className="font-bold text-emerald-400">To'langan</span>
+              /* State 1 & 2: Active Scanner Viewport */
+              <div className="flex flex-col items-center justify-center w-full animate-fade-in">
+                {/* Viewfinder frame container */}
+                <div className="relative w-64 h-64 border-2 border-white/20 rounded-[28px] overflow-hidden flex items-center justify-center bg-black/40 shadow-2xl">
+                  {scanState === "scanning" ? (
+                    <>
+                      {/* Real-time HTML5 Back Camera Feed */}
+                      <video
+                        ref={videoRef}
+                        playsInline
+                        autoPlay
+                        muted
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+
+                      {/* Laser scan line over the video feed */}
+                      <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#FF5A00] to-transparent shadow-[0_0_12px_rgba(255,90,0,0.8)] animate-laser z-10" />
+                    </>
+                  ) : (
+                    /* Blur camera placeholder for permission screen */
+                    <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 flex items-center justify-center select-none">
+                      <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/20 animate-pulse">
+                        <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
+                          <path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0-6a9 9 0 1 1 0 18 9 9 0 0 1 0-18Z" />
+                        </svg>
                       </div>
                     </div>
-                    <button
-                      onClick={closeScanner}
-                      className="w-full py-3 rounded-xl bg-primary text-xs font-bold text-white shadow-lg hover:bg-primary-hover transition-colors"
-                    >
-                      Tayyor
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center mx-auto shadow-md">
-                      <AlertCircle className="h-8 w-8" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-black tracking-tight text-white">
-                        Xato yuz berdi
-                      </h4>
-                      <p className="text-xs text-red-400 font-bold mt-1">
-                        Skaner chiptani aniqlay olmadi.
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleScanClick}
-                      className="w-full py-3 rounded-xl bg-primary text-xs font-bold text-white shadow-lg hover:bg-primary-hover transition-colors"
-                    >
-                      Qaytadan urinish
-                    </button>
-                  </>
-                )}
+                  )}
+
+                  {/* Glowing target corners */}
+                  <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#FF5A00] rounded-tl-xl z-10" />
+                  <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#FF5A00] rounded-tr-xl z-10" />
+                  <div className="absolute bottom-0 left-0 w-6 h-6 border-b-4 border-l-4 border-[#FF5A00] rounded-bl-xl z-10" />
+                  <div className="absolute bottom-0 right-0 w-6 h-6 border-b-4 border-r-4 border-[#FF5A00] rounded-br-xl z-10" />
+                </div>
               </div>
             )}
           </div>
 
-          {/* Footer Instruction Text */}
-          <div className="pb-6 text-center text-xs text-white/50 px-6 leading-relaxed">
-            BAZMLY tadbiri yoki marosim zalining QR-kodli taklifnoma chiptasini to'rtburchak maydonga yo'naltiring.
+          {/* Footer State-dependent Area */}
+          <div className="w-full px-6 pb-12 z-20 flex flex-col items-center">
+            {scanState === "permission" && (
+              /* State 2: Camera Permission bottom sheet drawer */
+              <div className="w-full bg-[#1C1C1E] border-t border-[#2A2A2A]/40 rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl flex flex-col items-stretch animate-scale-up absolute bottom-0 left-0 right-0">
+                {/* Drag pill handle */}
+                <div className="w-9 h-1 bg-white/20 rounded-full mx-auto mb-6" />
+                
+                <div className="space-y-6">
+                  <p className="text-white text-center font-bold text-[15px] leading-snug px-6">
+                    Ilovada kamera yoqishga ruxsat bering
+                  </p>
+
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setScanState("scanning")}
+                      className="w-full py-4 bg-[#FF5A00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF5A00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+                    >
+                      Ruxsat berish
+                    </button>
+                    <button
+                      onClick={closeScanner}
+                      className="w-full py-3 bg-transparent text-white/70 hover:text-white font-bold text-sm tracking-wide transition-colors"
+                    >
+                      Ruxsat yo'q
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {scanState === "scanning" && (
+              /* State 1: Active scan bottom triggers */
+              <div className="flex flex-col items-center justify-center animate-fade-in">
+                {/* Custom QR code active scan badge */}
+                <div 
+                  onClick={() => setScanState("my_qr")}
+                  className="w-14 h-14 bg-[#FF5A00] hover:bg-[#E05000] rounded-2xl flex items-center justify-center shadow-[0_6px_20px_rgba(255,90,0,0.35)] cursor-pointer transform active:scale-95 transition-all mb-2"
+                >
+                  <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+                    <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+                    <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+                    <path d="M3 17v2a2 2 0 0 1 2 2h2" />
+                    <rect x="7" y="7" width="10" height="10" rx="1.5" />
+                  </svg>
+                </div>
+                <span className="text-white/90 text-xs font-semibold tracking-wide">
+                  QR kod orqali
+                </span>
+              </div>
+            )}
+
+            {scanState === "my_qr" && (
+              /* State 3: User QR Code bottom close button */
+              <button
+                onClick={() => setScanState("scanning")}
+                className="w-full py-4 bg-[#FF5A00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF5A00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 animate-fade-in"
+              >
+                Ortga
+              </button>
+            )}
           </div>
 
         </div>
