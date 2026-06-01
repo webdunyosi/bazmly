@@ -21,6 +21,14 @@ export default function WelcomePage() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [fullName, setFullName] = useState("Shahzod");
   const [activeTab, setActiveTab] = useState("Umumiy");
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const BANNERS = [
+    "/images/home/adv1.png",
+    "/images/home/top.png",
+    "/images/home/tuyxona2.png",
+    "/images/home/tuyxona3.png"
+  ];
 
   useEffect(() => {
     setMounted(true);
@@ -30,6 +38,15 @@ export default function WelcomePage() {
       setFullName(localStorage.getItem("fullName") || "Shahzod");
     }
   }, []);
+
+  // Automatic slide interval for best offers carousel
+  useEffect(() => {
+    if (!isRegistered) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % BANNERS.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [isRegistered]);
 
   if (!mounted) {
     return <div className="flex flex-col flex-1 bg-[#121212] animate-pulse" />;
@@ -143,19 +160,36 @@ export default function WelcomePage() {
               {/* Banner Card Carousel */}
               <div className="relative group">
                 <div className="w-full aspect-[2.1/1] rounded-[28px] overflow-hidden border border-white/5 shadow-2xl relative bg-[#1C1C1E]">
-                  <img
-                    src="/images/home/adv1.png"
-                    alt="Haveli Offer Banner"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                  {BANNERS.map((banner, index) => {
+                    const isActive = currentSlide === index;
+                    return (
+                      <img
+                        key={banner}
+                        src={banner}
+                        alt={`Offer Banner ${index + 1}`}
+                        className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ease-in-out transform ${
+                          isActive ? "opacity-100 scale-100 z-10" : "opacity-0 scale-105 z-0 pointer-events-none"
+                        }`}
+                      />
+                    );
+                  })}
                 </div>
                 
                 {/* Indicator Dots */}
                 <div className="flex justify-center items-center gap-1.5 pt-3">
-                  <span className="w-2 h-2 rounded-full bg-white shadow-sm" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                  {BANNERS.map((_, index) => {
+                    const isActive = currentSlide === index;
+                    return (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setCurrentSlide(index)}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          isActive ? "w-4 bg-primary" : "w-1.5 bg-white/20 hover:bg-white/40"
+                        }`}
+                      />
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -229,8 +263,8 @@ export default function WelcomePage() {
               {[
                 { id: "1", name: "Sayqal", img: "/images/home/tuyxona1.png", rating: "4.8" },
                 { id: "2", name: "Tinchlik", img: "/images/home/tuyxona2.png", rating: "4.8" },
-                { id: "3", name: "Panorama", img: "/images/home/tuyxona3.png", rating: "4.8" },
-                { id: "4", name: "Sharqona", img: "/images/home/tuyxona4.png", rating: "4.8" }
+                { id: "4", name: "Panorama", img: "/images/home/tuyxona3.png", rating: "4.8" },
+                { id: "5", name: "Sharqona", img: "/images/home/tuyxona4.png", rating: "4.8" }
               ].map((card) => (
                 <div
                   key={card.id}
