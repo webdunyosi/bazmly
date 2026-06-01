@@ -47,6 +47,25 @@ const LANGUAGES: Language[] = [
   { code: "ko", name: "Korean", nativeName: "한국어", flag: "🇰🇷" },
 ];
 
+const FAQS = [
+  {
+    q: "Qanday qilib restoran yoki marosim zalini bron qilish mumkin?",
+    a: "Loyiha bosh sahifasidagi 'Joylar' bo'limiga o'ting, o'zingizga yoqqan restoran yoki zalni tanlang. Sana, vaqt va stol raqamini belgilab, to'lovni tasdiqlang. Broningiz muvaffaqiyatli amalga oshgach, u 'Tarix' bo'limida faol holatda ko'rinadi."
+  },
+  {
+    q: "To'lovlar xavfsizmi va qanday amalga oshiriladi?",
+    a: "Barcha to'lovlar hamkor rasmiy to'lov tizimlari orqali 3D-Secure himoyasi bilan amalga oshiriladi. Humo yoki Uzcard bank kartangizni kiritib, SMS-kod orqali tasdiqlash yo'li bilan mutlaqo xavfsiz to'lov qilishingiz mumkin."
+  },
+  {
+    q: "Buyurtmani bekor qilsam, pulim qaytariladimi?",
+    a: "Ha, albatta. Agar tadbiringiz boshlanishiga 48 soatdan ko'proq vaqt qolgan bo'lsa, buyurtmani bekor qilishingiz mumkin va mablag'ingiz kartangizga 100% qaytarib beriladi. 48 soatdan kam vaqt qolganda esa bekor qilish imkoniyati mavjud emas."
+  },
+  {
+    q: "Promo-kodlar va kuponlardan qanday foydalanaman?",
+    a: "Mavjud kuponlarni 'Voucher' bo'limida ko'rishingiz mumkin. Buyurtmani rasmiylashtirish va to'lov sahifasida promo-kod kiritish oynasiga kupon kodini kiritsangiz, chegirma avtomatik ravishda buyurtma summasiga qo'llaniladi."
+  }
+];
+
 export default function LoginPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -70,6 +89,8 @@ export default function LoginPage() {
   const [showLanguages, setShowLanguages] = useState(false);
   const [showMessages, setShowMessages] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [tempLanguage, setTempLanguage] = useState("uz");
 
   // Cards Management States
@@ -152,7 +173,8 @@ export default function LoginPage() {
         activeModal === "logout_profile" ||
         activeModal === "delete_account" ||
         showLanguages ||
-        showMessages
+        showMessages ||
+        showHelp
       ) {
         bottomNav.style.transform = "translateY(100%)";
         bottomNav.style.opacity = "0";
@@ -170,7 +192,7 @@ export default function LoginPage() {
         bottomNav.style.pointerEvents = "auto";
       }
     };
-  }, [showCards, showCardOtp, showAddCard, selectedCardForDelete, activeModal, showLanguages, showMessages]);
+  }, [showCards, showCardOtp, showAddCard, selectedCardForDelete, activeModal, showLanguages, showMessages, showHelp]);
 
   // Toast auto-dismiss helper
   useEffect(() => {
@@ -325,7 +347,7 @@ export default function LoginPage() {
     {
       label: "Yordam",
       icon: HelpCircle,
-      action: () => setActiveModal("help"),
+      action: () => setShowHelp(true),
     },
     {
       label: "Chiqish",
@@ -333,6 +355,14 @@ export default function LoginPage() {
       action: () => setActiveModal("logout_profile"),
     },
   ];
+
+  const isBottomNavHidden =
+    (showCards && (showCardOtp || showAddCard || selectedCardForDelete)) ||
+    activeModal === "logout_profile" ||
+    activeModal === "delete_account" ||
+    showLanguages ||
+    showMessages ||
+    showHelp;
 
   return (
     <div
@@ -353,7 +383,7 @@ export default function LoginPage() {
 
       {isRegistered ? (
         /* ==================== REGISTERED PROFILE VIEW ==================== */
-        <div className="flex flex-col flex-1 pb-10 bg-[#121212] text-white">
+        <div className={`flex flex-col flex-1 bg-[#121212] text-white transition-all duration-300 ${isBottomNavHidden ? "-mb-16" : ""}`}>
           {showCards ? (
             /* ==================== HIGH-FIDELITY REGISTERED MY CARDS VIEW ==================== */
             <div className="flex flex-col flex-1 bg-[#121212] text-white">
@@ -566,7 +596,7 @@ export default function LoginPage() {
                   </div>
 
                   {/* Content Container */}
-                  <main className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-6 max-w-md mx-auto w-full">
+                  <main className="flex-1 overflow-y-auto px-6 py-8 pb-10 flex flex-col gap-6 max-w-md mx-auto w-full">
                     {/* Render existing cards */}
                     {userCards.map((card) => (
                       <div
@@ -902,7 +932,7 @@ export default function LoginPage() {
               </div>
 
               {/* Scrollable Bookings List */}
-              <main className="flex-1 overflow-y-auto px-6 py-6 pb-28 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+              <main className="flex-1 overflow-y-auto px-6 py-6 pb-2 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
                 {[
                   { id: "1", showBanner: true },
                   { id: "2", showBanner: false }
@@ -985,6 +1015,101 @@ export default function LoginPage() {
                 ))}
               </main>
             </div>
+          ) : showHelp ? (
+            /* ==================== HIGH-FIDELITY REGISTERED YORDAM (HELP) VIEW ==================== */
+            <div className="flex flex-col flex-1 bg-[#121212] text-white animate-fade-in">
+              {/* Top Bar Header */}
+              <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setShowHelp(false);
+                      setOpenFaq(null);
+                    }}
+                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <h1 className="text-xl font-bold text-white tracking-wide">Yordam markazi</h1>
+                </div>
+              </div>
+
+              {/* Scrollable Help Content */}
+              <main className="flex-1 overflow-y-auto px-6 py-6 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+                {/* Hero Card */}
+                <div className="w-full bg-gradient-to-br from-[#1C1C1E] to-[#252528] border border-white/5 rounded-3xl p-5 flex flex-col gap-3 shadow-xl">
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">
+                    <HelpCircle className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <h2 className="text-base font-bold text-white tracking-wide">Qanday yordam bera olamiz?</h2>
+                    <p className="text-xs text-white/60 leading-relaxed font-medium">
+                      BAZMLY ilovasi orqali marosim zallari, restoran va shou-dasturlarni onlayn, xavfsiz va eng yaxshi narxlarda bron qilish bo'yicha savollaringizga javob oling.
+                    </p>
+                  </div>
+                </div>
+
+                {/* FAQ Header */}
+                <div className="space-y-1 mt-1">
+                  <h3 className="text-base font-bold text-white tracking-wide">Tez-tez beriladigan savollar</h3>
+                  <p className="text-xs text-white/40 font-medium">Eng ko'p beriladigan savollarga javoblar</p>
+                </div>
+
+                {/* FAQ Accordions List */}
+                <div className="space-y-3">
+                  {FAQS.map((faq, idx) => {
+                    const isOpen = openFaq === idx;
+                    return (
+                      <div
+                        key={idx}
+                        className="w-full bg-[#1C1C1E] border border-white/5 rounded-2xl overflow-hidden transition-all duration-300 shadow-md"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setOpenFaq(isOpen ? null : idx)}
+                          className="w-full px-5 py-4 flex items-center justify-between gap-3 text-left transition-colors hover:bg-white/5"
+                        >
+                          <span className="text-xs font-bold text-white/90 leading-snug">{faq.q}</span>
+                          <ChevronDown className={`h-4.5 w-4.5 text-white/40 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-primary" : ""}`} />
+                        </button>
+                        
+                        <div
+                          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                            isOpen ? "max-h-[160px] border-t border-white/5" : "max-h-0"
+                          }`}
+                        >
+                          <p className="px-5 py-4 text-xs text-white/60 leading-relaxed font-medium bg-[#161618]">
+                            {faq.a}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Support Contact Section */}
+                <div className="w-full bg-[#221A15] border border-[#FF6B00]/10 rounded-3xl p-5 flex flex-col gap-4 shadow-xl mt-2">
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-bold text-white tracking-wide">Savolingizga javob topmadingizmi?</h4>
+                    <p className="text-[11px] text-white/60 leading-relaxed font-medium">
+                      Bizning mijozlarni qo'llab-quvvatlash xizmati mutaxassislarimiz haftada 7 kun, 24 soat davomida sizga tezkor yordam berishga tayyor.
+                    </p>
+                  </div>
+                  
+                  <a
+                    href="https://t.me/bazmly_support"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3.5 rounded-2xl bg-[#FF6B00] hover:bg-[#E05000] text-white font-bold text-xs tracking-wide flex items-center justify-center gap-2 transition-all active:scale-98 shadow-lg shadow-[#FF6B00]/20"
+                  >
+                    <svg className="h-4.5 w-4.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15.82-.77 4.47-1.09 6.16-.13.72-.4 1-.66 1.03-.57.05-1-.38-1.55-.74-.86-.57-1.34-.86-2.18-1.41-.97-.64-.34-.99.21-1.56.14-.15 2.65-2.42 2.7-2.63.01-.03.01-.13-.05-.18-.06-.05-.14-.03-.21-.02-.09.02-1.54.98-4.36 2.88-.41.28-.79.42-1.12.41-.37-.01-1.08-.21-1.61-.38-.65-.21-1.17-.32-1.12-.68.02-.19.28-.38.77-.57 3.01-1.31 5.02-2.18 6.03-2.6 2.87-1.19 3.47-1.4 3.86-1.4.08 0 .28.02.4.12.1.09.13.21.14.31.01.07-.01.2-.02.26z"/>
+                    </svg>
+                    <span>Qo'llab-quvvatlash xizmati (Telegram)</span>
+                  </a>
+                </div>
+              </main>
+            </div>
           ) : isEditing ? (
             /* ==================== HIGH-FIDELITY REGISTERED EDIT PROFILE VIEW ==================== */
             <div className="flex flex-col flex-1">
@@ -1001,7 +1126,7 @@ export default function LoginPage() {
               </div>
 
               {/* Content Container */}
-              <main className="flex-1 overflow-y-auto px-6 py-8 flex flex-col items-center max-w-md mx-auto w-full">
+              <main className="flex-1 overflow-y-auto px-6 py-8 pb-10 flex flex-col items-center max-w-md mx-auto w-full">
                 {/* Circle Avatar with Camera/Plus icon */}
                 <div className="relative mb-8 mt-2">
                   <div className="w-36 h-36 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl bg-zinc-800">
@@ -1094,7 +1219,7 @@ export default function LoginPage() {
             <>
               <Navbar />
 
-              <main className="flex-1 flex flex-col items-center justify-start py-8 px-4 max-w-md mx-auto w-full">
+              <main className="flex-1 flex flex-col items-center justify-start py-8 px-4 pb-10 max-w-md mx-auto w-full">
                 {/* Header Title */}
                 <h1 className="text-xl font-black text-white mb-6">
                   Sozlamalar
