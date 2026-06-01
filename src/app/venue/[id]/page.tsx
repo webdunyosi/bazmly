@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState, useEffect } from "react";
+import React, { use, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import {
@@ -132,10 +132,109 @@ export default function VenueDetailPage({ params }: Props) {
   const [activeImage, setActiveImage] = useState(venue.image);
   const [isSaved, setIsSaved] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [showReviews, setShowReviews] = useState(false);
+  const [newReviewText, setNewReviewText] = useState("");
+  const [userName, setUserName] = useState("Shahzod");
+  const [reviewsList, setReviewsList] = useState([
+    {
+      author: "KaiB",
+      avatar: "/images/home/rest1.png",
+      date: "22 Jul",
+      isVerified: true,
+      rating: 5,
+      text: "KaiB was amazing with our cats!! 🌟🌟🌟 This was our first time using a pet-sitting service, so we were naturally quite anxious. We took a chance on Kai and completely lucked out! We booked Kai to come twice a day for three days."
+    },
+    {
+      author: "Shahzod",
+      avatar: "/images/home/rest2.png",
+      date: "20 Jul",
+      isVerified: true,
+      rating: 5,
+      text: "Menga bu joy juda yoqdi! Taomlari shirin, xizmat ko'rsatish darajasi juda yuqori. Hammaga tavsiya qilaman! 🌟"
+    },
+    {
+      author: "Malika",
+      avatar: "/images/home/rest3.png",
+      date: "18 Jul",
+      isVerified: true,
+      rating: 5,
+      text: "Ajoyib muhit va shinam joy. Oilaviy o'tirishlar uchun juda mos keladi. Kelajakda yana albatta kelamiz."
+    },
+    {
+      author: "Olim",
+      avatar: "/images/home/rest4.png",
+      date: "10 Jul",
+      isVerified: true,
+      rating: 4,
+      text: "Xizmat ko'rsatish a'lo darajada. Taomlari ham lazzatli. Faqat sal kechroq tayyor bo'ldi, lekin kutishga arziydi."
+    }
+  ]);
 
   useEffect(() => {
     setActiveImage(venue.image);
   }, [venue]);
+
+  useEffect(() => {
+    const name = localStorage.getItem("fullName");
+    if (name) {
+      setUserName(name);
+    }
+  }, []);
+
+  useEffect(() => {
+    const bottomNav = document.getElementById("global-bottom-nav");
+    if (bottomNav) {
+      if (showReviews) {
+        bottomNav.style.transform = "translateY(100%)";
+        bottomNav.style.opacity = "0";
+        bottomNav.style.pointerEvents = "none";
+      } else {
+        bottomNav.style.transform = "translateY(0)";
+        bottomNav.style.opacity = "1";
+        bottomNav.style.pointerEvents = "auto";
+      }
+    }
+    return () => {
+      if (bottomNav) {
+        bottomNav.style.transform = "translateY(0)";
+        bottomNav.style.opacity = "1";
+        bottomNav.style.pointerEvents = "auto";
+      }
+    };
+  }, [showReviews]);
+
+  const reviewsEndRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    // Standard delay to let state render fully before scrolling
+    setTimeout(() => {
+      reviewsEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
+  useEffect(() => {
+    if (showReviews) {
+      scrollToBottom();
+    }
+  }, [reviewsList, showReviews]);
+
+  const handleSendReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newReviewText.trim()) return;
+
+    const newRev = {
+      author: userName,
+      avatar: "/images/home/rest6.png",
+      date: "Hozir",
+      isVerified: true,
+      rating: 5,
+      text: newReviewText.trim()
+    };
+
+    setReviewsList([...reviewsList, newRev]);
+    setNewReviewText("");
+    setToastMessage("Sharhingiz muvaffaqiyatli qo'shildi!");
+  };
 
   // Toast auto-dismiss helper
   useEffect(() => {
@@ -248,11 +347,12 @@ export default function VenueDetailPage({ params }: Props) {
             {/* Rating row link */}
             <button
               type="button"
-              className="flex items-center gap-1 text-xs font-bold text-white/70 hover:text-white transition-colors"
+              onClick={() => setShowReviews(true)}
+              className="flex items-center gap-1 text-xs font-bold text-white/70 hover:text-white transition-colors cursor-pointer active:scale-95 transition-all"
             >
               <span className="text-[#FFB800]">★</span>
-              <span>{venue.rating} ({venue.reviews})</span>
-              <ChevronRight className="h-4 w-4 text-white/40" />
+              <span>{venue.rating} ({reviewsList.length} ta sharh)</span>
+              <ChevronRight className="h-4 w-4 text-[#FFB800]" />
             </button>
           </div>
 
@@ -357,6 +457,105 @@ export default function VenueDetailPage({ params }: Props) {
           <span>Keyingisi</span>
         </Link>
       </div>
+
+      {/* Reviews Screen Overlay */}
+      {showReviews && (
+        <div className="fixed inset-0 z-50 bg-[#121212] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white overflow-hidden">
+          {/* Header */}
+          <div className="relative py-6 px-6 flex items-center justify-between z-20 border-b border-white/5 bg-[#121212]">
+            <button
+              onClick={() => setShowReviews(false)}
+              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition-all flex items-center justify-center text-white cursor-pointer active:scale-90"
+            >
+              <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+            </button>
+            <div className="absolute left-1/2 -translate-x-1/2 font-bold text-base tracking-wide text-white">
+              Sharhlar ({reviewsList.length})
+            </div>
+            <div className="w-9" />
+          </div>
+
+          {/* Review Cards list container */}
+          <div className="flex-1 overflow-y-auto px-6 py-6 pb-28 flex flex-col gap-4">
+            {reviewsList.map((rev, idx) => (
+              <div
+                key={idx}
+                className="bg-[#1C1C1E] border border-white/5 rounded-[22px] p-5 shadow-lg relative text-left animate-slide-up"
+                style={{ animationDelay: `${idx * 50}ms` }}
+              >
+                <div className="flex items-center justify-between mb-3.5">
+                  <div className="flex items-center gap-3">
+                    {/* Avatar */}
+                    <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-white/10 bg-zinc-800">
+                      <img
+                        src={rev.avatar}
+                        className="w-full h-full object-cover"
+                        alt={rev.author}
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-bold text-white tracking-wide">{rev.author}</span>
+                        <span className="text-white/30 text-[10px]">•</span>
+                        <span className="text-xs text-white/50">{rev.date}</span>
+                        {rev.isVerified && (
+                          <span className="text-[10px] bg-white/10 text-white/60 px-1.5 py-0.5 rounded-[4px] font-semibold tracking-wide ml-1">
+                            Verified
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Stars */}
+                  <div className="flex items-center gap-0.5 text-[#FFB800]">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <span key={i} className="text-xs">
+                        {i < rev.rating ? "★" : "☆"}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {/* Text Body */}
+                <p className="text-xs font-medium text-white/80 leading-relaxed">
+                  {rev.text}
+                </p>
+                {/* Read More button */}
+                <div className="flex justify-end mt-2">
+                  <button className="text-[10px] font-bold text-white/40 hover:text-white/60 transition-colors">
+                    Read More
+                  </button>
+                </div>
+              </div>
+            ))}
+            <div ref={reviewsEndRef} />
+          </div>
+
+          {/* Input panel fixed at bottom of overlay */}
+          <div className="absolute bottom-0 left-0 right-0 bg-[#121212] px-6 py-4 border-t border-white/5 pb-6">
+            <form
+              onSubmit={handleSendReview}
+              className="flex items-center bg-[#1C1C1E] rounded-full px-4 py-3.5 gap-3 border border-white/5 focus-within:border-[#FF6B00]/40 transition-all"
+            >
+              <input
+                type="text"
+                value={newReviewText}
+                onChange={(e) => setNewReviewText(e.target.value)}
+                placeholder="Yozish"
+                className="flex-1 bg-transparent text-sm text-white placeholder-white/30 outline-none"
+              />
+              <button
+                type="submit"
+                disabled={!newReviewText.trim()}
+                className="p-1.5 rounded-full bg-transparent text-[#FF6B00] hover:scale-105 active:scale-95 disabled:opacity-40 disabled:scale-100 transition-all shrink-0 flex items-center justify-center"
+              >
+                <svg className="w-5.5 h-5.5 fill-current transform rotate-45 -translate-x-[2px] translate-y-[1px]" viewBox="0 0 24 24">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
