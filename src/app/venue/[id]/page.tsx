@@ -25,7 +25,7 @@ export default function VenueDetailPage({ params }: Props) {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col flex-1">
       <Navbar />
 
       <main className="flex-1 w-full px-4 py-6 pb-24">

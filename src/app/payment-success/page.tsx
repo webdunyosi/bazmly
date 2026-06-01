@@ -143,7 +143,7 @@ function SuccessContent() {
 
 export default function PaymentSuccessPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col flex-1">
       <Navbar />
 
       <main className="flex-1 max-w-lg w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 flex items-center justify-center">

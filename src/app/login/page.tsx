@@ -91,7 +91,7 @@ export default function LoginPage() {
 
   if (!mounted) {
     return (
-      <div className="flex flex-col min-h-screen bg-brand-dark animate-pulse" />
+      <div className="flex flex-col flex-1 bg-brand-dark animate-pulse" />
     );
   }
 
@@ -240,7 +240,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="flex flex-col min-h-screen bg-brand-light dark:bg-brand-dark transition-colors duration-300 relative"
+      className="flex flex-col flex-1 bg-brand-light dark:bg-brand-dark transition-colors duration-300 relative"
       style={{
         backgroundImage: "url('/images/topo_bg.png')",
         backgroundSize: "cover",
