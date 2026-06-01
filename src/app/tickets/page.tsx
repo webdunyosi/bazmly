@@ -1,236 +1,220 @@
 "use client";
 
-import React, { useState } from "react";
-import Link from "next/link";
-import Navbar from "@/components/navbar";
+import React, { useState, useEffect } from "react";
+import { ChevronRight, Check } from "lucide-react";
 
-interface MockTicket {
+interface Voucher {
   id: string;
-  venueName: string;
-  location: string;
-  date: string;
-  session: string;
-  guests: number;
-  totalPrice: string;
-  emoji: string;
-  status: "active" | "past";
+  code: string;
+  description: string;
+  expirySeconds?: number; // active countdown
+  expiryDate?: string; // static date
 }
 
-const MOCK_TICKETS: MockTicket[] = [
+const MOCK_VOUCHERS: Voucher[] = [
   {
-    id: "BZM-482015",
-    venueName: "Oltin Saroy To'yxonasi",
-    location: "Toshkent sh., Yunusobod",
-    date: "2026-06-18",
-    session: "Kechki navbat (18:00)",
-    guests: 250,
-    totalPrice: "18,250,000 UZS",
-    emoji: "🏰",
-    status: "active",
+    id: "v1",
+    code: "BAZMLY50E",
+    description: "-80 000 so'm oldindan buyurtma uchun promokod",
+    expirySeconds: 5 * 3600 + 35 * 60 + 49, // 05:35:49
   },
   {
-    id: "BZM-193405",
-    venueName: "Shoroq Restorani",
-    location: "Toshkent sh., Mirobod",
-    date: "2026-03-12",
-    session: "Kechki navbat (18:00)",
-    guests: 120,
-    totalPrice: "7,000,000 UZS",
-    emoji: "🍽️",
-    status: "past",
+    id: "v2",
+    code: "BAZMLYGOLD",
+    description: "-80 000 so'm oldindan buyurtma uchun promokod",
+    expiryDate: "09/19/2026",
+  },
+  {
+    id: "v3",
+    code: "BAZMLYVIP",
+    description: "-80 000 so'm oldindan buyurtma uchun promokod",
+    expirySeconds: 5 * 3600 + 35 * 60 + 49,
+  },
+  {
+    id: "v4",
+    code: "BAZMLY80K",
+    description: "-80 000 so'm oldindan buyurtma uchun promokod",
+    expirySeconds: 5 * 3600 + 35 * 60 + 49,
   },
 ];
 
-export default function TicketsPage() {
-  const [activeTab, setActiveTab] = useState<"active" | "past">("active");
-  const [expandedTicketId, setExpandedTicketId] = useState<string | null>("BZM-482015");
+export default function VouchersPage() {
+  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [timers, setTimers] = useState<Record<string, number>>({});
 
-  const filteredTickets = MOCK_TICKETS.filter((t) => t.status === activeTab);
+  // Real-time countdown timer tick effect
+  useEffect(() => {
+    // Initialize countdowns
+    const initialTimers: Record<string, number> = {};
+    MOCK_VOUCHERS.forEach((v) => {
+      if (v.expirySeconds !== undefined) {
+        initialTimers[v.id] = v.expirySeconds;
+      }
+    });
+    setTimers(initialTimers);
+
+    // Decrement countdowns every second
+    const interval = setInterval(() => {
+      setTimers((prev) => {
+        const next = { ...prev };
+        let updated = false;
+        Object.keys(next).forEach((key) => {
+          if (next[key] > 0) {
+            next[key] -= 1;
+            updated = true;
+          }
+        });
+        return updated ? next : prev;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatCountdown = (totalSeconds: number) => {
+    if (totalSeconds <= 0) return "00:00:00";
+    const hrs = Math.floor(totalSeconds / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+    return [hrs, mins, secs].map((v) => v.toString().padStart(2, "0")).join(":");
+  };
+
+  const handleCopy = (code: string) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    }).catch((err) => {
+      console.warn("Clipboard failed, using fallback copy feedback:", err);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    });
+  };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-
-      <main className="flex-1 w-full px-4 py-6 pb-24">
-        <h1 className="text-3xl font-extrabold text-foreground mb-8">
-          Mening Chiptalarim
+    <div className={`absolute inset-0 pb-24 overflow-y-auto bg-[#0F0F0F] flex flex-col font-sans select-none transition-all duration-300 ${selectedVoucher ? "z-[80]" : "z-40"}`}>
+      
+      {/* ==================== Header ==================== */}
+      <div className="py-4 text-center pt-6">
+        <h1 className="text-[22px] font-extrabold text-white tracking-wide">
+          Promokodlar
         </h1>
+      </div>
 
-        {/* Tab switcher */}
-        <div className="flex border-b border-brand-light-border dark:border-brand-dark-border mb-8">
-          <button
-            onClick={() => {
-              setActiveTab("active");
-              setExpandedTicketId(null);
-            }}
-            className={`flex-1 pb-4 text-sm font-bold text-center border-b-2 transition-all duration-200 ${
-              activeTab === "active"
-                ? "border-primary text-primary"
-                : "border-transparent text-foreground/50 hover:text-foreground"
-            }`}
-          >
-            Faol chiptalar ({MOCK_TICKETS.filter((t) => t.status === "active").length})
-          </button>
-          <button
-            onClick={() => {
-              setActiveTab("past");
-              setExpandedTicketId(null);
-            }}
-            className={`flex-1 pb-4 text-sm font-bold text-center border-b-2 transition-all duration-200 ${
-              activeTab === "past"
-                ? "border-primary text-primary"
-                : "border-transparent text-foreground/50 hover:text-foreground"
-            }`}
-          >
-            Tarix ({MOCK_TICKETS.filter((t) => t.status === "past").length})
-          </button>
-        </div>
+      {/* ==================== Vouchers List ==================== */}
+      <div className="flex-1 px-4 py-3 space-y-4">
+        {MOCK_VOUCHERS.map((voucher) => {
+          const timerVal = timers[voucher.id];
+          const isTimerActive = timerVal !== undefined;
 
-        {/* Tickets List */}
-        {filteredTickets.length > 0 ? (
-          <div className="space-y-6">
-            {filteredTickets.map((ticket) => {
-              const isExpanded = expandedTicketId === ticket.id;
-
-              return (
-                <div
-                  key={ticket.id}
-                  className="rounded-3xl border border-brand-light-border dark:border-brand-dark-border bg-brand-light-card dark:bg-brand-dark-card shadow-lg overflow-hidden transition-all duration-300"
-                >
-                  {/* Summary row */}
-                  <div
-                    onClick={() => setExpandedTicketId(isExpanded ? null : ticket.id)}
-                    className="p-6 flex items-center justify-between cursor-pointer hover:bg-foreground/3 dark:hover:bg-white/3 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
-                        {ticket.emoji}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-extrabold text-base text-foreground">
-                            {ticket.venueName}
-                          </h3>
-                          <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded bg-primary/10 text-primary">
-                            {ticket.id}
-                          </span>
-                        </div>
-                        <p className="text-xs text-foreground/50 mt-0.5">
-                          📅 {ticket.date} • {ticket.session}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <span className="font-extrabold text-sm text-foreground/80">
-                        {ticket.totalPrice}
-                      </span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className={`w-5 h-5 text-foreground/50 transition-transform duration-300 ${
-                          isExpanded ? "rotate-180" : ""
-                        }`}
-                      >
-                        <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Expandable detail section (Ticket Card) */}
-                  {isExpanded && (
-                    <div className="border-t border-brand-light-border dark:border-brand-dark-border bg-foreground/3 dark:bg-white/3 p-6 animate-fadeIn">
-                      <div className="flex flex-col items-center justify-between gap-8">
-                        {/* Details */}
-                        <div className="space-y-4 text-sm w-full">
-                          <h4 className="font-extrabold text-primary text-xs uppercase tracking-wider">
-                            Tashrif tafsilotlari
-                          </h4>
-                          
-                          <div className="grid grid-cols-2 gap-4 text-xs">
-                            <div>
-                              <p className="text-foreground/40 font-bold uppercase">Manzil</p>
-                              <p className="font-extrabold text-foreground">{ticket.location}</p>
-                            </div>
-                            <div>
-                              <p className="text-foreground/40 font-bold uppercase">Mehmonlar</p>
-                              <p className="font-extrabold text-foreground">{ticket.guests} kishi</p>
-                            </div>
-                            <div>
-                              <p className="text-foreground/40 font-bold uppercase">Sana</p>
-                              <p className="font-extrabold text-foreground font-mono">{ticket.date}</p>
-                            </div>
-                            <div>
-                              <p className="text-foreground/40 font-bold uppercase">To'lov holati</p>
-                              <p className="font-bold text-green-500">Muvaffaqiyatli to'langan</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Dashed divider */}
-                        <div className="w-full border-t border-dashed border-brand-light-border dark:border-brand-dark-border" />
-
-                        {/* Interactive QR code */}
-                        <div className="flex flex-col items-center justify-center gap-2">
-                          <div className="p-2.5 bg-white rounded-2xl border border-gray-100 shadow-md">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 100 100"
-                              className="h-28 w-28 text-black"
-                            >
-                              {/* Top-left position marker */}
-                              <rect x="0" y="0" width="30" height="30" fill="currentColor" />
-                              <rect x="5" y="5" width="20" height="20" fill="white" />
-                              <rect x="10" y="10" width="10" height="10" fill="currentColor" />
-
-                              {/* Top-right position marker */}
-                              <rect x="70" y="0" width="30" height="30" fill="currentColor" />
-                              <rect x="75" y="5" width="20" height="20" fill="white" />
-                              <rect x="80" y="10" width="10" height="10" fill="currentColor" />
-
-                              {/* Bottom-left position marker */}
-                              <rect x="0" y="70" width="30" height="30" fill="currentColor" />
-                              <rect x="5" y="75" width="20" height="20" fill="white" />
-                              <rect x="10" y="80" width="10" height="10" fill="currentColor" />
-
-                              {/* Mock QR bits */}
-                              <rect x="40" y="10" width="10" height="10" fill="currentColor" />
-                              <rect x="55" y="0" width="10" height="15" fill="currentColor" />
-                              <rect x="35" y="25" width="20" height="10" fill="currentColor" />
-                              <rect x="50" y="45" width="15" height="15" fill="currentColor" />
-                              <rect x="80" y="40" width="10" height="20" fill="currentColor" />
-                              <rect x="85" y="75" width="15" height="15" fill="currentColor" />
-                            </svg>
-                          </div>
-                          <span className="text-[9px] font-bold text-foreground/40 uppercase tracking-widest">
-                            Kirish QR kodi
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-16 rounded-3xl bg-brand-light-card dark:bg-brand-dark-card border border-brand-light-border dark:border-brand-dark-border max-w-md mx-auto">
-            <span className="text-5xl">🎫</span>
-            <h3 className="mt-4 text-xl font-bold">Chiptalar yo'q</h3>
-            <p className="text-sm text-foreground/50 mt-2">
-              Sizda hozircha chiptalar mavjud emas. Ilovadan foydalanib to'yxona yoki restoran bron qilishingiz mumkin!
-            </p>
-            <Link
-              href="/feed"
-              className="mt-6 inline-flex items-center justify-center rounded-2xl bg-primary text-white px-6 py-3 text-sm font-bold shadow-lg shadow-primary/20 hover:bg-primary-hover hover:scale-[1.02] transition-all duration-200"
+          return (
+            <div
+              key={voucher.id}
+              onClick={() => setSelectedVoucher(voucher)}
+              className="group p-4 flex items-center justify-between gap-4 border border-[#2A2A2A]/40 bg-[#1C1C1E] hover:bg-[#252528] rounded-[22px] cursor-pointer transition-all duration-300 shadow-md transform active:scale-[0.98]"
             >
-              Explore Feed
-            </Link>
+              {/* Logo section */}
+              <div className="w-[50px] h-[50px] shrink-0 rounded-[14px] bg-[#FF5A00] flex flex-col items-center justify-center font-black text-white text-[10px] tracking-tighter leading-none shadow-[0_4px_12px_rgba(255,90,0,0.3)]">
+                <span className="scale-x-95">Bazmly</span>
+              </div>
+
+              {/* Text info */}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-white text-xs font-semibold leading-normal break-words pr-2">
+                  {voucher.description}
+                </h3>
+                <div className="mt-1 flex items-center">
+                  {isTimerActive ? (
+                    <span className="text-[#FF5A00] text-xs font-bold font-mono tracking-wider animate-pulse">
+                      {formatCountdown(timerVal)}
+                    </span>
+                  ) : (
+                    <span className="text-[#8E8E93] text-xs font-semibold">
+                      {voucher.expiryDate}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Chevron */}
+              <div className="shrink-0">
+                <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white transition-colors" />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ==================== Copy Successful Toast ==================== */}
+      {copied && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[160] bg-emerald-500 text-white font-extrabold text-[11px] tracking-wider uppercase px-4 py-2.5 rounded-full shadow-lg flex items-center gap-2 animate-scale-up">
+          <Check className="w-4 h-4" />
+          <span>Muvaffaqiyatli nusxalandi!</span>
+        </div>
+      )}
+
+      {/* ==================== Dimming Backdrop ==================== */}
+      <div
+        onClick={() => setSelectedVoucher(null)}
+        className={`fixed inset-0 z-[140] bg-black/75 backdrop-blur-[2px] transition-opacity duration-300 max-w-md mx-auto ${
+          selectedVoucher ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      />
+
+      {/* ==================== Slide-Up Drawer / Bottom Sheet ==================== */}
+      <div
+        className={`fixed inset-x-0 bottom-0 z-[150] max-w-md mx-auto bg-[#1C1C1E] border-t border-[#2A2A2A]/40 rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl transition-transform duration-300 flex flex-col items-stretch transform ${
+          selectedVoucher ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        {/* Drag pill handle */}
+        <div className="w-9 h-1 bg-white/20 rounded-full mx-auto mb-6" />
+
+        {selectedVoucher && (
+          <div className="space-y-6">
+            {/* Drawer Content */}
+            <div className="space-y-2 text-left">
+              <h2 className="text-white text-xl font-bold tracking-tight">
+                Promokod {selectedVoucher.code}
+              </h2>
+              <p className="text-white/70 text-xs font-semibold leading-relaxed">
+                {selectedVoucher.description}
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3.5 pt-2">
+              {/* Copy Button */}
+              <button
+                onClick={() => handleCopy(selectedVoucher.code)}
+                className="w-full py-4 bg-[#FF5A00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF5A00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-4 h-4 animate-scale-up" />
+                    <span>Nusxa olindi!</span>
+                  </>
+                ) : (
+                  <span>Nusxa olish</span>
+                )}
+              </button>
+
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedVoucher(null)}
+                className="w-full py-3 bg-transparent text-white/90 hover:text-white font-bold text-sm tracking-wide transition-colors"
+              >
+                Ortga
+              </button>
+            </div>
           </div>
         )}
-      </main>
+      </div>
+
     </div>
   );
 }
