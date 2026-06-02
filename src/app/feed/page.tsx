@@ -63,7 +63,7 @@ export default function FeedPage() {
   }, [toastMessage]);
 
   if (!mounted) {
-    return <div className="flex flex-col flex-1 bg-[#121212] animate-pulse" />;
+    return <div className="flex flex-col flex-1 bg-[var(--background)] animate-pulse" />;
   }
 
   const showToast = (msg: string) => {
@@ -91,7 +91,7 @@ export default function FeedPage() {
 
   return (
     <div
-      className={`flex flex-col flex-1 bg-[#121212] text-white transition-all duration-300 relative ${
+      className={`flex flex-col flex-1 bg-[var(--background)] text-white transition-all duration-300 relative ${
         showLocationSelect ? "-mb-16" : ""
       }`}
     >
@@ -105,7 +105,7 @@ export default function FeedPage() {
 
       {showLocationSelect ? (
         /* ==================== HIGH-FIDELITY REGISTERED MANZIL (LOCATION SELECT) VIEW ==================== */
-        <div className="flex flex-col flex-1 bg-[#121212] text-white animate-fade-in">
+        <div className="flex flex-col flex-1 bg-[var(--background)] text-white animate-fade-in">
           {/* Top Bar Header */}
           <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
             <h1 className="text-xl font-bold text-white tracking-wide">Manzil</h1>
@@ -228,7 +228,7 @@ export default function FeedPage() {
         </div>
       ) : (
         /* ==================== HIGH-FIDELITY REGISTERED BOOKINGS HISTORY VIEW ==================== */
-        <div className="flex flex-col flex-1 bg-[#121212] text-white">
+        <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
           {/* Top Bar Header */}
           <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
             <h1 className="text-xl font-bold text-white tracking-wide">Band qilingan</h1>

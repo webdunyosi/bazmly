@@ -159,7 +159,7 @@ function BookingContent({ id }: { id: string }) {
   };
 
   if (!mounted) {
-    return <div className="flex flex-col flex-1 bg-[#121212] animate-pulse h-screen" />;
+    return <div className="flex flex-col flex-1 bg-[var(--background)] animate-pulse h-screen" />;
   }
 
   // Format price helper
@@ -251,10 +251,10 @@ function BookingContent({ id }: { id: string }) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto min-h-screen bg-[#121212] text-white flex flex-col relative overflow-hidden pb-12">
+    <div className="w-full max-w-md mx-auto min-h-screen bg-[var(--background)] text-white flex flex-col relative overflow-hidden pb-12">
       
       {/* Dynamic Header */}
-      <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 select-none shrink-0 bg-[#121212] z-30 sticky top-0">
+      <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 select-none shrink-0 bg-[var(--background)] z-30 sticky top-0">
         <button
           onClick={() => {
             if (bookingStep === "details") setBookingStep("params");
@@ -770,11 +770,11 @@ function BookingContent({ id }: { id: string }) {
             {/* Dotted Tear line with semicircles */}
             <div className="relative h-6 w-full flex items-center justify-between">
               {/* Left cutout */}
-              <div className="w-3.5 h-6 bg-[#121212] rounded-r-full -ml-px border-y border-r border-white/5" />
+              <div className="w-3.5 h-6 bg-[var(--background)] rounded-r-full -ml-px border-y border-r border-white/5" />
               {/* Dash line */}
               <div className="flex-1 border-t-2 border-dashed border-zinc-800 mx-2" />
               {/* Right cutout */}
-              <div className="w-3.5 h-6 bg-[#121212] rounded-l-full -mr-px border-y border-l border-white/5" />
+              <div className="w-3.5 h-6 bg-[var(--background)] rounded-l-full -mr-px border-y border-l border-white/5" />
             </div>
 
             {/* Bottom barcode segment */}
@@ -953,10 +953,10 @@ function BookingContent({ id }: { id: string }) {
 
       {/* OVERLAY 2: SMS Verification OTP Screen (with Numeric Keypad) */}
       {showOTP && (
-        <div className="fixed inset-0 z-[100] flex flex-col max-w-md mx-auto bg-[#121212] animate-fade-in">
+        <div className="fixed inset-0 z-[100] flex flex-col max-w-md mx-auto bg-[var(--background)] animate-fade-in">
           
           {/* Header Row */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 select-none shrink-0 bg-[#121212]">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 select-none shrink-0 bg-[var(--background)]">
             <div className="w-8 h-8" />
             <h2 className="text-sm font-bold tracking-wide uppercase text-zinc-400">Tasdiqlash</h2>
             <button 
@@ -1034,7 +1034,7 @@ function BookingContent({ id }: { id: string }) {
                 <button
                   key={btn}
                   onClick={() => handleKeypadPress(btn)}
-                  className="py-4 bg-[#121212]/80 hover:bg-[#121212] border border-white/5 active:scale-95 transition-all text-sm font-extrabold rounded-xl flex items-center justify-center text-white"
+                  className="py-4 bg-[#121212]/30 hover:bg-[#121212]/50 border border-white/5 active:scale-95 transition-all text-sm font-extrabold rounded-xl flex items-center justify-center text-white"
                 >
                   {isBack ? (
                     /* Backspace SVG */
@@ -1120,9 +1120,9 @@ export default function BookingPage({ params }: Props) {
     <div className="flex flex-col flex-1">
       <Navbar />
 
-      <main className="flex-1 w-full bg-[#121212]">
+      <main className="flex-1 w-full bg-[var(--background)]">
         <Suspense fallback={
-          <div className="flex items-center justify-center h-64 bg-[#121212] text-white">
+          <div className="flex items-center justify-center h-64 bg-[var(--background)] text-white">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#FF6B00]" />
           </div>
         }>

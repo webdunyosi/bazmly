@@ -383,7 +383,7 @@ export default function VenueDetailPage({ params }: Props) {
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-[#121212] text-white min-h-screen relative">
+    <div className="flex flex-col flex-1 bg-[var(--background)] text-white min-h-screen relative">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-xl animate-fade-in flex items-center gap-2 max-w-xs text-center border border-white/20">
@@ -604,9 +604,9 @@ export default function VenueDetailPage({ params }: Props) {
 
       {/* Reviews Screen Overlay */}
       {showReviews && (
-        <div className="fixed inset-0 z-50 bg-[#121212] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-[var(--background)] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white overflow-hidden">
           {/* Header */}
-          <div className="relative py-6 px-6 flex items-center justify-between z-20 border-b border-white/5 bg-[#121212]">
+          <div className="relative py-6 px-6 flex items-center justify-between z-20 border-b border-white/5 bg-[var(--background)]">
             <button
               onClick={() => setShowReviews(false)}
               className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition-all flex items-center justify-center text-white cursor-pointer active:scale-90"
@@ -675,7 +675,7 @@ export default function VenueDetailPage({ params }: Props) {
           </div>
 
           {/* Input panel fixed at bottom of overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-[#121212] px-6 py-4 border-t border-white/5 pb-6">
+          <div className="absolute bottom-0 left-0 right-0 bg-[var(--background)] px-6 py-4 border-t border-white/5 pb-6">
             <form
               onSubmit={handleSendReview}
               className="flex items-center bg-[#393939] rounded-full px-4 py-3.5 gap-3 border border-white/5 focus-within:border-[#FF6B00]/40 transition-all"
@@ -820,9 +820,9 @@ export default function VenueDetailPage({ params }: Props) {
 
       {/* Location Search Overlay (2-rasm) */}
       {showLocationSearch && (
-        <div className="fixed inset-0 z-50 bg-[#121212] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white select-none">
+        <div className="fixed inset-0 z-50 bg-[var(--background)] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white select-none">
           {/* Header Row with Search Input */}
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5 bg-[#121212] z-30 sticky top-0">
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5 bg-[var(--background)] z-30 sticky top-0">
             <button
               onClick={() => {
                 setShowLocationSearch(false);

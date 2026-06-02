@@ -162,7 +162,7 @@ export default function WelcomePage() {
   }, [isRegistered]);
 
   if (!mounted) {
-    return <div className="flex flex-col flex-1 bg-[#121212] animate-pulse" />;
+    return <div className="flex flex-col flex-1 bg-[var(--background)] animate-pulse" />;
   }
 
   const welcomeCategories = [
@@ -195,10 +195,10 @@ export default function WelcomePage() {
   const horizontalTabs = ["Umumiy", "Restoranlar", "To'yxonalar", "Katering", "Bezaklar"];
 
   return (
-    <div className="flex flex-col flex-1 bg-[#121212] text-white transition-colors duration-300 relative">
+    <div className="flex flex-col flex-1 bg-[var(--background)] text-white transition-colors duration-300 relative">
       {isRegistered ? (
         /* ==================== HIGH-FIDELITY REGISTERED ASOSIY (HOME) VIEW ==================== */
-        <div className="flex flex-col flex-1 min-h-screen bg-[#121212]">
+        <div className="flex flex-col flex-1 min-h-screen bg-[var(--background)]">
           {/* Header Row */}
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
             <h1 className="text-xl font-bold text-white tracking-wide">
@@ -726,9 +726,9 @@ export default function WelcomePage() {
 
       {/* Location Search Overlay (2-rasm) */}
       {showLocationSearch && (
-        <div className="fixed inset-0 z-50 bg-[#121212] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white select-none">
+        <div className="fixed inset-0 z-50 bg-[var(--background)] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white select-none">
           {/* Header Row with Search Input */}
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5 bg-[#121212] z-30 sticky top-0">
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5 bg-[var(--background)] z-30 sticky top-0">
             <button
               onClick={() => {
                 setShowLocationSearch(false);

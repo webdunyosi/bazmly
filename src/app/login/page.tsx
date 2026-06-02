@@ -203,9 +203,7 @@ export default function LoginPage() {
   }, [toastMessage]);
 
   if (!mounted) {
-    return (
-      <div className="flex flex-col flex-1 bg-brand-dark animate-pulse" />
-    );
+    return <div className="flex flex-col flex-1 bg-[var(--background)] animate-pulse" />;
   }
 
   const showToast = (msg: string) => {
@@ -366,7 +364,7 @@ export default function LoginPage() {
 
   return (
     <div
-      className="flex flex-col flex-1 bg-brand-light dark:bg-brand-dark transition-colors duration-300 relative"
+      className="flex flex-col flex-1 bg-[var(--background)] transition-colors duration-300 relative"
       style={{
         backgroundImage: "url('/images/topo_bg.png')",
         backgroundSize: "cover",
@@ -383,10 +381,10 @@ export default function LoginPage() {
 
       {isRegistered ? (
         /* ==================== REGISTERED PROFILE VIEW ==================== */
-        <div className={`flex flex-col flex-1 bg-[#121212] text-white transition-all duration-300 ${isBottomNavHidden ? "-mb-16" : ""}`}>
+        <div className={`flex flex-col flex-1 bg-[var(--background)] text-white transition-all duration-300 ${isBottomNavHidden ? "-mb-16" : ""}`}>
           {showCards ? (
             /* ==================== HIGH-FIDELITY REGISTERED MY CARDS VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[#121212] text-white">
+            <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
               <style>{`
                 @keyframes slideUp {
                   from { transform: translateY(100%); }
@@ -399,7 +397,7 @@ export default function LoginPage() {
 
               {showCardOtp ? (
                 /* ==================== SCREEN 4: OTP VERIFICATION VIEW ==================== */
-                <div className="flex flex-col flex-1 bg-[#121212] text-white">
+                <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
                   {/* Close Top Bar */}
                   <div className="relative flex items-center justify-between px-6 py-5">
                     <button
@@ -514,7 +512,7 @@ export default function LoginPage() {
                 </div>
               ) : showAddCard ? (
                 /* ==================== SCREEN 2 & 3: ADD CARD DETAILS VIEW ==================== */
-                <div className="flex flex-col flex-1 bg-[#121212] text-white">
+                <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
                   {/* Top Bar Header */}
                   <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
                     <button
@@ -582,7 +580,7 @@ export default function LoginPage() {
                 </div>
               ) : (
                 /* ==================== SCREEN 1: CARDS LIST VIEW ==================== */
-                <div className="flex flex-col flex-1 bg-[#121212] text-white">
+                <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
                   {/* Top Bar Header */}
                   <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
                     <button
@@ -694,7 +692,7 @@ export default function LoginPage() {
             </div>
           ) : showLanguages ? (
             /* ==================== HIGH-FIDELITY REGISTERED LANGUAGE SETTINGS VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[#121212] text-white">
+            <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
               {/* Top Bar Header */}
               <div className="relative flex items-center justify-between px-6 py-5">
                 <button
@@ -768,7 +766,7 @@ export default function LoginPage() {
             </div>
           ) : showMessages ? (
             /* ==================== HIGH-FIDELITY REGISTERED XABARLAR VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[#121212] text-white animate-fade-in">
+            <div className="flex flex-col flex-1 bg-[var(--background)] text-white animate-fade-in">
               {/* Top Bar Header */}
               <div className="relative flex items-center justify-between px-6 py-5">
                 <button
@@ -911,7 +909,7 @@ export default function LoginPage() {
             </div>
           ) : showHistory ? (
             /* ==================== HIGH-FIDELITY REGISTERED BOOKINGS HISTORY VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[#121212] text-white">
+            <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
               {/* Top Bar Header */}
               <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
                 <div className="flex items-center gap-2">
@@ -1017,7 +1015,7 @@ export default function LoginPage() {
             </div>
           ) : showHelp ? (
             /* ==================== HIGH-FIDELITY REGISTERED YORDAM (HELP) VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[#121212] text-white animate-fade-in">
+            <div className="flex flex-col flex-1 bg-[var(--background)] text-white animate-fade-in">
               {/* Top Bar Header */}
               <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
                 <div className="flex items-center gap-2">

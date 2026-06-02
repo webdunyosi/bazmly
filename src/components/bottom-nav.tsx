@@ -336,7 +336,7 @@ export default function BottomNav() {
 
       {/* Skaner Modal interfeysi saqlab qolindi */}
       {isScanning && (
-        <div className="fixed inset-0 z-[100] bg-[#0F0F0F] flex flex-col justify-between max-w-md mx-auto shadow-2xl animate-fade-in text-white overflow-hidden select-none">
+        <div className="fixed inset-0 z-[100] bg-[var(--background)] flex flex-col justify-between max-w-md mx-auto shadow-2xl animate-fade-in text-white overflow-hidden select-none">
           
           {/* Header */}
           <div className="relative py-6 px-6 flex items-center justify-between z-20">
