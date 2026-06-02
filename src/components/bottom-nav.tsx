@@ -158,17 +158,20 @@ export default function BottomNav() {
   const activeIdx = 2;
   const cX = 200; // Center coordinate
 
-  // Generate dynamic path with a mathematically perfect concentric circular notch
+  // Generate dynamic path with a smooth concentric U-notch and rounded shoulders
   const getDynamicPath = (center: number) => {
-    const r = 42; // Radius of the notch circle
-    const cy = 16; // Y center of the notch circle aligned with the active circle's center
-    const dx = Math.sqrt(r * r - cy * cy); // X offset where circle intersects Y=0
-    const leftStart = center - dx;
-    const rightStart = center + dx;
+    const leftStart = center - 52;
+    const leftEnd = center - 38;
+    const rightEnd = center + 38;
+    const rightStart = center + 52;
+    const depth = 56; // concentric gap depth
 
     return `M0,0 
             L${leftStart},0 
-            A ${r} ${r} 0 0 1 ${rightStart} 0 
+            C${leftStart + 8},0 ${leftEnd},6 ${leftEnd + 2},16 
+            C${leftEnd + 6},26 ${center - 18},${depth} ${center},${depth} 
+            C${center + 18},${depth} ${rightEnd - 6},26 ${rightEnd - 2},16 
+            C${rightEnd},6 ${rightStart - 8},0 ${rightStart},0 
             L400,0 
             L400,52 
             C400,67.5 387.5,80 372,80 
@@ -276,6 +279,15 @@ export default function BottomNav() {
           })}
 
         </div>
+
+        {/* ==================== NOTCH BACKGROUND MASK CIRCLE ==================== */}
+        <div
+          className="absolute -top-[26px] w-[84px] h-[84px] rounded-full bg-[#121212] z-30 transition-all duration-300 pointer-events-none"
+          style={{
+            left: `${(cX / 400) * 100}%`,
+            transform: "translateX(-50%)",
+          }}
+        />
 
         {/* ==================== SLIDING ACTIVE CIRCLE WITH CONCENTRIC GAP ==================== */}
         <div
