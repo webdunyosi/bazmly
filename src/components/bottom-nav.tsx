@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X, CheckCircle, Aperture, AlertCircle, ChevronLeft } from "lucide-react";
+import { X, ChevronLeft, CheckCircle, Aperture, AlertCircle } from "lucide-react";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -27,14 +27,14 @@ export default function BottomNav() {
     const parentFrame = document.getElementById("global-bottom-nav")?.parentElement;
     if (parentFrame) {
       if (isHiddenRoute) {
-        parentFrame.classList.remove("pb-16");
+        parentFrame.classList.remove("pb-20");
       } else {
-        parentFrame.classList.add("pb-16");
+        parentFrame.classList.add("pb-20");
       }
     }
     return () => {
       if (parentFrame) {
-        parentFrame.classList.add("pb-16");
+        parentFrame.classList.add("pb-20");
       }
     };
   }, [pathname, isHiddenRoute, mounted]);
@@ -154,47 +154,48 @@ export default function BottomNav() {
     },
   ];
 
-  // The circle and SVG notch always stay frozen in the middle (index 2, "Skaner")
-  const activeIdx = 2;
-  const cX = 200; // Center coordinate
+  // Derive the active index dynamically based on routes and scanner state
+  const getActiveIndex = () => {
+    if (isScanning) return 2;
+    if (pathname === "/") return 0;
+    if (pathname.startsWith("/tickets") || pathname.startsWith("/payment-success")) return 1;
+    if (pathname.startsWith("/feed") || pathname.startsWith("/venue") || pathname.startsWith("/booking") || pathname.startsWith("/payment")) return 3;
+    if (pathname.startsWith("/login")) return 4;
+    return 0; // default to Asosiy
+  };
 
-  // Generate dynamic path with a smooth concentric U-notch and rounded shoulders
+  const activeIdx = getActiveIndex();
+
+  // State-driven Center coordinate for smooth sliding
+  const [cX, setCX] = useState(200);
+
+  useEffect(() => {
+    const indicesX = [40, 120, 200, 280, 360];
+    const targetX = indicesX[activeIdx] ?? 200;
+    setCX(targetX);
+  }, [activeIdx]);
+
+  // Perfectly symmetrical bell-curve notch path
   const getDynamicPath = (center: number) => {
-    const leftStart = center - 52;
-    const leftEnd = center - 38;
-    const rightEnd = center + 38;
-    const rightStart = center + 52;
-    const depth = 56; // concentric gap depth
-
-    return `M0,0 
-            L${leftStart},0 
-            C${leftStart + 8},0 ${leftEnd},6 ${leftEnd + 2},16 
-            C${leftEnd + 6},26 ${center - 18},${depth} ${center},${depth} 
-            C${center + 18},${depth} ${rightEnd - 6},26 ${rightEnd - 2},16 
-            C${rightEnd},6 ${rightStart - 8},0 ${rightStart},0 
-            L400,0 
-            L400,52 
-            C400,67.5 387.5,80 372,80 
-            L28,80 
-            C12.5,80 0,67.5 0,52 
+    return `M0,15 
+            L${center - 55},15 
+            C${center - 38},15 ${center - 34},33 ${center - 26},49 
+            C${center - 14},75 ${center + 14},75 ${center + 26},49 
+            C${center + 34},33 ${center + 38},15 ${center + 55},15 
+            L400,15 
+            L400,95 
+            L0,95 
             Z`;
   };
 
-  // Generate top border path only (X=0 to X=400 top edge with notch)
+  // Perfectly symmetrical top border path
   const getTopBorderPath = (center: number) => {
-    const leftStart = center - 52;
-    const leftEnd = center - 38;
-    const rightEnd = center + 38;
-    const rightStart = center + 52;
-    const depth = 56; // concentric gap depth
-
-    return `M0,0 
-            L${leftStart},0 
-            C${leftStart + 8},0 ${leftEnd},6 ${leftEnd + 2},16 
-            C${leftEnd + 6},26 ${center - 18},${depth} ${center},${depth} 
-            C${center + 18},${depth} ${rightEnd - 6},26 ${rightEnd - 2},16 
-            C${rightEnd},6 ${rightStart - 8},0 ${rightStart},0 
-            L400,0`;
+    return `M0,15 
+            L${center - 55},15 
+            C${center - 38},15 ${center - 34},33 ${center - 26},49 
+            C${center - 14},75 ${center + 14},75 ${center + 26},49 
+            C${center + 34},33 ${center + 38},15 ${center + 55},15 
+            L400,15`;
   };
 
   if (isHiddenRoute) {
@@ -203,73 +204,63 @@ export default function BottomNav() {
 
   return (
     <>
-      {/* ==================== Figmatic Dynamic Sliding Notch Bottom Bar ==================== */}
-      <div id="global-bottom-nav" className="fixed bottom-0 left-0 right-0 z-50 h-20 max-w-md mx-auto transition-all duration-300">
+      {/* Dynamic Sliding Bottom Bar Container */}
+      <div id="global-bottom-nav" className="fixed bottom-0 left-0 right-0 z-50 h-[85px] max-w-md mx-auto transition-all duration-300">
         
         {/* Dynamic Curved SVG Background with sliding notch */}
         <svg
-          className="absolute inset-0 w-full h-full text-[#373737] drop-shadow-[0_-8px_20px_rgba(0,0,0,0.45)] transition-colors duration-300 pointer-events-none"
-          viewBox="0 0 400 80"
+          className="absolute inset-0 w-full h-[95px] drop-shadow-[0_-4px_15px_rgba(0,0,0,0.5)] pointer-events-none"
+          viewBox="0 0 400 95"
           preserveAspectRatio="none"
-          fill="currentColor"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Main filled bar path */}
+          {/* Main dynamic path that morphs smoothly */}
           <path
             d={getDynamicPath(cX)}
-            className="transition-all duration-300"
+            fill="#2A2A2A"
+            className="transition-all duration-300 ease-out"
           />
-          {/* Top border stroke path */}
+          {/* Top dynamic border path that morphs smoothly */}
           <path
             d={getTopBorderPath(cX)}
             fill="none"
-            stroke="#505050"
-            strokeWidth="1.2"
-            className="transition-all duration-300"
+            stroke="#404040"
+            strokeWidth="1.5"
+            className="transition-all duration-300 ease-out"
           />
         </svg>
 
         {/* Content Navigation Actions Layer */}
-        <div className="absolute inset-0 flex justify-between items-center px-2 z-10">
+        <div className="absolute inset-0 flex justify-between items-center px-2 z-10 pt-4">
           
           {navItems.map((item, index) => {
-            const isActive = item.isActive;
-
-            if (index === 2) {
-              /* Spacer to keep flex layout intact for the center Skaner notch */
-              return (
-                <div
-                  key={index}
-                  className="relative flex-1 flex flex-col items-center justify-center h-full"
-                >
-                  <div className="w-10 h-10" />
-                </div>
-              );
-            }
+            const isActive = index === activeIdx;
 
             return (
               <div
                 key={index}
-                className="relative flex-1 flex flex-col items-center justify-center h-full"
+                className="relative flex-1 flex flex-col items-center justify-center h-full pt-1"
               >
                 {item.isAction ? (
                   <button
                     onClick={item.action}
-                    className="flex flex-col items-center gap-1.5 py-1 px-3 transition-all duration-200"
+                    className="flex flex-col items-center gap-1 py-1 px-3 transition-all duration-300 ease-out"
                   >
                     <img
                       src={item.icon}
                       alt={item.name}
-                      className={`h-5 w-5 object-contain transition-all duration-200 ${
+                      className={`h-5 w-5 object-contain transition-all duration-300 ease-out ${
                         isActive
-                          ? "brightness-0 invert opacity-100"
-                          : "brightness-75 opacity-40 hover:opacity-75"
+                          ? "opacity-0 scale-50 pointer-events-none translate-y-4"
+                          : "brightness-0 invert opacity-40 hover:opacity-75"
                       }`}
                     />
                     <span
-                      className={`text-[10px] font-bold transition-all duration-200 ${
+                      className={`text-[11px] font-medium transition-all duration-300 ease-out ${
                         isActive
-                          ? "text-white"
-                          : "text-zinc-500 hover:text-white/80"
+                          ? "opacity-0 scale-50 pointer-events-none translate-y-4"
+                          : "text-[#8E8E93] hover:text-white/80"
                       }`}
                     >
                       {item.name}
@@ -278,22 +269,22 @@ export default function BottomNav() {
                 ) : (
                   <Link
                     href={item.path}
-                    className="flex flex-col items-center gap-1.5 py-1 px-3 transition-all duration-200"
+                    className="flex flex-col items-center gap-1 py-1 px-3 transition-all duration-300 ease-out"
                   >
                     <img
                       src={item.icon}
                       alt={item.name}
-                      className={`h-5 w-5 object-contain transition-all duration-200 ${
+                      className={`h-5 w-5 object-contain transition-all duration-300 ease-out ${
                         isActive
-                          ? "brightness-0 invert opacity-100"
-                          : "brightness-75 opacity-40 hover:opacity-75"
+                          ? "opacity-0 scale-50 pointer-events-none translate-y-4"
+                          : "brightness-0 invert opacity-40 hover:opacity-75"
                       }`}
                     />
                     <span
-                      className={`text-[10px] font-bold transition-all duration-200 ${
+                      className={`text-[11px] font-medium transition-all duration-300 ease-out ${
                         isActive
-                          ? "text-white"
-                          : "text-zinc-500 hover:text-white/80"
+                          ? "opacity-0 scale-50 pointer-events-none translate-y-4"
+                          : "text-[#8E8E93] hover:text-white/80"
                       }`}
                     >
                       {item.name}
@@ -306,43 +297,43 @@ export default function BottomNav() {
 
         </div>
 
-
-        {/* ==================== SLIDING ACTIVE CIRCLE WITH CONCENTRIC GAP ==================== */}
+        {/* ==================== SMOOTH SLIDING ACTIVE CIRCLE (FAB) ==================== */}
+        {/* Floating position is centered with perfectly matching concentric space around it */}
         <div
-          className="absolute -top-[16px] w-[64px] h-[64px] rounded-full bg-[#2A2A2A] border border-white/10 flex items-center justify-center shadow-2xl z-50 transition-all duration-300"
+          className="absolute w-[60px] h-[60px] rounded-full bg-[#3A3A3C] border border-white/10 flex items-center justify-center shadow-2xl z-50 transition-all duration-300 ease-out cursor-pointer active:scale-95"
           style={{
+            top: "5px", // Mathematically centered: floats 10px above Y=15, and has 10px gap at the bottom Y=75
             left: `${(cX / 400) * 100}%`,
             transform: "translateX(-50%)",
           }}
+          onClick={navItems[activeIdx]?.isAction ? navItems[activeIdx].action : undefined}
         >
-          {navItems[activeIdx].isAction ? (
-            <button
-              onClick={navItems[activeIdx].action}
-              className="w-full h-full flex items-center justify-center"
-            >
-              <img
-                src={navItems[activeIdx].icon}
-                alt={navItems[activeIdx].name}
-                className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
-              />
-            </button>
-          ) : (
-            <Link
-              href={navItems[activeIdx].path}
-              className="w-full h-full flex items-center justify-center"
-            >
-              <img
-                src={navItems[activeIdx].icon}
-                alt={navItems[activeIdx].name}
-                className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
-              />
-            </Link>
+          {navItems[activeIdx] && (
+            navItems[activeIdx].isAction ? (
+              <button className="w-full h-full flex items-center justify-center">
+                <img
+                  src={navItems[activeIdx].icon}
+                  alt={navItems[activeIdx].name}
+                  className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
+                  key={activeIdx}
+                />
+              </button>
+            ) : (
+              <Link href={navItems[activeIdx].path} className="w-full h-full flex items-center justify-center">
+                <img
+                  src={navItems[activeIdx].icon}
+                  alt={navItems[activeIdx].name}
+                  className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
+                  key={activeIdx}
+                />
+              </Link>
+            )
           )}
         </div>
 
       </div>
 
-      {/* ==================== High-Fidelity QR Scanner Overlay ==================== */}
+      {/* Skaner Modal interfeysi saqlab qolindi */}
       {isScanning && (
         <div className="fixed inset-0 z-[100] bg-[#0F0F0F] flex flex-col justify-between max-w-md mx-auto shadow-2xl animate-fade-in text-white overflow-hidden select-none">
           
@@ -350,29 +341,23 @@ export default function BottomNav() {
           <div className="relative py-6 px-6 flex items-center justify-between z-20">
             {scanState === "my_qr" ? (
               <>
-                {/* Back Arrow */}
                 <button
                   onClick={() => setScanState("scanning")}
                   className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition-all flex items-center justify-center text-white cursor-pointer active:scale-90"
                 >
                   <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
                 </button>
-                {/* Centered Bazmly Logo text */}
                 <div className="absolute left-1/2 -translate-x-1/2 font-black text-lg tracking-tighter text-white select-none scale-x-95">
                   Bazmly
                 </div>
-                {/* Placeholder empty space to balance flex */}
                 <div className="w-9" />
               </>
             ) : (
               <>
-                {/* Centered title for scanning or permission screen */}
                 <div className="absolute left-1/2 -translate-x-1/2 font-semibold text-sm tracking-wide text-white/90">
                   Scanning QR code
                 </div>
-                {/* Space balance */}
                 <div className="w-9" />
-                {/* Close Scanner Button */}
                 <button
                   onClick={closeScanner}
                   className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition-all flex items-center justify-center text-white cursor-pointer active:scale-90"
