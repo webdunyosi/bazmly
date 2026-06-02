@@ -31,13 +31,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full bg-zinc-100 dark:bg-brand-dark text-foreground transition-colors duration-300 flex justify-center items-stretch">
+      <body className="min-h-full bg-[var(--background)] text-foreground transition-colors duration-300 flex justify-center items-stretch">
         <ThemeProvider>
           {/* Global App Load Splash Screen */}
           <SplashScreen />
           
           {/* Centered Mobile-only Device Mock Frame */}
-          <div className="w-full max-w-md min-h-screen bg-brand-light dark:bg-brand-dark flex flex-col shadow-2xl relative border-x border-brand-light-border dark:border-brand-dark-border pb-16">
+          <div className="w-full max-w-md min-h-screen bg-[var(--background)] flex flex-col shadow-2xl relative border-x border-brand-light-border dark:border-brand-dark-border pb-16">
             {children}
             <BottomNav />
           </div>
