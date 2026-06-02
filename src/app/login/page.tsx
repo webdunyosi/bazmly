@@ -14,9 +14,11 @@ import {
   ChevronLeft,
   MapPin,
   Bell,
+  Wallet,
   CreditCard,
   Clock,
   Languages,
+  Headset,
   HelpCircle,
   LogOut,
   ChevronRight,
@@ -326,7 +328,7 @@ export default function LoginPage() {
     },
     {
       label: "Mening kartalarim",
-      icon: CreditCard,
+      icon: Wallet,
       action: () => setShowCards(true),
     },
     {
@@ -344,7 +346,7 @@ export default function LoginPage() {
     },
     {
       label: "Yordam",
-      icon: HelpCircle,
+      icon: Headset,
       action: () => setShowHelp(true),
     },
     {
@@ -1272,31 +1274,38 @@ export default function LoginPage() {
                 </div>
 
                 {/* Options List Dashboard Container */}
-                <div className="w-full border border-white/10 rounded-2xl bg-black/80 shadow-2xl overflow-hidden p-2 space-y-1 glass-effect">
+                <div className="w-full border border-white/5 rounded-[32px] p-5.5 space-y-4 bg-transparent shadow-xl">
                   {menuItems.map((item, index) => {
                     const Icon = item.icon;
                     const isChiqish = item.label === "Chiqish";
+                    
+                    if (isChiqish) {
+                      return (
+                        <button
+                          key={index}
+                          onClick={item.action}
+                          className="w-full flex items-center justify-between py-4 px-5 rounded-[20px] bg-red-500/10 hover:bg-red-500/20 active:scale-[0.99] border border-red-500/20 transition-all duration-200 text-left cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3.5">
+                            <Icon className="w-5.5 h-5.5 text-red-500 shrink-0" />
+                            <span className="text-sm font-extrabold text-red-500 tracking-wide">{item.label}</span>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-red-500/70" />
+                        </button>
+                      );
+                    }
+                    
                     return (
                       <button
                         key={index}
                         onClick={item.action}
-                        className="w-full flex items-center justify-between p-3.5 rounded-xl text-white/90 hover:bg-white/5 active:bg-white/10 transition-all text-left group"
+                        className="w-full flex items-center justify-between py-4 px-5 rounded-[20px] bg-[#393939] hover:bg-[#484848] active:scale-[0.99] transition-all duration-200 text-left cursor-pointer shadow-sm"
                       >
-                        <div className="flex items-center gap-3">
-                          <span className={`p-2 rounded-xl border transition-colors ${
-                            isChiqish
-                              ? "bg-red-500/10 border-red-500/20 text-red-500"
-                              : "bg-white/5 border-white/5 text-white/80 group-hover:text-primary group-hover:border-primary/20"
-                          }`}>
-                            <Icon className="h-4.5 w-4.5" />
-                          </span>
-                          <span className={`text-sm font-bold tracking-wide ${
-                            isChiqish ? "text-red-500/90 font-black" : ""
-                          }`}>{item.label}</span>
+                        <div className="flex items-center gap-3.5">
+                          <Icon className="w-5.5 h-5.5 text-white/90 shrink-0" />
+                          <span className="text-sm font-semibold text-white tracking-wide">{item.label}</span>
                         </div>
-                        <ChevronRight className={`h-4 w-4 text-white/30 group-hover:translate-x-0.5 transition-transform ${
-                          isChiqish ? "text-red-500/40 group-hover:text-red-500" : ""
-                        }`} />
+                        <ChevronRight className="w-5 h-5 text-white/70" />
                       </button>
                     );
                   })}
