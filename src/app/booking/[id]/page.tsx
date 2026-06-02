@@ -586,7 +586,7 @@ function BookingContent({ id }: { id: string }) {
           </div>
 
           {/* Selected Card summary Dropdown */}
-          <div className="rounded-2xl border border-white/5 bg-[#1C1C1E] p-4.5 flex items-center justify-between">
+          <div className="rounded-2xl border border-white/5 bg-[#393939] p-4.5 flex items-center justify-between">
             <div className="flex items-center gap-3.5">
               {/* Logo icon */}
               <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center">
@@ -611,7 +611,7 @@ function BookingContent({ id }: { id: string }) {
               setInputPromo(promoCode);
               setShowPromoModal(true);
             }}
-            className="rounded-2xl border border-white/5 bg-[#1C1C1E] p-4.5 flex items-center justify-between cursor-pointer hover:border-zinc-800 transition-colors"
+            className="rounded-2xl border border-white/5 bg-[#393939] p-4.5 flex items-center justify-between cursor-pointer hover:border-zinc-800 transition-colors"
           >
             <div className="flex items-center gap-3.5">
               <div className="w-10 h-10 rounded-xl bg-[#FF6B00]/10 flex items-center justify-center text-[#FF6B00]">
@@ -633,7 +633,7 @@ function BookingContent({ id }: { id: string }) {
           </div>
 
           {/* Invoicing calculations Card */}
-          <div className="rounded-3xl border border-white/5 bg-[#1C1C1E] p-6 shadow-xl space-y-4.5 text-left">
+          <div className="rounded-3xl border border-white/5 bg-[#393939] p-6 shadow-xl space-y-4.5 text-left">
             <h3 className="font-extrabold text-sm text-zinc-400 uppercase tracking-widest border-b border-white/5 pb-3">Hisob varag'i</h3>
             
             <div className="space-y-3.5 text-xs">
@@ -693,7 +693,7 @@ function BookingContent({ id }: { id: string }) {
           {/* Main Ticket Container */}
           <div 
             onClick={() => setBookingStep("qr")}
-            className="rounded-[32px] border border-white/5 bg-[#1C1C1E] overflow-hidden shadow-2xl relative flex flex-col cursor-pointer hover:border-zinc-800 transition-colors"
+            className="rounded-[32px] border border-white/5 bg-[#393939] overflow-hidden shadow-2xl relative flex flex-col cursor-pointer hover:border-zinc-800 transition-colors"
           >
             {/* Top Image Segment */}
             <div className="relative h-44 w-full bg-zinc-900">
@@ -889,7 +889,7 @@ function BookingContent({ id }: { id: string }) {
           <div className="absolute inset-0 z-0" onClick={() => setShowAddCard(false)} />
           
           {/* Sheet Body */}
-          <div className="w-full bg-[#1C1C1E] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up">
+          <div className="w-full bg-[#393939] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up">
             
             {/* Drag Handle */}
             <div className="w-10 h-1.5 bg-white/10 rounded-full mx-auto" />
@@ -961,7 +961,7 @@ function BookingContent({ id }: { id: string }) {
             <h2 className="text-sm font-bold tracking-wide uppercase text-zinc-400">Tasdiqlash</h2>
             <button 
               onClick={() => setShowOTP(false)}
-              className="w-8 h-8 rounded-full bg-[#1C1C1E] border border-white/5 flex items-center justify-center text-zinc-400 hover:text-white"
+              className="w-8 h-8 rounded-full bg-[#393939] border border-white/5 flex items-center justify-center text-zinc-400 hover:text-white"
             >
               <X className="h-4 w-4" />
             </button>
@@ -986,7 +986,7 @@ function BookingContent({ id }: { id: string }) {
                     className={`w-10 h-12 rounded-xl border flex items-center justify-center font-mono font-black text-base transition-all ${
                       char 
                         ? "border-[#FF6B00] bg-[#FF6B00]/5 text-white scale-105" 
-                        : "border-zinc-800 bg-[#1C1C1E] text-zinc-700"
+                        : "border-zinc-800 bg-[#393939] text-zinc-700"
                     }`}
                   >
                     {char || "•"}
@@ -1026,7 +1026,7 @@ function BookingContent({ id }: { id: string }) {
           </div>
 
           {/* Custom Numeric Keypad at the bottom (Image 2 Screen 6) */}
-          <div className="bg-[#1C1C1E] border-t border-white/5 p-4 grid grid-cols-3 gap-2.5 select-none shrink-0">
+          <div className="bg-[#393939] border-t border-white/5 p-4 grid grid-cols-3 gap-2.5 select-none shrink-0">
             {["1", "2", "3", "4", "5", "6", "7", "8", "9", "+*#", "0", "back"].map((btn) => {
               const isBack = btn === "back";
               const isSymbol = btn === "+*#";
@@ -1059,7 +1059,7 @@ function BookingContent({ id }: { id: string }) {
           <div className="absolute inset-0 z-0" onClick={() => setShowPromoModal(false)} />
           
           {/* Sheet Body */}
-          <div className="w-full bg-[#1C1C1E] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up">
+          <div className="w-full bg-[#393939] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up">
             
             {/* Drag Handle */}
             <div className="w-10 h-1.5 bg-white/10 rounded-full mx-auto" />

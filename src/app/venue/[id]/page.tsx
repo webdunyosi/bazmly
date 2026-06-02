@@ -554,7 +554,7 @@ export default function VenueDetailPage({ params }: Props) {
               return (
                 <div
                   key={idx}
-                  className="bg-[#1C1C1E] border border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg relative text-left animate-fade-in"
+                  className="bg-[#393939] border border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg relative text-left animate-fade-in"
                 >
                   {/* Image Viewport */}
                   <div className="w-full aspect-[1.15/1] rounded-2xl overflow-hidden relative border border-white/5 bg-zinc-800">
@@ -624,7 +624,7 @@ export default function VenueDetailPage({ params }: Props) {
             {reviewsList.map((rev, idx) => (
               <div
                 key={idx}
-                className="bg-[#1C1C1E] border border-white/5 rounded-[22px] p-5 shadow-lg relative text-left animate-slide-up"
+                className="bg-[#393939] border border-white/5 rounded-[22px] p-5 shadow-lg relative text-left animate-slide-up"
                 style={{ animationDelay: `${idx * 50}ms` }}
               >
                 <div className="flex items-center justify-between mb-3.5">
@@ -678,7 +678,7 @@ export default function VenueDetailPage({ params }: Props) {
           <div className="absolute bottom-0 left-0 right-0 bg-[#121212] px-6 py-4 border-t border-white/5 pb-6">
             <form
               onSubmit={handleSendReview}
-              className="flex items-center bg-[#1C1C1E] rounded-full px-4 py-3.5 gap-3 border border-white/5 focus-within:border-[#FF6B00]/40 transition-all"
+              className="flex items-center bg-[#393939] rounded-full px-4 py-3.5 gap-3 border border-white/5 focus-within:border-[#FF6B00]/40 transition-all"
             >
               <input
                 type="text"
@@ -706,7 +706,7 @@ export default function VenueDetailPage({ params }: Props) {
         <div className="fixed inset-0 z-50 flex flex-col justify-end max-w-md mx-auto bg-black/60 backdrop-blur-sm transition-all duration-300">
           <div className="absolute inset-0 z-0" onClick={() => setShowPartySheet(false)} />
           
-          <div className="w-full bg-[#1C1C1E] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up select-none">
+          <div className="w-full bg-[#393939] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up select-none">
             
             <div className="w-10 h-1.5 bg-white/10 rounded-full mx-auto" />
             
@@ -828,7 +828,7 @@ export default function VenueDetailPage({ params }: Props) {
                 setShowLocationSearch(false);
                 setShowPartySheet(true); // go back to bottom sheet
               }}
-              className="p-2.5 rounded-xl bg-[#1C1C1E] border border-white/5 text-white/80 hover:text-white transition-all active:scale-90"
+              className="p-2.5 rounded-xl bg-[#393939] border border-white/5 text-white/80 hover:text-white transition-all active:scale-90"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>

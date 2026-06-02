@@ -208,7 +208,7 @@ export default function WelcomePage() {
             {/* Top Right Voucher Link Button */}
             <Link
               href="/tickets"
-              className="p-2.5 rounded-xl bg-[#1C1C1E] border border-white/5 text-white/80 hover:text-white transition-all active:scale-95 flex items-center justify-center"
+              className="p-2.5 rounded-xl bg-[#393939] border border-white/5 text-white/80 hover:text-white transition-all active:scale-95 flex items-center justify-center"
             >
               <Ticket className="h-5 w-5" />
             </Link>
@@ -273,7 +273,7 @@ export default function WelcomePage() {
 
               {/* Banner Card Carousel */}
               <div className="relative group">
-                <div className="w-full aspect-[2.1/1] rounded-[28px] overflow-hidden border border-white/5 shadow-2xl relative bg-[#1C1C1E]">
+                <div className="w-full aspect-[2.1/1] rounded-[28px] overflow-hidden border border-white/5 shadow-2xl relative bg-[#393939]">
                   {BANNERS.map((banner, index) => {
                     const isActive = currentSlide === index;
                     return (
@@ -320,7 +320,7 @@ export default function WelcomePage() {
               {/* Large Full-Width Restaurant Card */}
               <Link
                 href="/venue/3"
-                className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl hover:border-white/10 transition-all block text-left"
+                className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl hover:border-white/10 transition-all block text-left"
               >
                 {/* Visual Image Display */}
                 <div className="w-full h-44 rounded-2xl overflow-hidden relative border border-white/5">
@@ -382,7 +382,7 @@ export default function WelcomePage() {
               ].map((card) => (
                 <div
                   key={card.id}
-                  className="bg-[#1C1C1E] border border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg text-left relative"
+                  className="bg-[#393939] border border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg text-left relative"
                 >
                   {/* Image Viewport */}
                   <div className="w-full aspect-[1.1/1] rounded-2xl overflow-hidden relative border border-white/5 bg-zinc-800">
@@ -612,7 +612,7 @@ export default function WelcomePage() {
         <div className="fixed inset-0 z-50 flex flex-col justify-end max-w-md mx-auto bg-black/60 backdrop-blur-sm transition-all duration-300">
           <div className="absolute inset-0 z-0" onClick={() => setShowPartySheet(false)} />
           
-          <div className="w-full bg-[#1C1C1E] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up select-none">
+          <div className="w-full bg-[#393939] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up select-none">
             
             <div className="w-10 h-1.5 bg-white/10 rounded-full mx-auto" />
             
@@ -734,7 +734,7 @@ export default function WelcomePage() {
                 setShowLocationSearch(false);
                 setShowPartySheet(true); // go back to bottom sheet
               }}
-              className="p-2.5 rounded-xl bg-[#1C1C1E] border border-white/5 text-white/80 hover:text-white transition-all active:scale-90"
+              className="p-2.5 rounded-xl bg-[#393939] border border-white/5 text-white/80 hover:text-white transition-all active:scale-90"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>

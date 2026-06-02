@@ -424,7 +424,7 @@ export default function LoginPage() {
                         {[0, 1, 2, 3, 4, 5].map((idx) => (
                           <div
                             key={idx}
-                            className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold bg-[#1C1C1E] transition-all duration-200 ${
+                            className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold bg-[#393939] transition-all duration-200 ${
                               cardOtp[idx] ? "border-primary text-white scale-105" : "border-white/10 text-white/30"
                             }`}
                           >
@@ -532,7 +532,7 @@ export default function LoginPage() {
                     <div className="space-y-6">
                       {/* Card Number field with internal orange icon */}
                       <div className="space-y-2">
-                        <div className="relative flex items-center bg-[#1C1C1E] rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 focus-within:border-primary/50">
+                        <div className="relative flex items-center bg-[#393939] rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 focus-within:border-primary/50">
                           <span className="pl-4 text-primary shrink-0">
                             <CreditCard className="h-5 w-5" />
                           </span>
@@ -548,7 +548,7 @@ export default function LoginPage() {
 
                       {/* Expiry field */}
                       <div className="space-y-2">
-                        <div className="relative flex items-center bg-[#1C1C1E] rounded-2xl border border-white/5 overflow-hidden w-36 transition-all duration-300 focus-within:border-primary/50">
+                        <div className="relative flex items-center bg-[#393939] rounded-2xl border border-white/5 overflow-hidden w-36 transition-all duration-300 focus-within:border-primary/50">
                           <input
                             type="text"
                             value={newCardExpiry}
@@ -602,7 +602,7 @@ export default function LoginPage() {
                       <div
                         key={card.id}
                         onClick={() => setSelectedCardForDelete(card)}
-                        className="w-full border border-white/15 bg-[#1C1C1E] rounded-[24px] p-6 flex flex-col justify-between h-44 shadow-2xl relative overflow-hidden transition-all duration-300 hover:border-primary/55 cursor-pointer active:scale-98"
+                        className="w-full border border-white/15 bg-[#393939] rounded-[24px] p-6 flex flex-col justify-between h-44 shadow-2xl relative overflow-hidden transition-all duration-300 hover:border-primary/55 cursor-pointer active:scale-98"
                       >
                         <div className="flex justify-between items-start">
                           {card.type === "humo" ? (
@@ -630,7 +630,7 @@ export default function LoginPage() {
                     ))}
 
                     {/* Card 2: Empty Card with Add Button */}
-                    <div className="w-full border border-white/10 bg-[#1C1C1E]/20 rounded-[24px] p-6 flex flex-col justify-between h-44 transition-all duration-300 hover:bg-[#1C1C1E]/30">
+                    <div className="w-full border border-white/10 bg-[#393939]/20 rounded-[24px] p-6 flex flex-col justify-between h-44 transition-all duration-300 hover:bg-[#393939]/30">
                       <div className="flex justify-between items-start text-white/60">
                         <CreditCard className="h-7 w-7" />
                       </div>
@@ -656,7 +656,7 @@ export default function LoginPage() {
                     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
                       <div className="absolute inset-0" onClick={() => setSelectedCardForDelete(null)} />
                       
-                      <div className="w-full max-w-md bg-[#1C1C1E] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+                      <div className="w-full max-w-md bg-[#393939] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
                         {/* Notch indicator */}
                         <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
                         
@@ -732,7 +732,7 @@ export default function LoginPage() {
                           className={`w-full flex items-center justify-between p-5 rounded-[20px] transition-all duration-200 active:scale-98 text-left ${
                             isSelected
                               ? "bg-primary text-white shadow-lg shadow-primary/20"
-                              : "bg-[#1C1C1E] text-white hover:bg-zinc-800"
+                              : "bg-[#393939] text-white hover:bg-zinc-800"
                           }`}
                         >
                           <div className="flex items-center gap-4">
@@ -831,7 +831,7 @@ export default function LoginPage() {
                     <h3 className="text-base font-bold text-white tracking-wide">This Week</h3>
                     
                     {/* Read Card 1 (dark grey bg) */}
-                    <div className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                    <div className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
                       <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
                         <img
                           src="/logo-loading.png"
@@ -854,7 +854,7 @@ export default function LoginPage() {
                     </div>
 
                     {/* Read Card 2 (dark grey bg) */}
-                    <div className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                    <div className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
                       <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
                         <img
                           src="/logo-loading.png"
@@ -884,7 +884,7 @@ export default function LoginPage() {
                     <h3 className="text-base font-bold text-white tracking-wide">This Month</h3>
 
                     {/* Read Card 3 (dark grey bg, different date) */}
-                    <div className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                    <div className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
                       <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
                         <img
                           src="/logo-loading.png"
@@ -939,7 +939,7 @@ export default function LoginPage() {
                 ].map((item) => (
                   <div
                     key={item.id}
-                    className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl transition-all duration-300 hover:border-white/10"
+                    className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl transition-all duration-300 hover:border-white/10"
                   >
                     {/* Top Restaurant Detail */}
                     <div className="flex items-start gap-4">
@@ -1037,7 +1037,7 @@ export default function LoginPage() {
               {/* Scrollable Help Content */}
               <main className="flex-1 overflow-y-auto px-6 py-6 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
                 {/* Hero Card */}
-                <div className="w-full bg-gradient-to-br from-[#1C1C1E] to-[#252528] border border-white/5 rounded-3xl p-5 flex flex-col gap-3 shadow-xl">
+                <div className="w-full bg-gradient-to-br from-[#393939] to-[#252528] border border-white/5 rounded-3xl p-5 flex flex-col gap-3 shadow-xl">
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">
                     <HelpCircle className="h-6 w-6" />
                   </div>
@@ -1062,7 +1062,7 @@ export default function LoginPage() {
                     return (
                       <div
                         key={idx}
-                        className="w-full bg-[#1C1C1E] border border-white/5 rounded-2xl overflow-hidden transition-all duration-300 shadow-md"
+                        className="w-full bg-[#393939] border border-white/5 rounded-2xl overflow-hidden transition-all duration-300 shadow-md"
                       >
                         <button
                           type="button"
@@ -1156,7 +1156,7 @@ export default function LoginPage() {
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="Alisher Raimov"
-                      className="w-full px-4 py-3.5 rounded-xl border border-white/10 bg-[#1C1C1E] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors"
+                      className="w-full px-4 py-3.5 rounded-xl border border-white/10 bg-[#393939] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
 
@@ -1168,7 +1168,7 @@ export default function LoginPage() {
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
                       placeholder="+998 99 219 19 55"
-                      className="w-full px-4 py-3.5 rounded-xl border border-white/10 bg-[#1C1C1E] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors"
+                      className="w-full px-4 py-3.5 rounded-xl border border-white/10 bg-[#393939] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors"
                     />
                   </div>
 
@@ -1179,7 +1179,7 @@ export default function LoginPage() {
                       <select
                         value={editLocation}
                         onChange={(e) => setEditLocation(e.target.value)}
-                        className="w-full px-4 py-3.5 pr-10 rounded-xl border border-white/10 bg-[#1C1C1E] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors appearance-none cursor-pointer"
+                        className="w-full px-4 py-3.5 pr-10 rounded-xl border border-white/10 bg-[#393939] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors appearance-none cursor-pointer"
                       >
                         <option value="Tashkent, Tashkent city">Toshkent</option>
                         <option value="Samarkand, Samarkand region">Samarqand</option>
@@ -1200,7 +1200,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setActiveModal("delete_account")}
-                      className="w-full bg-[#1C1C1E] border border-white/10 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-[#252528] transition-colors text-left"
+                      className="w-full bg-[#393939] border border-white/10 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-[#252528] transition-colors text-left"
                     >
                       <div className="flex items-center gap-3">
                         <span className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center">
@@ -1502,7 +1502,7 @@ export default function LoginPage() {
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
               <div className="absolute inset-0" onClick={() => setActiveModal(null)} />
               
-              <div className="w-full max-w-md bg-[#1C1C1E] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+              <div className="w-full max-w-md bg-[#393939] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
                 {/* Notch indicator */}
                 <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
                 
@@ -1539,7 +1539,7 @@ export default function LoginPage() {
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
               <div className="absolute inset-0" onClick={() => setActiveModal(null)} />
               
-              <div className="w-full max-w-md bg-[#1C1C1E] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+              <div className="w-full max-w-md bg-[#393939] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
                 {/* Notch indicator */}
                 <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
                 

@@ -125,7 +125,7 @@ export default function FeedPage() {
                       setIsRegionDropdownOpen(!isRegionDropdownOpen);
                       setIsDistrictDropdownOpen(false);
                     }}
-                    className="w-full px-5 py-4 rounded-2xl border border-white/5 bg-[#1C1C1E] text-sm text-white font-semibold flex justify-between items-center outline-none transition-colors hover:border-white/10"
+                    className="w-full px-5 py-4 rounded-2xl border border-white/5 bg-[#393939] text-sm text-white font-semibold flex justify-between items-center outline-none transition-colors hover:border-white/10"
                   >
                     <span>{selectedRegion || "Belgilash"}</span>
                     <ChevronDown
@@ -137,7 +137,7 @@ export default function FeedPage() {
 
                   {/* Dropdown Menu */}
                   {isRegionDropdownOpen && (
-                    <div className="absolute left-0 right-0 mt-2 z-30 bg-[#1C1C1E] border border-white/5 rounded-2xl shadow-2xl overflow-hidden py-1 max-h-56 overflow-y-auto">
+                    <div className="absolute left-0 right-0 mt-2 z-30 bg-[#393939] border border-white/5 rounded-2xl shadow-2xl overflow-hidden py-1 max-h-56 overflow-y-auto">
                       {REGIONS.map((region) => (
                         <button
                           key={region}
@@ -168,7 +168,7 @@ export default function FeedPage() {
                       setIsDistrictDropdownOpen(!isDistrictDropdownOpen);
                       setIsRegionDropdownOpen(false);
                     }}
-                    className={`w-full px-5 py-4 rounded-2xl border border-white/5 bg-[#1C1C1E] text-sm text-white font-semibold flex justify-between items-center outline-none transition-colors ${
+                    className={`w-full px-5 py-4 rounded-2xl border border-white/5 bg-[#393939] text-sm text-white font-semibold flex justify-between items-center outline-none transition-colors ${
                       selectedRegion
                         ? "hover:border-white/10 cursor-pointer"
                         : "opacity-40 cursor-not-allowed"
@@ -184,7 +184,7 @@ export default function FeedPage() {
 
                   {/* Dropdown Menu */}
                   {isDistrictDropdownOpen && selectedRegion && (
-                    <div className="absolute left-0 right-0 mt-2 z-30 bg-[#1C1C1E] border border-white/5 rounded-2xl shadow-2xl overflow-hidden py-1 max-h-56 overflow-y-auto">
+                    <div className="absolute left-0 right-0 mt-2 z-30 bg-[#393939] border border-white/5 rounded-2xl shadow-2xl overflow-hidden py-1 max-h-56 overflow-y-auto">
                       {districts.map((district) => (
                         <button
                           key={district}
@@ -257,7 +257,7 @@ export default function FeedPage() {
             ].map((item) => (
               <div
                 key={item.id}
-                className="w-full bg-[#1C1C1E] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl transition-all duration-300 hover:border-white/10"
+                className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl transition-all duration-300 hover:border-white/10"
               >
                 {/* Top Restaurant Detail */}
                 <div className="flex items-start gap-4">

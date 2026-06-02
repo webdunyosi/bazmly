@@ -115,7 +115,7 @@ export default function VouchersPage() {
             <div
               key={voucher.id}
               onClick={() => setSelectedVoucher(voucher)}
-              className="group p-4 flex items-center justify-between gap-4 border border-[#2A2A2A]/40 bg-[#1C1C1E] hover:bg-[#252528] rounded-[22px] cursor-pointer transition-all duration-300 shadow-md transform active:scale-[0.98]"
+              className="group p-4 flex items-center justify-between gap-4 border border-[#2A2A2A]/40 bg-[#393939] hover:bg-[#252528] rounded-[22px] cursor-pointer transition-all duration-300 shadow-md transform active:scale-[0.98]"
             >
               {/* Logo section */}
               <div className="w-[50px] h-[50px] shrink-0 rounded-[14px] bg-[#FF5A00] flex flex-col items-center justify-center font-black text-white text-[10px] tracking-tighter leading-none shadow-[0_4px_12px_rgba(255,90,0,0.3)]">
@@ -167,7 +167,7 @@ export default function VouchersPage() {
 
       {/* ==================== Slide-Up Drawer / Bottom Sheet ==================== */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-[150] max-w-md mx-auto bg-[#1C1C1E] border-t border-[#2A2A2A]/40 rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl transition-transform duration-300 flex flex-col items-stretch transform ${
+        className={`fixed inset-x-0 bottom-0 z-[150] max-w-md mx-auto bg-[#393939] border-t border-[#2A2A2A]/40 rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl transition-transform duration-300 flex flex-col items-stretch transform ${
           selectedVoucher ? "translate-y-0" : "translate-y-full"
         }`}
       >

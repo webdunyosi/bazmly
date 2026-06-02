@@ -478,7 +478,7 @@ export default function BottomNav() {
           <div className="w-full px-6 pb-12 z-20 flex flex-col items-center">
             {scanState === "permission" && (
               /* State 2: Camera Permission bottom sheet drawer */
-              <div className="w-full bg-[#1C1C1E] border-t border-[#2A2A2A]/40 rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl flex flex-col items-stretch animate-scale-up absolute bottom-0 left-0 right-0">
+              <div className="w-full bg-[#393939] border-t border-[#2A2A2A]/40 rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl flex flex-col items-stretch animate-scale-up absolute bottom-0 left-0 right-0">
                 {/* Drag pill handle */}
                 <div className="w-9 h-1 bg-white/20 rounded-full mx-auto mb-6" />
                 
