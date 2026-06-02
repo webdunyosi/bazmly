@@ -158,23 +158,23 @@ export default function BottomNav() {
   const activeIdx = 2;
   const cX = 200; // Center coordinate
 
-  // Generate dynamic path with a concentric 40px depth U-notch
+  // Generate dynamic path with a mathematically perfect concentric circular notch
   const getDynamicPath = (center: number) => {
-    const leftStart = center - 46;
-    const leftEnd = center - 34;
-    const rightEnd = center + 34;
-    const rightStart = center + 46;
-    const depth = 40; // concentric 10px bottom gap
+    const r = 42; // Radius of the notch circle
+    const cy = 16; // Y center of the notch circle aligned with the active circle's center
+    const dx = Math.sqrt(r * r - cy * cy); // X offset where circle intersects Y=0
+    const leftStart = center - dx;
+    const rightStart = center + dx;
 
-    return `M0,28 C0,12.5 12.5,0 28,0 
+    return `M0,0 
             L${leftStart},0 
-            C${leftStart + 8},0 ${leftEnd},6 ${leftEnd + 2},16 
-            C${leftEnd + 6},26 ${center - 18},${depth} ${center},${depth} 
-            C${center + 18},${depth} ${rightEnd - 6},26 ${rightEnd - 2},16 
-            C${rightEnd},6 ${rightStart - 8},0 ${rightStart},0 
-            L372,0 
-            C387.5,0 400,12.5 400,28 
-            L400,80 L0,80 Z`;
+            A ${r} ${r} 0 0 1 ${rightStart} 0 
+            L400,0 
+            L400,52 
+            C400,67.5 387.5,80 372,80 
+            L28,80 
+            C12.5,80 0,67.5 0,52 
+            Z`;
   };
 
   if (isHiddenRoute) {
@@ -188,7 +188,7 @@ export default function BottomNav() {
         
         {/* Dynamic Curved SVG Background with sliding notch */}
         <svg
-          className="absolute inset-0 w-full h-full text-[#1C1C1E] dark:text-[#121212] drop-shadow-[0_-8px_20px_rgba(0,0,0,0.45)] transition-colors duration-300 pointer-events-none"
+          className="absolute inset-0 w-full h-full text-[#373737] drop-shadow-[0_-8px_20px_rgba(0,0,0,0.45)] transition-colors duration-300 pointer-events-none"
           viewBox="0 0 400 80"
           preserveAspectRatio="none"
           fill="currentColor"
@@ -279,7 +279,7 @@ export default function BottomNav() {
 
         {/* ==================== SLIDING ACTIVE CIRCLE WITH CONCENTRIC GAP ==================== */}
         <div
-          className="absolute -top-5 w-[50px] h-[50px] rounded-full bg-[#2A2A2A] border border-white/10 flex items-center justify-center shadow-2xl z-50 transition-all duration-300"
+          className="absolute -top-[16px] w-[64px] h-[64px] rounded-full bg-[#2A2A2A] border border-white/10 flex items-center justify-center shadow-2xl z-50 transition-all duration-300"
           style={{
             left: `${(cX / 400) * 100}%`,
             transform: "translateX(-50%)",
@@ -293,7 +293,7 @@ export default function BottomNav() {
               <img
                 src={navItems[activeIdx].icon}
                 alt={navItems[activeIdx].name}
-                className="h-5.5 w-5.5 object-contain brightness-0 invert animate-scale-up"
+                className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
               />
             </button>
           ) : (
@@ -304,7 +304,7 @@ export default function BottomNav() {
               <img
                 src={navItems[activeIdx].icon}
                 alt={navItems[activeIdx].name}
-                className="h-5.5 w-5.5 object-contain brightness-0 invert animate-scale-up"
+                className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
               />
             </Link>
           )}
