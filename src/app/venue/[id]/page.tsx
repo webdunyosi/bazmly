@@ -534,7 +534,7 @@ export default function VenueDetailPage({ params }: Props) {
           </div>
 
           {/* Search bar inside section */}
-          <div className="flex items-center bg-[#1C1C1E] border border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/50 transition-all duration-300">
+          <div className="flex items-center bg-[#393939] border border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/50 transition-all duration-300">
             <span className="pl-4 text-white/40">
               <Search className="h-5 w-5" />
             </span>
@@ -834,7 +834,7 @@ export default function VenueDetailPage({ params }: Props) {
             </button>
 
             {/* Search Input Field */}
-            <div className="flex-1 flex items-center bg-[#1C1C1E] border border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/40 transition-all px-4 py-3">
+            <div className="flex-1 flex items-center bg-[#393939] border border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/40 transition-all px-4 py-3">
               <Search className="h-4.5 w-4.5 text-zinc-500 shrink-0" />
               <input
                 type="text"

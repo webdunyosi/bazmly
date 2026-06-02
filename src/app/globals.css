@@ -3,7 +3,7 @@
 @theme {
   --color-primary: #FF6B00;
   --color-primary-hover: #E05E00;
-  --color-brand-dark: #0A0A0A;
+  --color-brand-dark: #2C2C2C;
   --color-brand-dark-surface: #121212;
   --color-brand-dark-card: #1E1E1E;
   --color-brand-dark-border: #2A2A2A;
@@ -20,7 +20,7 @@
 }
 
 .dark {
-  --background: #0A0A0A;
+  --background: #2C2C2C;
   --foreground: #F3F4F6;
 }
 
