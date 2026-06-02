@@ -154,16 +154,9 @@ export default function BottomNav() {
     },
   ];
 
-  // Calculate the active index to position the sliding notch dynamically
-  let activeIdx = 2; // Default center
-  const activeItemIndex = navItems.findIndex((item) => item.isActive);
-  if (activeItemIndex !== -1) {
-    activeIdx = activeItemIndex;
-  }
-
-  // Horizontal centers coordinates in 400px viewBox
-  const centers = [52, 120, 200, 280, 348];
-  const cX = centers[activeIdx];
+  // The circle and SVG notch always stay frozen in the middle (index 2, "Skaner")
+  const activeIdx = 2;
+  const cX = 200; // Center coordinate
 
   // Generate dynamic path with a concentric 40px depth U-notch
   const getDynamicPath = (center: number) => {
@@ -212,45 +205,71 @@ export default function BottomNav() {
           {navItems.map((item, index) => {
             const isActive = item.isActive;
 
+            if (index === 2) {
+              /* Spacer to keep flex layout intact for the center Skaner notch */
+              return (
+                <div
+                  key={index}
+                  className="relative flex-1 flex flex-col items-center justify-center h-full"
+                >
+                  <div className="w-10 h-10" />
+                </div>
+              );
+            }
+
             return (
               <div
                 key={index}
                 className="relative flex-1 flex flex-col items-center justify-center h-full"
               >
-                {isActive ? (
-                  /* Spacer to keep flex layout intact while active item is rendered absolutely below */
-                  <div className="w-10 h-10" />
+                {item.isAction ? (
+                  <button
+                    onClick={item.action}
+                    className="flex flex-col items-center gap-1.5 py-1 px-3 transition-all duration-200"
+                  >
+                    <img
+                      src={item.icon}
+                      alt={item.name}
+                      className={`h-5 w-5 object-contain transition-all duration-200 ${
+                        isActive
+                          ? "brightness-0 invert opacity-100"
+                          : "brightness-75 opacity-40 hover:opacity-75"
+                      }`}
+                    />
+                    <span
+                      className={`text-[10px] font-bold transition-all duration-200 ${
+                        isActive
+                          ? "text-white"
+                          : "text-zinc-500 hover:text-white/80"
+                      }`}
+                    >
+                      {item.name}
+                    </span>
+                  </button>
                 ) : (
-                  /* ==================== NORMAL FLAT INACTIVE STATE ==================== */
-                  item.isAction ? (
-                    <button
-                      onClick={item.action}
-                      className="flex flex-col items-center gap-1.5 py-1 px-3 transition-all duration-200"
+                  <Link
+                    href={item.path}
+                    className="flex flex-col items-center gap-1.5 py-1 px-3 transition-all duration-200"
+                  >
+                    <img
+                      src={item.icon}
+                      alt={item.name}
+                      className={`h-5 w-5 object-contain transition-all duration-200 ${
+                        isActive
+                          ? "brightness-0 invert opacity-100"
+                          : "brightness-75 opacity-40 hover:opacity-75"
+                      }`}
+                    />
+                    <span
+                      className={`text-[10px] font-bold transition-all duration-200 ${
+                        isActive
+                          ? "text-white"
+                          : "text-zinc-500 hover:text-white/80"
+                      }`}
                     >
-                      <img
-                        src={item.icon}
-                        alt={item.name}
-                        className="h-5 w-5 object-contain brightness-75 opacity-40 hover:opacity-75 transition-opacity"
-                      />
-                      <span className="text-[10px] font-bold text-zinc-500 hover:text-white/80">
-                        {item.name}
-                      </span>
-                    </button>
-                  ) : (
-                    <Link
-                      href={item.path}
-                      className="flex flex-col items-center gap-1.5 py-1 px-3 transition-all duration-200"
-                    >
-                      <img
-                        src={item.icon}
-                        alt={item.name}
-                        className="h-5 w-5 object-contain brightness-75 opacity-40 hover:opacity-75 transition-opacity"
-                      />
-                      <span className="text-[10px] font-bold text-zinc-500 hover:text-white/80">
-                        {item.name}
-                      </span>
-                    </Link>
-                  )
+                      {item.name}
+                    </span>
+                  </Link>
                 )}
               </div>
             );
