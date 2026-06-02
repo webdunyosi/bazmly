@@ -180,6 +180,23 @@ export default function BottomNav() {
             Z`;
   };
 
+  // Generate top border path only (X=0 to X=400 top edge with notch)
+  const getTopBorderPath = (center: number) => {
+    const leftStart = center - 52;
+    const leftEnd = center - 38;
+    const rightEnd = center + 38;
+    const rightStart = center + 52;
+    const depth = 56; // concentric gap depth
+
+    return `M0,0 
+            L${leftStart},0 
+            C${leftStart + 8},0 ${leftEnd},6 ${leftEnd + 2},16 
+            C${leftEnd + 6},26 ${center - 18},${depth} ${center},${depth} 
+            C${center + 18},${depth} ${rightEnd - 6},26 ${rightEnd - 2},16 
+            C${rightEnd},6 ${rightStart - 8},0 ${rightStart},0 
+            L400,0`;
+  };
+
   if (isHiddenRoute) {
     return <div id="global-bottom-nav" className="hidden" />;
   }
@@ -196,8 +213,17 @@ export default function BottomNav() {
           preserveAspectRatio="none"
           fill="currentColor"
         >
+          {/* Main filled bar path */}
           <path
             d={getDynamicPath(cX)}
+            className="transition-all duration-300"
+          />
+          {/* Top border stroke path */}
+          <path
+            d={getTopBorderPath(cX)}
+            fill="none"
+            stroke="#505050"
+            strokeWidth="1.2"
             className="transition-all duration-300"
           />
         </svg>
@@ -280,14 +306,6 @@ export default function BottomNav() {
 
         </div>
 
-        {/* ==================== NOTCH BACKGROUND MASK CIRCLE ==================== */}
-        <div
-          className="absolute -top-[26px] w-[84px] h-[84px] rounded-full bg-[#121212] z-30 transition-all duration-300 pointer-events-none"
-          style={{
-            left: `${(cX / 400) * 100}%`,
-            transform: "translateX(-50%)",
-          }}
-        />
 
         {/* ==================== SLIDING ACTIVE CIRCLE WITH CONCENTRIC GAP ==================== */}
         <div
