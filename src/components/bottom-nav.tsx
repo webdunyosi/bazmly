@@ -219,7 +219,7 @@ export default function BottomNav() {
           {/* Main dynamic path that morphs smoothly */}
           <path
             d={getDynamicPath(cX)}
-            fill="#2A2A2A"
+            fill="#333333"
             className="transition-all duration-300 ease-out"
           />
           {/* Top dynamic border path that morphs smoothly */}

@@ -31,7 +31,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full bg-zinc-100 dark:bg-zinc-950 text-foreground transition-colors duration-300 flex justify-center items-stretch">
+      <body className="min-h-full bg-zinc-100 dark:bg-brand-dark text-foreground transition-colors duration-300 flex justify-center items-stretch">
         <ThemeProvider>
           {/* Global App Load Splash Screen */}
           <SplashScreen />

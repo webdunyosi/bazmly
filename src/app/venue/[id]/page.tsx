@@ -461,7 +461,7 @@ export default function VenueDetailPage({ params }: Props) {
       </div>
 
       {/* Main Details Body */}
-      <main className="flex-1 px-6 py-6 pb-28 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+      <main className="flex-1 px-6 py-6 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
         
         {/* Info detail block */}
         <div className="space-y-4">
@@ -620,7 +620,7 @@ export default function VenueDetailPage({ params }: Props) {
           </div>
 
           {/* Review Cards list container */}
-          <div className="flex-1 overflow-y-auto px-6 py-6 pb-28 flex flex-col gap-4">
+          <div className="flex-1 overflow-y-auto px-6 py-6 pb-8 flex flex-col gap-4">
             {reviewsList.map((rev, idx) => (
               <div
                 key={idx}

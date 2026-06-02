@@ -215,7 +215,7 @@ export default function WelcomePage() {
           </div>
 
           {/* Main Scrollable Area */}
-          <main className="flex-1 overflow-y-auto px-6 py-6 pb-28 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+          <main className="flex-1 overflow-y-auto px-6 py-6 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
             
             {/* Search Input and Filter Button */}
             <div className="flex items-center gap-3">

@@ -96,7 +96,7 @@ export default function VouchersPage() {
   };
 
   return (
-    <div className={`absolute inset-0 pb-24 overflow-y-auto bg-[var(--background)] flex flex-col font-sans select-none transition-all duration-300 ${selectedVoucher ? "z-[80]" : "z-40"}`}>
+    <div className={`absolute inset-0 pb-6 overflow-y-auto bg-[var(--background)] flex flex-col font-sans select-none transition-all duration-300 ${selectedVoucher ? "z-[80]" : "z-40"}`}>
       
       {/* ==================== Header ==================== */}
       <div className="py-4 text-center pt-6">
