@@ -175,26 +175,27 @@ export default function BottomNav() {
     setCX(targetX);
   }, [activeIdx]);
 
-  // Perfectly symmetrical bell-curve notch path
+  // Silliq tushuvchi (bell-curve) oyiq path formula driven by active index cX
+  // Increased gap width (58) and depth (79) to make the space around the button perfectly spacious
   const getDynamicPath = (center: number) => {
     return `M0,15 
-            L${center - 55},15 
-            C${center - 38},15 ${center - 34},33 ${center - 26},49 
-            C${center - 14},75 ${center + 14},75 ${center + 26},49 
-            C${center + 34},33 ${center + 38},15 ${center + 55},15 
+            L${center - 58},15 
+            C${center - 40},15 ${center - 36},33 ${center - 28},49 
+            C${center - 15},79 ${center + 15},79 ${center + 28},49 
+            C${center + 36},33 ${center + 40},15 ${center + 58},15 
             L400,15 
             L400,95 
             L0,95 
             Z`;
   };
 
-  // Perfectly symmetrical top border path
+  // Perfectly symmetrical top border path with slightly wider/deeper spacing
   const getTopBorderPath = (center: number) => {
     return `M0,15 
-            L${center - 55},15 
-            C${center - 38},15 ${center - 34},33 ${center - 26},49 
-            C${center - 14},75 ${center + 14},75 ${center + 26},49 
-            C${center + 34},33 ${center + 38},15 ${center + 55},15 
+            L${center - 58},15 
+            C${center - 40},15 ${center - 36},33 ${center - 28},49 
+            C${center - 15},79 ${center + 15},79 ${center + 28},49 
+            C${center + 36},33 ${center + 40},15 ${center + 58},15 
             L400,15`;
   };
 
@@ -302,7 +303,7 @@ export default function BottomNav() {
         <div
           className="absolute w-[60px] h-[60px] rounded-full bg-[#3A3A3C] border border-white/10 flex items-center justify-center shadow-2xl z-50 transition-all duration-300 ease-out cursor-pointer active:scale-95"
           style={{
-            top: "5px", // Mathematically centered: floats 10px above Y=15, and has 10px gap at the bottom Y=75
+            top: "5px", // Mathematically centered: floats 10px above Y=15, and has 14px gap at the bottom Y=79
             left: `${(cX / 400) * 100}%`,
             transform: "translateX(-50%)",
           }}
