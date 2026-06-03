@@ -16,8 +16,11 @@ import {
   CheckCircle,
   X,
   ChevronDown,
+  Sun,
+  Moon,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
+import { useTheme } from "@/components/theme-provider";
 
 export default function WelcomePage() {
   const [mounted, setMounted] = useState(false);
@@ -26,6 +29,7 @@ export default function WelcomePage() {
   const [activeTab, setActiveTab] = useState("Umumiy");
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showBookingSuccessToast, setShowBookingSuccessToast] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   // Interactive party/time picker state (2-rasm)
   const [showPartySheet, setShowPartySheet] = useState(false);
@@ -195,23 +199,35 @@ export default function WelcomePage() {
   const horizontalTabs = ["Umumiy", "Restoranlar", "To'yxonalar", "Katering", "Bezaklar"];
 
   return (
-    <div className="flex flex-col flex-1 bg-[var(--background)] text-white transition-colors duration-300 relative">
+    <div className="flex flex-col flex-1 bg-[var(--background)] text-foreground transition-colors duration-300 relative">
       {isRegistered ? (
         /* ==================== HIGH-FIDELITY REGISTERED ASOSIY (HOME) VIEW ==================== */
         <div className="flex flex-col flex-1 min-h-screen bg-[var(--background)]">
           {/* Header Row */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
-            <h1 className="text-xl font-bold text-white tracking-wide">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-brand-light-border dark:border-brand-dark-border">
+            <h1 className="text-xl font-bold text-foreground dark:text-white tracking-wide">
               Hayrli kun! {fullName}
             </h1>
             
-            {/* Top Right Voucher Link Button */}
-            <Link
-              href="/tickets"
-              className="p-2.5 rounded-xl bg-[#393939] border border-white/5 text-white/80 hover:text-white transition-all active:scale-95 flex items-center justify-center"
-            >
-              <Ticket className="h-5 w-5" />
-            </Link>
+            <div className="flex items-center gap-2">
+              {/* Theme Toggle Button */}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="p-2.5 rounded-xl bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 text-foreground/80 dark:text-white/80 hover:text-primary transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-sm"
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? <Sun className="h-5 w-5 text-orange-400" /> : <Moon className="h-5 w-5 text-indigo-600" />}
+              </button>
+
+              {/* Top Right Voucher Link Button */}
+              <Link
+                href="/tickets"
+                className="p-2.5 rounded-xl bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 text-foreground/80 dark:text-white/80 hover:text-white transition-all active:scale-95 flex items-center justify-center"
+              >
+                <Ticket className="h-5 w-5" />
+              </Link>
+            </div>
           </div>
 
           {/* Main Scrollable Area */}
@@ -220,14 +236,14 @@ export default function WelcomePage() {
             {/* Search Input and Filter Button */}
             <div className="flex items-center gap-3">
               {/* Search Field */}
-              <div className="flex-1 relative flex items-center bg-[#393939] border border-white/5 rounded-2xl overflow-hidden focus-within:border-primary/50 transition-all duration-300">
-                <span className="pl-4 text-white/40">
+              <div className="flex-1 relative flex items-center bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-2xl overflow-hidden focus-within:border-primary/50 transition-all duration-300">
+                <span className="pl-4 text-foreground/40 dark:text-white/40">
                   <Search className="h-5 w-5" />
                 </span>
                 <input
                   type="text"
                   placeholder="Qidirish"
-                  className="w-full pl-3 pr-4 py-4 bg-transparent text-sm text-white font-medium outline-none placeholder:text-white/30"
+                  className="w-full pl-3 pr-4 py-4 bg-transparent text-sm text-foreground dark:text-white font-medium outline-none placeholder:text-foreground/30 dark:placeholder:text-white/30"
                 />
               </div>
 
@@ -253,7 +269,7 @@ export default function WelcomePage() {
                     className={`px-5 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
                       isActive
                         ? "bg-primary text-white border-primary shadow-lg shadow-primary/10"
-                        : "bg-[#393939] border-white/5 text-white/60 hover:text-white/85"
+                        : "bg-brand-light-card dark:bg-[#393939] border-brand-light-border dark:border-white/5 text-foreground/60 dark:text-white/60 hover:text-foreground/85 dark:hover:text-white/85"
                     }`}
                   >
                     {tab}
@@ -265,15 +281,15 @@ export default function WelcomePage() {
             {/* Section: Eng yaxshi takliflar */}
             <div className="space-y-4">
               <div className="flex justify-between items-center pr-1">
-                <h2 className="text-lg font-bold text-white tracking-wide">Eng yaxshi takliflar</h2>
-                <Link href="/tickets" className="text-xs text-white/40 font-semibold hover:text-white/70 transition-colors">
+                <h2 className="text-lg font-bold text-foreground dark:text-white tracking-wide">Eng yaxshi takliflar</h2>
+                <Link href="/tickets" className="text-xs text-foreground/40 dark:text-white/40 font-semibold hover:text-foreground/70 dark:hover:text-white/70 transition-colors">
                   Barchasini ko'rish
                 </Link>
               </div>
 
               {/* Banner Card Carousel */}
               <div className="relative group">
-                <div className="w-full aspect-[2.1/1] rounded-[28px] overflow-hidden border border-white/5 shadow-2xl relative bg-[#393939]">
+                <div className="w-full aspect-[2.1/1] rounded-[28px] overflow-hidden border border-brand-light-border dark:border-white/5 shadow-2xl relative bg-brand-light-card dark:bg-[#393939]">
                   {BANNERS.map((banner, index) => {
                     const isActive = currentSlide === index;
                     return (
@@ -311,8 +327,8 @@ export default function WelcomePage() {
             {/* Section: Top Restoranlar */}
             <div className="space-y-4">
               <div className="flex justify-between items-center pr-1">
-                <h2 className="text-lg font-bold text-white tracking-wide">Top Restoranlar</h2>
-                <Link href="/feed" className="text-xs text-white/40 font-semibold hover:text-white/70 transition-colors">
+                <h2 className="text-lg font-bold text-foreground dark:text-white tracking-wide">Top Restoranlar</h2>
+                <Link href="/feed" className="text-xs text-foreground/40 dark:text-white/40 font-semibold hover:text-foreground/70 dark:hover:text-white/70 transition-colors">
                   Barchasini ko'rish
                 </Link>
               </div>
@@ -320,10 +336,10 @@ export default function WelcomePage() {
               {/* Large Full-Width Restaurant Card */}
               <Link
                 href="/venue/3"
-                className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl hover:border-white/10 transition-all block text-left"
+                className="w-full bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl hover:border-brand-light-border/80 dark:hover:border-white/10 transition-all block text-left"
               >
                 {/* Visual Image Display */}
-                <div className="w-full h-44 rounded-2xl overflow-hidden relative border border-white/5">
+                <div className="w-full h-44 rounded-2xl overflow-hidden relative border border-brand-light-border dark:border-white/5">
                   <img
                     src="/images/home/top.png"
                     alt="Rest One"
@@ -335,7 +351,7 @@ export default function WelcomePage() {
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-white tracking-wide">Rest One</h3>
+                      <h3 className="text-base font-bold text-foreground dark:text-white tracking-wide">Rest One</h3>
                       <div className="flex items-center gap-1.5 text-xs text-[#10B981] font-bold pt-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
                         <span>Ochiq</span>
@@ -343,7 +359,7 @@ export default function WelcomePage() {
                     </div>
 
                     {/* Star Rating */}
-                    <div className="flex items-center gap-1 text-xs font-bold text-[#FFB800] bg-white/5 border border-white/5 px-2.5 py-1 rounded-lg">
+                    <div className="flex items-center gap-1 text-xs font-bold text-[#FFB800] bg-foreground/5 dark:bg-white/5 border border-foreground/5 dark:border-white/5 px-2.5 py-1 rounded-lg">
                       <Star className="h-3.5 w-3.5 fill-[#FFB800] text-[#FFB800]" />
                       <span>4.8 (356 ta sharh)</span>
                     </div>
@@ -351,8 +367,8 @@ export default function WelcomePage() {
 
                   {/* Metadata Row */}
                   <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-1.5 text-xs text-white/60 font-semibold">
-                      <Compass className="h-4 w-4 text-white/40" />
+                    <div className="flex items-center gap-1.5 text-xs text-foreground/60 dark:text-white/60 font-semibold">
+                      <Compass className="h-4 w-4 text-foreground/40 dark:text-white/40" />
                       <span>1 km uzoqda</span>
                     </div>
 
@@ -364,8 +380,8 @@ export default function WelcomePage() {
                   </div>
 
                   {/* Address */}
-                  <div className="flex items-center gap-1.5 text-xs text-white/50 font-semibold truncate pt-0.5">
-                    <MapPin className="h-4 w-4 text-white/30 shrink-0" />
+                  <div className="flex items-center gap-1.5 text-xs text-foreground/50 dark:text-white/50 font-semibold truncate pt-0.5">
+                    <MapPin className="h-4 w-4 text-foreground/30 dark:text-white/30 shrink-0" />
                     <span className="truncate">O'zbekiston ko'chasi 27 - uy</span>
                   </div>
                 </div>
@@ -382,10 +398,10 @@ export default function WelcomePage() {
               ].map((card) => (
                 <div
                   key={card.id}
-                  className="bg-[#393939] border border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg text-left relative"
+                  className="bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg text-left relative"
                 >
                   {/* Image Viewport */}
-                  <div className="w-full aspect-[1.1/1] rounded-2xl overflow-hidden relative border border-white/5 bg-zinc-800">
+                  <div className="w-full aspect-[1.1/1] rounded-2xl overflow-hidden relative border border-brand-light-border dark:border-white/5 bg-zinc-800">
                     <img
                       src={card.img}
                       alt={card.name}
@@ -396,7 +412,7 @@ export default function WelcomePage() {
                   {/* Info details */}
                   <div className="space-y-2 pr-0.5">
                     <div className="flex items-center justify-between gap-1">
-                      <h4 className="text-xs font-bold text-white tracking-wide truncate">{card.name}</h4>
+                      <h4 className="text-xs font-bold text-foreground dark:text-white tracking-wide truncate">{card.name}</h4>
                       <div className="flex items-center gap-0.5 text-[10px] font-bold text-[#FFB800] shrink-0">
                         <Star className="h-3 w-3 fill-[#FFB800] text-[#FFB800]" />
                         <span>{card.rating}</span>
@@ -404,26 +420,26 @@ export default function WelcomePage() {
                     </div>
 
                     {/* Distance & Status info */}
-                    <div className="flex items-center gap-1 text-[10px] text-white/50 font-bold leading-none">
-                      <Compass className="h-3 w-3 text-white/30 shrink-0" />
+                    <div className="flex items-center gap-1 text-[10px] text-foreground/50 dark:text-white/50 font-bold leading-none">
+                      <Compass className="h-3 w-3 text-foreground/30 dark:text-white/30 shrink-0" />
                       <span>2 km</span>
-                      <span className="text-white/20">|</span>
+                      <span className="text-foreground/20 dark:text-white/20">|</span>
                       <span className="text-[#10B981]">Ochiq</span>
                     </div>
 
                     {/* Address */}
-                    <div className="flex items-center gap-1 text-[10px] text-white/40 font-semibold truncate leading-none">
-                      <MapPin className="h-3 w-3 text-white/20 shrink-0" />
+                    <div className="flex items-center gap-1 text-[10px] text-foreground/40 dark:text-white/40 font-semibold truncate leading-none">
+                      <MapPin className="h-3 w-3 text-foreground/20 dark:text-white/20 shrink-0" />
                       <span className="truncate">Umid qo'rg'...</span>
                     </div>
 
                     {/* View Button */}
                     <Link
                       href={`/venue/${card.id}`}
-                      className="w-full py-2 bg-white hover:bg-zinc-100 text-zinc-950 text-[10px] font-bold rounded-full flex items-center justify-center gap-1 active:scale-95 transition-all shadow-md mt-1"
+                      className="w-full py-2 bg-foreground dark:bg-white hover:bg-foreground/90 dark:hover:bg-zinc-100 text-background dark:text-zinc-950 text-[10px] font-bold rounded-full flex items-center justify-center gap-1 active:scale-95 transition-all shadow-md mt-1"
                     >
                       <span>Ko'rish</span>
-                      <ArrowRight className="h-3 w-3 text-zinc-950 stroke-[3]" />
+                      <ArrowRight className="h-3 w-3 text-background dark:text-zinc-950 stroke-[3]" />
                     </Link>
                   </div>
                 </div>
@@ -434,7 +450,19 @@ export default function WelcomePage() {
         </div>
       ) : (
         /* ==================== ORIGINAL WELCOME ONBOARDING VIEW ==================== */
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 relative">
+          {/* Floating Theme Toggle Button for Onboarding screen */}
+          <div className="absolute top-5 right-5 z-50">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2.5 rounded-xl bg-white/10 dark:bg-black/20 border border-white/20 backdrop-blur-md text-white hover:bg-white/20 transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-lg"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="h-5 w-5 text-orange-400 animate-scale-up" /> : <Moon className="h-5 w-5 text-white animate-scale-up" />}
+            </button>
+          </div>
+
           <Navbar />
 
           <main className="flex-1">
@@ -612,22 +640,22 @@ export default function WelcomePage() {
         <div className="fixed inset-0 z-50 flex flex-col justify-end max-w-md mx-auto bg-black/60 backdrop-blur-sm transition-all duration-300">
           <div className="absolute inset-0 z-0" onClick={() => setShowPartySheet(false)} />
           
-          <div className="w-full bg-[#393939] border-t border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up select-none">
+          <div className="w-full bg-brand-light-card dark:bg-[#393939] border-t border-brand-light-border dark:border-white/5 rounded-t-[36px] px-6 pb-9 pt-4 shadow-2xl relative z-10 flex flex-col gap-6 animate-slide-up select-none">
             
-            <div className="w-10 h-1.5 bg-white/10 rounded-full mx-auto" />
+            <div className="w-10 h-1.5 bg-foreground/10 dark:bg-white/10 rounded-full mx-auto" />
             
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Partiya sozlamalari</span>
+              <span className="text-[10px] font-bold text-foreground/50 dark:text-zinc-500 uppercase tracking-widest">Partiya sozlamalari</span>
               <button 
                 onClick={() => setShowPartySheet(false)}
-                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 hover:text-white"
+                className="w-8 h-8 rounded-full bg-foreground/5 dark:bg-white/5 flex items-center justify-center text-foreground/60 dark:text-zinc-400 hover:text-[#FF6B00] dark:hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="space-y-3.5 text-left">
-              <h3 className="font-extrabold text-sm text-white">Partiya soni</h3>
+              <h3 className="font-extrabold text-sm text-foreground dark:text-white">Partiya soni</h3>
               <div className="flex justify-between items-center gap-3">
                 {[1, 2, 3, 4, 5].map((num) => {
                   const isSelected = partySize === num;
@@ -635,10 +663,10 @@ export default function WelcomePage() {
                     <button
                       key={num}
                       onClick={() => setPartySize(num)}
-                      className={`flex-1 py-3 text-base font-extrabold rounded-2xl transition-all ${
+                      className={`flex-1 py-3 text-base font-extrabold rounded-2xl transition-all cursor-pointer ${
                         isSelected 
                           ? "border border-[#FF6B00] bg-[#FF6B00]/5 text-[#FF6B00] scale-105" 
-                          : "border border-white/5 bg-zinc-900 text-white"
+                          : "border border-brand-light-border dark:border-white/5 bg-foreground/5 dark:bg-zinc-900 text-foreground dark:text-white"
                       }`}
                     >
                       {num}
@@ -649,11 +677,11 @@ export default function WelcomePage() {
             </div>
 
             <div className="space-y-3.5 text-left">
-              <h3 className="font-extrabold text-sm text-white">Kun va vaqt</h3>
+              <h3 className="font-extrabold text-sm text-foreground dark:text-white">Kun va vaqt</h3>
               
-              <div className="grid grid-cols-2 gap-6 py-4 bg-zinc-900/60 rounded-2xl relative border border-white/5 overflow-hidden h-[120px] select-none">
+              <div className="grid grid-cols-2 gap-6 py-4 bg-foreground/5 dark:bg-zinc-900/60 rounded-2xl relative border border-brand-light-border dark:border-white/5 overflow-hidden h-[120px] select-none">
                 {/* Center Highlight Bar overlay */}
-                <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 h-10 border-y border-zinc-800 pointer-events-none z-20" />
+                <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 h-10 border-y border-brand-light-border/40 dark:border-zinc-800 pointer-events-none z-20" />
                 
                 {/* Left Column (Days) */}
                 <div 
@@ -673,7 +701,7 @@ export default function WelcomePage() {
                         key={day}
                         style={{ height: "40px", lineHeight: "40px" }}
                         className={`snap-center shrink-0 flex items-center justify-center text-sm font-black transition-all duration-200 ${
-                          isActive ? "text-white scale-110" : "text-zinc-600"
+                          isActive ? "text-foreground dark:text-white scale-110" : "text-foreground/40 dark:text-zinc-600"
                         }`}
                       >
                         {day}
@@ -700,7 +728,7 @@ export default function WelcomePage() {
                         key={time}
                         style={{ height: "40px", lineHeight: "40px" }}
                         className={`snap-center shrink-0 flex items-center justify-center text-sm font-black transition-all duration-200 ${
-                          isActive ? "text-white scale-110" : "text-zinc-600"
+                          isActive ? "text-foreground dark:text-white scale-110" : "text-foreground/40 dark:text-zinc-600"
                         }`}
                       >
                         {time}
@@ -726,26 +754,26 @@ export default function WelcomePage() {
 
       {/* Location Search Overlay (2-rasm) */}
       {showLocationSearch && (
-        <div className="fixed inset-0 z-50 bg-[var(--background)] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-white select-none">
+        <div className="fixed inset-0 z-50 bg-brand-light-surface dark:bg-[var(--background)] flex flex-col max-w-md mx-auto shadow-2xl animate-fade-in text-foreground dark:text-white select-none">
           {/* Header Row with Search Input */}
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5 bg-[var(--background)] z-30 sticky top-0">
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-brand-light-border dark:border-white/5 bg-brand-light-surface dark:bg-[var(--background)] z-30 sticky top-0">
             <button
               onClick={() => {
                 setShowLocationSearch(false);
                 setShowPartySheet(true); // go back to bottom sheet
               }}
-              className="p-2.5 rounded-xl bg-[#393939] border border-white/5 text-white/80 hover:text-white transition-all active:scale-90"
+              className="p-2.5 rounded-xl bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 text-foreground/80 dark:text-white/80 hover:text-white transition-all active:scale-90"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
 
             {/* Search Input Field */}
-            <div className="flex-1 flex items-center bg-[#393939] border border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/40 transition-all px-4 py-3">
-              <Search className="h-4.5 w-4.5 text-zinc-500 shrink-0" />
+            <div className="flex-1 flex items-center bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-2xl overflow-hidden focus-within:border-[#FF6B00]/40 transition-all px-4 py-3">
+              <Search className="h-4.5 w-4.5 text-foreground/40 dark:text-zinc-500 shrink-0" />
               <input
                 type="text"
                 placeholder="Qidirish"
-                className="w-full bg-transparent border-0 p-0 pl-2.5 text-sm font-bold text-white focus:ring-0 outline-none placeholder:text-zinc-600"
+                className="w-full bg-transparent border-0 p-0 pl-2.5 text-sm font-bold text-foreground dark:text-white focus:ring-0 outline-none placeholder:text-foreground/30 dark:placeholder:text-zinc-600"
               />
             </div>
           </div>
@@ -756,7 +784,7 @@ export default function WelcomePage() {
               setShowLocationSearch(false);
               window.location.href = `/venue/3?guests=${partySize}&date=${selectedDay}&time=${selectedTime}&location=Toshkent`;
             }}
-            className="w-full px-6 py-5 border-b border-white/5 flex items-center gap-3.5 hover:bg-white/5 transition-colors cursor-pointer text-left"
+            className="w-full px-6 py-5 border-b border-brand-light-border dark:border-white/5 flex items-center gap-3.5 hover:bg-foreground/5 dark:hover:bg-white/5 transition-colors cursor-pointer text-left"
           >
             {/* Compass / Navigation Icon */}
             <div className="text-[#FF6B00]">
@@ -764,12 +792,12 @@ export default function WelcomePage() {
                 <path d="M12 2L2 22l10-4 10 4L12 2z" />
               </svg>
             </div>
-            <span className="text-sm font-black text-white">Manzilni avtomatik aniqlash</span>
+            <span className="text-sm font-black text-foreground dark:text-white">Manzilni avtomatik aniqlash</span>
           </button>
 
           {/* Section: Oxirgi manzillar */}
           <div className="flex-1 px-6 py-6 space-y-4 text-left">
-            <h3 className="text-sm font-black text-zinc-400 tracking-wide">Oxirgi manzillar</h3>
+            <h3 className="text-sm font-black text-foreground/40 dark:text-zinc-400 tracking-wide">Oxirgi manzillar</h3>
             
             <div className="space-y-1">
               {[
@@ -782,10 +810,10 @@ export default function WelcomePage() {
                     setShowLocationSearch(false);
                     window.location.href = `/venue/3?guests=${partySize}&date=${selectedDay}&time=${selectedTime}&location=${encodeURIComponent(loc.name)}`;
                   }}
-                  className="w-full py-4 border-b border-white/5 last:border-b-0 flex items-center gap-3.5 hover:bg-white/5 transition-colors cursor-pointer text-left"
+                  className="w-full py-4 border-b border-brand-light-border dark:border-white/5 last:border-b-0 flex items-center gap-3.5 hover:bg-foreground/5 dark:hover:bg-white/5 transition-colors cursor-pointer text-left"
                 >
-                  <MapPin className="h-5 w-5 text-zinc-500 shrink-0" />
-                  <span className="text-sm font-bold text-white/90">{loc.name}</span>
+                  <MapPin className="h-5 w-5 text-foreground/30 dark:text-zinc-500 shrink-0" />
+                  <span className="text-sm font-bold text-foreground/90 dark:text-white/90">{loc.name}</span>
                 </button>
               ))}
             </div>
