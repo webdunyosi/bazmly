@@ -166,14 +166,8 @@ export default function BottomNav() {
 
   const activeIdx = getActiveIndex();
 
-  // State-driven Center coordinate for smooth sliding
-  const [cX, setCX] = useState(200);
-
-  useEffect(() => {
-    const indicesX = [40, 120, 200, 280, 360];
-    const targetX = indicesX[activeIdx] ?? 200;
-    setCX(targetX);
-  }, [activeIdx]);
+  // Coordinates are locked to 200 to keep the notch centered on the Scanner
+  const cX = 200;
 
   // Silliq tushuvchi (bell-curve) oyiq path formula driven by active index cX
   // Increased gap width (58) and depth (79) to make the space around the button perfectly spacious
@@ -236,6 +230,7 @@ export default function BottomNav() {
         <div className="absolute inset-0 flex justify-between items-center px-2 z-10 pt-4">
           
           {navItems.map((item, index) => {
+            const isCenterFAB = index === 2;
             const isActive = index === activeIdx;
 
             return (
@@ -252,16 +247,20 @@ export default function BottomNav() {
                       src={item.icon}
                       alt={item.name}
                       className={`h-5 w-5 object-contain transition-all duration-300 ease-out ${
-                        isActive
+                        isCenterFAB
                           ? "opacity-0 scale-50 pointer-events-none translate-y-4"
-                          : "brightness-0 invert opacity-40 hover:opacity-75"
+                          : isActive
+                            ? "brightness-0 invert opacity-100"
+                            : "brightness-0 invert opacity-40 hover:opacity-75"
                       }`}
                     />
                     <span
                       className={`text-[11px] font-medium transition-all duration-300 ease-out ${
-                        isActive
+                        isCenterFAB
                           ? "opacity-0 scale-50 pointer-events-none translate-y-4"
-                          : "text-[#8E8E93] hover:text-white/80"
+                          : isActive
+                            ? "text-white"
+                            : "text-[#8E8E93] hover:text-white/80"
                       }`}
                     >
                       {item.name}
@@ -276,16 +275,20 @@ export default function BottomNav() {
                       src={item.icon}
                       alt={item.name}
                       className={`h-5 w-5 object-contain transition-all duration-300 ease-out ${
-                        isActive
+                        isCenterFAB
                           ? "opacity-0 scale-50 pointer-events-none translate-y-4"
-                          : "brightness-0 invert opacity-40 hover:opacity-75"
+                          : isActive
+                            ? "brightness-0 invert opacity-100"
+                            : "brightness-0 invert opacity-40 hover:opacity-75"
                       }`}
                     />
                     <span
                       className={`text-[11px] font-medium transition-all duration-300 ease-out ${
-                        isActive
+                        isCenterFAB
                           ? "opacity-0 scale-50 pointer-events-none translate-y-4"
-                          : "text-[#8E8E93] hover:text-white/80"
+                          : isActive
+                            ? "text-white"
+                            : "text-[#8E8E93] hover:text-white/80"
                       }`}
                     >
                       {item.name}
@@ -304,32 +307,18 @@ export default function BottomNav() {
           className="absolute w-[60px] h-[60px] rounded-full bg-[#3A3A3C] border border-white/10 flex items-center justify-center shadow-2xl z-50 transition-all duration-300 ease-out cursor-pointer active:scale-95"
           style={{
             top: "5px", // Mathematically centered: floats 10px above Y=15, and has 14px gap at the bottom Y=79
-            left: `${(cX / 400) * 100}%`,
+            left: "50%",
             transform: "translateX(-50%)",
           }}
-          onClick={navItems[activeIdx]?.isAction ? navItems[activeIdx].action : undefined}
+          onClick={handleScanClick}
         >
-          {navItems[activeIdx] && (
-            navItems[activeIdx].isAction ? (
-              <button className="w-full h-full flex items-center justify-center">
-                <img
-                  src={navItems[activeIdx].icon}
-                  alt={navItems[activeIdx].name}
-                  className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
-                  key={activeIdx}
-                />
-              </button>
-            ) : (
-              <Link href={navItems[activeIdx].path} className="w-full h-full flex items-center justify-center">
-                <img
-                  src={navItems[activeIdx].icon}
-                  alt={navItems[activeIdx].name}
-                  className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
-                  key={activeIdx}
-                />
-              </Link>
-            )
-          )}
+          <button className="w-full h-full flex items-center justify-center">
+            <img
+              src="/icons/scan-barcode.png"
+              alt="Skaner"
+              className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
+            />
+          </button>
         </div>
 
       </div>
