@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/components/theme-provider";
 import {
   Globe,
   Search,
@@ -70,6 +71,8 @@ const FAQS = [
 
 export default function LoginPage() {
   const router = useRouter();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [mounted, setMounted] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [step, setStep] = useState<Step>(1);
@@ -383,10 +386,10 @@ export default function LoginPage() {
 
       {isRegistered ? (
         /* ==================== REGISTERED PROFILE VIEW ==================== */
-        <div className={`flex flex-col flex-1 bg-[var(--background)] text-white transition-all duration-300 ${isBottomNavHidden ? "-mb-16" : ""}`}>
+        <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"} transition-all duration-300 ${isBottomNavHidden ? "-mb-16" : ""}`}>
           {showCards ? (
             /* ==================== HIGH-FIDELITY REGISTERED MY CARDS VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
+            <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
               <style>{`
                 @keyframes slideUp {
                   from { transform: translateY(100%); }
@@ -399,12 +402,14 @@ export default function LoginPage() {
 
               {showCardOtp ? (
                 /* ==================== SCREEN 4: OTP VERIFICATION VIEW ==================== */
-                <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
+                <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
                   {/* Close Top Bar */}
                   <div className="relative flex items-center justify-between px-6 py-5">
                     <button
                       onClick={() => setShowCardOtp(false)}
-                      className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                      className={`p-2 rounded-xl transition-all active:scale-95 ${
+                        isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                      }`}
                     >
                       <X className="h-5 w-5" />
                     </button>
@@ -414,8 +419,8 @@ export default function LoginPage() {
                   {/* Verification Form Content */}
                   <main className="flex-1 px-6 py-4 flex flex-col justify-between max-w-md mx-auto w-full">
                     <div className="space-y-4">
-                      <h1 className="text-2xl font-black text-white tracking-tight">Send verification code</h1>
-                      <p className="text-xs text-white/60 leading-relaxed">
+                      <h1 className={`text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>Send verification code</h1>
+                      <p className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-zinc-500"}`}>
                         We'll send a code to your phone number to verify your account.
                       </p>
 
@@ -424,8 +429,12 @@ export default function LoginPage() {
                         {[0, 1, 2, 3, 4, 5].map((idx) => (
                           <div
                             key={idx}
-                            className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold bg-[#393939] transition-all duration-200 ${
-                              cardOtp[idx] ? "border-primary text-white scale-105" : "border-white/10 text-white/30"
+                            className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold transition-all duration-200 ${
+                              isDark ? "bg-[#393939]" : "bg-zinc-100"
+                            } ${
+                              cardOtp[idx] 
+                                ? "border-primary text-primary scale-105 dark:text-white" 
+                                : isDark ? "border-white/10 text-white/30" : "border-zinc-200 text-zinc-400"
                             }`}
                           >
                             {cardOtp[idx] || ""}
@@ -502,10 +511,14 @@ export default function LoginPage() {
                             key={index}
                             type="button"
                             onClick={() => handleKeypadPress(btn.val)}
-                            className="bg-[#2C2C2E] hover:bg-[#3A3A3C] active:bg-[#48484A] rounded-xl py-3 flex flex-col items-center justify-center transition-all duration-100"
+                            className={`rounded-xl py-3 flex flex-col items-center justify-center transition-all duration-100 ${
+                              isDark ? "bg-[#2C2C2E] hover:bg-[#3A3A3C] active:bg-[#48484A]" : "bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300"
+                            }`}
                           >
-                            <span className="text-xl font-bold leading-tight">{btn.val}</span>
-                            {btn.sub && <span className="text-[9px] font-medium text-white/40 uppercase tracking-widest leading-none">{btn.sub}</span>}
+                            <span className={`text-xl font-bold leading-tight ${isDark ? "text-white" : "text-zinc-900"}`}>{btn.val}</span>
+                            {btn.sub && <span className={`text-[9px] font-medium uppercase tracking-widest leading-none ${
+                              isDark ? "text-white/40" : "text-zinc-500"
+                            }`}>{btn.sub}</span>}
                           </button>
                         ))}
                       </div>
@@ -514,16 +527,20 @@ export default function LoginPage() {
                 </div>
               ) : showAddCard ? (
                 /* ==================== SCREEN 2 & 3: ADD CARD DETAILS VIEW ==================== */
-                <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
+                <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
                   {/* Top Bar Header */}
-                  <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+                  <div className={`relative flex items-center justify-between px-6 py-5 border-b ${
+                    isDark ? "border-white/5" : "border-zinc-100"
+                  }`}>
                     <button
                       onClick={() => setShowAddCard(false)}
-                      className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                      className={`p-2 rounded-xl transition-all active:scale-95 ${
+                        isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                      }`}
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
-                    <h1 className="text-base font-bold text-white tracking-wide">Karta ma'lumotlari</h1>
+                    <h1 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Karta ma'lumotlari</h1>
                     <div className="w-9 h-9" />
                   </div>
 
@@ -532,7 +549,9 @@ export default function LoginPage() {
                     <div className="space-y-6">
                       {/* Card Number field with internal orange icon */}
                       <div className="space-y-2">
-                        <div className="relative flex items-center bg-[#393939] rounded-2xl border border-white/5 overflow-hidden transition-all duration-300 focus-within:border-primary/50">
+                        <div className={`relative flex items-center rounded-2xl border overflow-hidden transition-all duration-300 focus-within:border-primary/50 ${
+                          isDark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+                        }`}>
                           <span className="pl-4 text-primary shrink-0">
                             <CreditCard className="h-5 w-5" />
                           </span>
@@ -541,20 +560,26 @@ export default function LoginPage() {
                             value={newCardNumber}
                             onChange={handleCardNumberChange}
                             placeholder="Karta raqami"
-                            className="w-full pl-3 pr-4 py-4 bg-transparent text-sm text-white font-semibold tracking-wider outline-none placeholder:text-white/30"
+                            className={`w-full pl-3 pr-4 py-4 bg-transparent text-sm font-semibold tracking-wider outline-none placeholder:text-white/30 ${
+                              isDark ? "text-white placeholder:text-white/30" : "text-zinc-900 placeholder:text-zinc-400"
+                            }`}
                           />
                         </div>
                       </div>
 
                       {/* Expiry field */}
                       <div className="space-y-2">
-                        <div className="relative flex items-center bg-[#393939] rounded-2xl border border-white/5 overflow-hidden w-36 transition-all duration-300 focus-within:border-primary/50">
+                        <div className={`relative flex items-center rounded-2xl border overflow-hidden w-36 transition-all duration-300 focus-within:border-primary/50 ${
+                          isDark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+                        }`}>
                           <input
                             type="text"
                             value={newCardExpiry}
                             onChange={handleCardExpiryChange}
                             placeholder="OO/YY"
-                            className="w-full px-4 py-4 bg-transparent text-sm text-white font-semibold tracking-widest text-center outline-none placeholder:text-white/30"
+                            className={`w-full px-4 py-4 bg-transparent text-sm font-semibold tracking-widest text-center outline-none placeholder:text-white/30 ${
+                              isDark ? "text-white placeholder:text-white/30" : "text-zinc-900 placeholder:text-zinc-400"
+                            }`}
                           />
                         </div>
                       </div>
@@ -582,16 +607,20 @@ export default function LoginPage() {
                 </div>
               ) : (
                 /* ==================== SCREEN 1: CARDS LIST VIEW ==================== */
-                <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
+                <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
                   {/* Top Bar Header */}
-                  <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+                  <div className={`relative flex items-center justify-between px-6 py-5 border-b ${
+                    isDark ? "border-white/5" : "border-zinc-100"
+                  }`}>
                     <button
                       onClick={() => setShowCards(false)}
-                      className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                      className={`p-2 rounded-xl transition-all active:scale-95 ${
+                        isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                      }`}
                     >
                       <ChevronLeft className="h-5 w-5" />
                     </button>
-                    <h1 className="text-base font-bold text-white tracking-wide">Sozlamalar</h1>
+                    <h1 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Sozlamalar</h1>
                     <div className="w-9 h-9" />
                   </div>
 
@@ -602,7 +631,11 @@ export default function LoginPage() {
                       <div
                         key={card.id}
                         onClick={() => setSelectedCardForDelete(card)}
-                        className="w-full border border-white/15 bg-[#393939] rounded-[24px] p-6 flex flex-col justify-between h-44 shadow-2xl relative overflow-hidden transition-all duration-300 hover:border-primary/55 cursor-pointer active:scale-98"
+                        className={`w-full border rounded-[24px] p-6 flex flex-col justify-between h-44 shadow-2xl relative overflow-hidden transition-all duration-300 cursor-pointer active:scale-98 ${
+                          isDark
+                            ? "border-white/15 bg-[#393939] hover:border-primary/55"
+                            : "border-transparent bg-zinc-900 text-white hover:bg-zinc-950"
+                        }`}
                       >
                         <div className="flex justify-between items-start">
                           {card.type === "humo" ? (
@@ -630,8 +663,12 @@ export default function LoginPage() {
                     ))}
 
                     {/* Card 2: Empty Card with Add Button */}
-                    <div className="w-full border border-white/10 bg-[#393939]/20 rounded-[24px] p-6 flex flex-col justify-between h-44 transition-all duration-300 hover:bg-[#393939]/30">
-                      <div className="flex justify-between items-start text-white/60">
+                    <div className={`w-full border rounded-[24px] p-6 flex flex-col justify-between h-44 transition-all duration-300 ${
+                      isDark
+                        ? "border-white/10 bg-[#393939]/20 hover:bg-[#393939]/30"
+                        : "border-zinc-200 bg-zinc-50 hover:bg-zinc-100"
+                    }`}>
+                      <div className={`flex justify-between items-start ${isDark ? "text-white/60" : "text-zinc-400"}`}>
                         <CreditCard className="h-7 w-7" />
                       </div>
                       <div className="flex justify-start">
@@ -656,12 +693,14 @@ export default function LoginPage() {
                     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
                       <div className="absolute inset-0" onClick={() => setSelectedCardForDelete(null)} />
                       
-                      <div className="w-full max-w-md bg-[#393939] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+                      <div className={`w-full max-w-md rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t relative ${
+                        isDark ? "bg-[#393939] border-white/5" : "bg-white border-zinc-200"
+                      }`}>
                         {/* Notch indicator */}
-                        <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
+                        <div className={`w-12 h-1 rounded-full mb-2 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
                         
                         {/* Title */}
-                        <p className="text-white text-base font-bold tracking-wide">Bank kartasi</p>
+                        <p className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Bank kartasi</p>
                         
                         {/* Delete Button */}
                         <button
@@ -682,7 +721,9 @@ export default function LoginPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedCardForDelete(null)}
-                          className="w-full py-4 text-white/60 hover:text-white font-bold text-sm tracking-wide transition-all active:scale-98"
+                          className={`w-full py-4 font-bold text-sm tracking-wide transition-all active:scale-98 ${
+                            isDark ? "text-white/60 hover:text-white" : "text-zinc-500 hover:text-zinc-800"
+                          }`}
                         >
                           Ortga
                         </button>
@@ -694,16 +735,18 @@ export default function LoginPage() {
             </div>
           ) : showLanguages ? (
             /* ==================== HIGH-FIDELITY REGISTERED LANGUAGE SETTINGS VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
+            <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
               {/* Top Bar Header */}
               <div className="relative flex items-center justify-between px-6 py-5">
                 <button
                   onClick={() => setShowLanguages(false)}
-                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                  className={`p-2 rounded-xl transition-all active:scale-95 ${
+                    isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                  }`}
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <h1 className="text-base font-bold text-white tracking-wide">Til sozlamalari</h1>
+                <h1 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Til sozlamalari</h1>
                 <div className="w-9 h-9" />
               </div>
 
@@ -712,8 +755,8 @@ export default function LoginPage() {
                 <div className="space-y-6">
                   {/* Subtitle */}
                   <div className="space-y-1 text-left">
-                    <h2 className="text-xl font-bold text-white tracking-tight leading-tight">Ilovani o'zingizga qulay</h2>
-                    <p className="text-xl font-bold text-white tracking-tight leading-tight text-white/95">tilda boshqaring</p>
+                    <h2 className={`text-xl font-bold tracking-tight leading-tight ${isDark ? "text-white" : "text-zinc-900"}`}>Ilovani o'zingizga qulay</h2>
+                    <p className={`text-xl font-bold tracking-tight leading-tight ${isDark ? "text-white/95" : "text-zinc-800"}`}>tilda boshqaring</p>
                   </div>
 
                   {/* Language Options Grid */}
@@ -732,7 +775,7 @@ export default function LoginPage() {
                           className={`w-full flex items-center justify-between p-5 rounded-[20px] transition-all duration-200 active:scale-98 text-left ${
                             isSelected
                               ? "bg-primary text-white shadow-lg shadow-primary/20"
-                              : "bg-[#393939] text-white hover:bg-zinc-800"
+                              : isDark ? "bg-[#393939] text-white hover:bg-zinc-800" : "bg-zinc-100 text-zinc-900 hover:bg-zinc-200"
                           }`}
                         >
                           <div className="flex items-center gap-4">
@@ -768,16 +811,18 @@ export default function LoginPage() {
             </div>
           ) : showMessages ? (
             /* ==================== HIGH-FIDELITY REGISTERED XABARLAR VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[var(--background)] text-white animate-fade-in">
+            <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"} animate-fade-in`}>
               {/* Top Bar Header */}
               <div className="relative flex items-center justify-between px-6 py-5">
                 <button
                   onClick={() => setShowMessages(false)}
-                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                  className={`p-2 rounded-xl transition-all active:scale-95 ${
+                    isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                  }`}
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <h1 className="text-base font-bold text-white tracking-wide">Xabarlar</h1>
+                <h1 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Xabarlar</h1>
                 <div className="w-9 h-9" />
               </div>
 
@@ -785,18 +830,20 @@ export default function LoginPage() {
               <main className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
                 {/* Subtitle */}
                 <div className="space-y-1">
-                  <h2 className="text-xl font-bold text-white tracking-tight leading-tight">Ilovamiz bo'yicha yangiliklarni</h2>
-                  <p className="text-xl font-bold text-white/90 tracking-tight leading-tight text-white/95">kuzatib boring</p>
+                  <h2 className={`text-xl font-bold tracking-tight leading-tight ${isDark ? "text-white" : "text-zinc-900"}`}>Ilovamiz bo'yicha yangiliklarni</h2>
+                  <p className={`text-xl font-bold tracking-tight leading-tight ${isDark ? "text-white/95" : "text-zinc-800"}`}>kuzatib boring</p>
                 </div>
 
                 {/* Notifications Grouped List */}
                 <div className="space-y-6">
                   {/* Group 1: Today */}
                   <div className="space-y-3.5">
-                    <h3 className="text-base font-bold text-white tracking-wide">Today</h3>
+                    <h3 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-800"}`}>Today</h3>
                     
                     {/* Unread Card (warm brown tint, unread red dot) */}
-                    <div className="w-full bg-[#221A15] border border-white/5 rounded-3xl p-5 flex items-start gap-4 relative shadow-lg">
+                    <div className={`w-full border rounded-3xl p-5 flex items-start gap-4 relative shadow-lg ${
+                      isDark ? "bg-[#221A15] border-white/5" : "bg-orange-50/50 border-orange-100"
+                    }`}>
                       {/* Red unread dot */}
                       <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#E53E3E]" />
                       
@@ -811,27 +858,29 @@ export default function LoginPage() {
                       
                       {/* Content text */}
                       <div className="space-y-1 pr-2">
-                        <h4 className="text-sm font-bold text-white leading-snug">
+                        <h4 className={`text-sm font-bold leading-snug ${isDark ? "text-white" : "text-zinc-900"}`}>
                           Bazmly just got better! 🚀
                         </h4>
-                        <p className="text-xs text-white/80 leading-normal">
+                        <p className={`text-xs leading-normal ${isDark ? "text-white/80" : "text-zinc-650"}`}>
                           Check out our latest update now
                         </p>
-                        <p className="text-[10px] text-white/45 font-semibold pt-1">
+                        <p className={`text-[10px] font-semibold pt-1 ${isDark ? "text-white/45" : "text-zinc-400"}`}>
                           20.01.2026, 18:00
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <hr className="border-t border-white/5 my-1" />
+                  <hr className={`border-t my-1 ${isDark ? "border-white/5" : "border-zinc-200"}`} />
 
                   {/* Group 2: This Week */}
                   <div className="space-y-3.5">
-                    <h3 className="text-base font-bold text-white tracking-wide">This Week</h3>
+                    <h3 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-800"}`}>This Week</h3>
                     
                     {/* Read Card 1 (dark grey bg) */}
-                    <div className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                    <div className={`w-full border rounded-3xl p-5 flex items-start gap-4 shadow-lg ${
+                      isDark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+                    }`}>
                       <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
                         <img
                           src="/logo-loading.png"
@@ -841,20 +890,22 @@ export default function LoginPage() {
                       </div>
                       
                       <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-white leading-snug">
+                        <h4 className={`text-sm font-bold leading-snug ${isDark ? "text-white" : "text-zinc-900"}`}>
                           Bazmly just got better! 🚀
                         </h4>
-                        <p className="text-xs text-white/80 leading-normal">
+                        <p className={`text-xs leading-normal ${isDark ? "text-white/80" : "text-zinc-650"}`}>
                           Check out our latest update now
                         </p>
-                        <p className="text-[10px] text-white/45 font-semibold pt-1">
+                        <p className={`text-[10px] font-semibold pt-1 ${isDark ? "text-white/45" : "text-zinc-400"}`}>
                           20.01.2026, 18:00
                         </p>
                       </div>
                     </div>
 
                     {/* Read Card 2 (dark grey bg) */}
-                    <div className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                    <div className={`w-full border rounded-3xl p-5 flex items-start gap-4 shadow-lg ${
+                      isDark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+                    }`}>
                       <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
                         <img
                           src="/logo-loading.png"
@@ -864,27 +915,29 @@ export default function LoginPage() {
                       </div>
                       
                       <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-white leading-snug">
+                        <h4 className={`text-sm font-bold leading-snug ${isDark ? "text-white" : "text-zinc-900"}`}>
                           Bazmly just got better! 🚀
                         </h4>
-                        <p className="text-xs text-white/80 leading-normal">
+                        <p className={`text-xs leading-normal ${isDark ? "text-white/80" : "text-zinc-650"}`}>
                           Check out our latest update now
                         </p>
-                        <p className="text-[10px] text-white/45 font-semibold pt-1">
+                        <p className={`text-[10px] font-semibold pt-1 ${isDark ? "text-white/45" : "text-zinc-400"}`}>
                           20.01.2026, 18:00
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <hr className="border-t border-white/5 my-1" />
+                  <hr className={`border-t my-1 ${isDark ? "border-white/5" : "border-zinc-200"}`} />
 
                   {/* Group 3: This Month */}
                   <div className="space-y-3.5">
-                    <h3 className="text-base font-bold text-white tracking-wide">This Month</h3>
+                    <h3 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-800"}`}>This Month</h3>
 
                     {/* Read Card 3 (dark grey bg, different date) */}
-                    <div className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex items-start gap-4 shadow-lg">
+                    <div className={`w-full border rounded-3xl p-5 flex items-start gap-4 shadow-lg ${
+                      isDark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+                    }`}>
                       <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
                         <img
                           src="/logo-loading.png"
@@ -894,13 +947,13 @@ export default function LoginPage() {
                       </div>
                       
                       <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-white leading-snug">
+                        <h4 className={`text-sm font-bold leading-snug ${isDark ? "text-white" : "text-zinc-900"}`}>
                           Bazmly just got better! 🚀
                         </h4>
-                        <p className="text-xs text-white/80 leading-normal">
+                        <p className={`text-xs leading-normal ${isDark ? "text-white/80" : "text-zinc-650"}`}>
                           Check out our latest update now
                         </p>
-                        <p className="text-[10px] text-white/45 font-semibold pt-1">
+                        <p className={`text-[10px] font-semibold pt-1 ${isDark ? "text-white/45" : "text-zinc-400"}`}>
                           12.01.2026, 15:30
                         </p>
                       </div>
@@ -911,21 +964,29 @@ export default function LoginPage() {
             </div>
           ) : showHistory ? (
             /* ==================== HIGH-FIDELITY REGISTERED BOOKINGS HISTORY VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[var(--background)] text-white">
+            <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
               {/* Top Bar Header */}
-              <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+              <div className={`relative flex items-center justify-between px-6 py-5 border-b ${
+                isDark ? "border-white/5" : "border-zinc-100"
+              }`}>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowHistory(false)}
-                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                    className={`p-2 rounded-xl transition-all active:scale-95 ${
+                      isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                    }`}
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
-                  <h1 className="text-xl font-bold text-white tracking-wide">Band qilingan</h1>
+                  <h1 className={`text-xl font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Band qilingan</h1>
                 </div>
                 
                 {/* Location pin with Toshkent */}
-                <div className="flex items-center gap-1.5 text-xs text-white/80 font-semibold bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                <div className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${
+                  isDark 
+                    ? "text-white/80 bg-white/5 border-white/5" 
+                    : "text-zinc-800 bg-zinc-100 border-zinc-200"
+                }`}>
                   <MapPin className="h-4 w-4 text-primary shrink-0" />
                   <span>Toshkent</span>
                 </div>
@@ -939,7 +1000,11 @@ export default function LoginPage() {
                 ].map((item) => (
                   <div
                     key={item.id}
-                    className="w-full bg-[#393939] border border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl transition-all duration-300 hover:border-white/10"
+                    className={`w-full rounded-3xl p-5 flex flex-col gap-4 transition-all duration-300 ${
+                      isDark
+                        ? "bg-[#393939] border border-white/5 shadow-xl hover:border-white/10"
+                        : "bg-white border border-[#FF6B00] shadow-md hover:shadow-lg hover:border-primary/80"
+                    }`}
                   >
                     {/* Top Restaurant Detail */}
                     <div className="flex items-start gap-4">
@@ -947,68 +1012,84 @@ export default function LoginPage() {
                       <img
                         src="/images/restaurant.png"
                         alt="Rest One"
-                        className="w-20 h-20 rounded-2xl object-cover shrink-0 border border-white/5 shadow-md"
+                        className={`w-20 h-20 rounded-2xl object-cover shrink-0 border shadow-md ${
+                          isDark ? "border-white/5" : "border-zinc-100"
+                        }`}
                       />
                       
                       <div className="space-y-1 pr-1 w-full min-w-0">
-                        <h2 className="text-base font-bold text-white tracking-wide truncate">Rest One</h2>
+                        <h2 className={`text-base font-bold tracking-wide truncate ${
+                          isDark ? "text-white" : "text-zinc-900"
+                        }`}>Rest One</h2>
                         
                         {/* Distance & Status info */}
-                        <div className="flex items-center gap-1.5 text-xs text-white/50 font-medium">
-                          <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        <div className={`flex items-center gap-1.5 text-xs font-medium ${
+                          isDark ? "text-white/50" : "text-zinc-500"
+                        }`}>
+                          <MapPin className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
                           <span>1 km</span>
-                          <span className="text-white/20">|</span>
+                          <span className={isDark ? "text-white/20" : "text-zinc-300"}>|</span>
                           <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] shrink-0" />
                           <span className="text-[#10B981] font-bold">Ochiq</span>
                         </div>
 
                         {/* Phone */}
-                        <div className="flex items-center gap-1.5 text-xs text-white/60 font-medium">
-                          <Phone className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                        <div className={`flex items-center gap-1.5 text-xs font-medium ${
+                          isDark ? "text-white/60" : "text-zinc-650"
+                        }`}>
+                          <Phone className={`h-3.5 w-3.5 shrink-0 ${isDark ? "text-white/40" : "text-zinc-400"}`} />
                           <span>+998 99 123 45 67</span>
                         </div>
 
                         {/* Address */}
-                        <div className="flex items-center gap-1.5 text-xs text-white/60 font-medium truncate">
-                          <MapPin className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                        <div className={`flex items-center gap-1.5 text-xs font-medium truncate ${
+                          isDark ? "text-white/60" : "text-zinc-650"
+                        }`}>
+                          <MapPin className={`h-3.5 w-3.5 shrink-0 ${isDark ? "text-white/40" : "text-zinc-400"}`} />
                           <span className="truncate">Umid qo'rg'oni 765 - uy</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Horizontal Divider */}
-                    <hr className="border-t border-white/5" />
+                    <hr className={`border-t ${isDark ? "border-white/5" : "border-zinc-100"}`} />
 
                     {/* Booking metadata table */}
                     <div className="space-y-2.5 text-xs font-semibold">
                       <div className="flex justify-between items-center">
-                        <span className="text-white/40">Holat</span>
-                        <span className="text-white font-bold">Band qilish tasdiqlandi</span>
+                        <span className={isDark ? "text-white/40" : "text-zinc-400"}>Holat</span>
+                        <span className={`font-bold ${isDark ? "text-white" : "text-zinc-900"}`}>Band qilish tasdiqlandi</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white/40">Chek raqami:</span>
-                        <span className="text-white/90 font-mono">0789 091172</span>
+                        <span className={isDark ? "text-white/40" : "text-zinc-400"}>Chek raqami:</span>
+                        <span className={`font-mono ${isDark ? "text-white/90" : "text-zinc-900"}`}>0789 091172</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white/40">Belgilandi:</span>
-                        <span className="text-white/90">11:00 • 26/02/2024</span>
+                        <span className={isDark ? "text-white/40" : "text-zinc-400"}>Belgilandi:</span>
+                        <span className={isDark ? "text-white/90" : "text-zinc-900"}>11:00 • 26/02/2024</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white/40">Stol raqami:</span>
-                        <span className="text-white/90">4 - stol</span>
+                        <span className={isDark ? "text-white/40" : "text-zinc-400"}>Stol raqami:</span>
+                        <span className={isDark ? "text-white/90" : "text-zinc-900"}>4 - stol</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-white/40">Restoran raqami:</span>
-                        <span className="text-white/90">+998 99 123 45 67</span>
+                        <span className={isDark ? "text-white/40" : "text-zinc-400"}>Restoran raqami:</span>
+                        <span className={isDark ? "text-white/90" : "text-zinc-900"}>+998 99 123 45 67</span>
                       </div>
                     </div>
 
                     {/* Bottom orange banner with clock for Card 1 */}
                     {item.showBanner && (
-                      <div className="w-full bg-[#FF6B00] rounded-2xl py-3.5 px-4 flex items-center justify-center gap-2 text-white font-bold text-sm shadow-md animate-pulse">
-                        <span>Qoldi:</span>
-                        <Clock className="h-4.5 w-4.5 shrink-0" />
-                        <span>2 soat 25 daqiqa</span>
+                      <div className={`w-full rounded-2xl py-3.5 px-4 flex items-center justify-between text-sm font-bold ${
+                        isDark 
+                          ? "bg-[#FF6B00] text-white shadow-md animate-pulse" 
+                          : "bg-white border border-[#FF6B00] text-[#FF6B00]"
+                      }`}>
+                        <span className={isDark ? "text-white" : "text-[#FF6B00] opacity-80 font-medium"}>Qoldi:</span>
+                        <div className="flex items-center gap-2">
+                          <Clock className={`h-4.5 w-4.5 shrink-0 ${isDark ? "text-white" : "text-[#FF6B00]"}`} />
+                          <span>2 soat 25 daqiqa</span>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1017,33 +1098,41 @@ export default function LoginPage() {
             </div>
           ) : showHelp ? (
             /* ==================== HIGH-FIDELITY REGISTERED YORDAM (HELP) VIEW ==================== */
-            <div className="flex flex-col flex-1 bg-[var(--background)] text-white animate-fade-in">
+            <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"} animate-fade-in`}>
               {/* Top Bar Header */}
-              <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+              <div className={`relative flex items-center justify-between px-6 py-5 border-b ${
+                isDark ? "border-white/5" : "border-zinc-100"
+              }`}>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
                       setShowHelp(false);
                       setOpenFaq(null);
                     }}
-                    className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                    className={`p-2 rounded-xl transition-all active:scale-95 ${
+                      isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                    }`}
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
-                  <h1 className="text-xl font-bold text-white tracking-wide">Yordam markazi</h1>
+                  <h1 className={`text-xl font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Yordam markazi</h1>
                 </div>
               </div>
 
               {/* Scrollable Help Content */}
               <main className="flex-1 overflow-y-auto px-6 py-6 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
                 {/* Hero Card */}
-                <div className="w-full bg-gradient-to-br from-[#393939] to-[#252528] border border-white/5 rounded-3xl p-5 flex flex-col gap-3 shadow-xl">
+                <div className={`w-full border rounded-3xl p-5 flex flex-col gap-3 shadow-xl ${
+                  isDark 
+                    ? "bg-gradient-to-br from-[#393939] to-[#252528] border-white/5" 
+                    : "bg-zinc-100 border-zinc-200"
+                }`}>
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">
                     <HelpCircle className="h-6 w-6" />
                   </div>
                   <div className="space-y-1">
-                    <h2 className="text-base font-bold text-white tracking-wide">Qanday yordam bera olamiz?</h2>
-                    <p className="text-xs text-white/60 leading-relaxed font-medium">
+                    <h2 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Qanday yordam bera olamiz?</h2>
+                    <p className={`text-xs leading-relaxed font-medium ${isDark ? "text-white/60" : "text-zinc-650"}`}>
                       BAZMLY ilovasi orqali marosim zallari, restoran va shou-dasturlarni onlayn, xavfsiz va eng yaxshi narxlarda bron qilish bo'yicha savollaringizga javob oling.
                     </p>
                   </div>
@@ -1051,8 +1140,8 @@ export default function LoginPage() {
 
                 {/* FAQ Header */}
                 <div className="space-y-1 mt-1">
-                  <h3 className="text-base font-bold text-white tracking-wide">Tez-tez beriladigan savollar</h3>
-                  <p className="text-xs text-white/40 font-medium">Eng ko'p beriladigan savollarga javoblar</p>
+                  <h3 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Tez-tez beriladigan savollar</h3>
+                  <p className={`text-xs font-medium ${isDark ? "text-white/40" : "text-zinc-500"}`}>Eng ko'p beriladigan savollarga javoblar</p>
                 </div>
 
                 {/* FAQ Accordions List */}
@@ -1062,23 +1151,29 @@ export default function LoginPage() {
                     return (
                       <div
                         key={idx}
-                        className="w-full bg-[#393939] border border-white/5 rounded-2xl overflow-hidden transition-all duration-300 shadow-md"
+                        className={`w-full border rounded-2xl overflow-hidden transition-all duration-300 shadow-md ${
+                          isDark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+                        }`}
                       >
                         <button
                           type="button"
                           onClick={() => setOpenFaq(isOpen ? null : idx)}
-                          className="w-full px-5 py-4 flex items-center justify-between gap-3 text-left transition-colors hover:bg-white/5"
+                          className={`w-full px-5 py-4 flex items-center justify-between gap-3 text-left transition-colors ${
+                            isDark ? "hover:bg-white/5" : "hover:bg-zinc-200"
+                          }`}
                         >
-                          <span className="text-xs font-bold text-white/90 leading-snug">{faq.q}</span>
-                          <ChevronDown className={`h-4.5 w-4.5 text-white/40 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-primary" : ""}`} />
+                          <span className={`text-xs font-bold leading-snug ${isDark ? "text-white/90" : "text-zinc-900"}`}>{faq.q}</span>
+                          <ChevronDown className={`h-4.5 w-4.5 shrink-0 transition-transform duration-300 ${isDark ? "text-white/40" : "text-zinc-500"} ${isOpen ? "rotate-180 text-primary" : ""}`} />
                         </button>
                         
                         <div
                           className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                            isOpen ? "max-h-[160px] border-t border-white/5" : "max-h-0"
+                            isOpen ? `border-t ${isDark ? "border-white/5" : "border-zinc-200"}` : "max-h-0"
                           }`}
                         >
-                          <p className="px-5 py-4 text-xs text-white/60 leading-relaxed font-medium bg-[#161618]">
+                          <p className={`px-5 py-4 text-xs leading-relaxed font-medium ${
+                            isDark ? "text-white/60 bg-[#161618]" : "text-zinc-650 bg-zinc-50"
+                          }`}>
                             {faq.a}
                           </p>
                         </div>
@@ -1088,10 +1183,12 @@ export default function LoginPage() {
                 </div>
 
                 {/* Support Contact Section */}
-                <div className="w-full bg-[#221A15] border border-[#FF6B00]/10 rounded-3xl p-5 flex flex-col gap-4 shadow-xl mt-2">
+                <div className={`w-full border rounded-3xl p-5 flex flex-col gap-4 shadow-xl mt-2 ${
+                  isDark ? "bg-[#221A15] border-[#FF6B00]/10" : "bg-orange-50/50 border-orange-100"
+                }`}>
                   <div className="space-y-1">
-                    <h4 className="text-sm font-bold text-white tracking-wide">Savolingizga javob topmadingizmi?</h4>
-                    <p className="text-[11px] text-white/60 leading-relaxed font-medium">
+                    <h4 className={`text-sm font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Savolingizga javob topmadingizmi?</h4>
+                    <p className={`text-[11px] leading-relaxed font-medium ${isDark ? "text-white/60" : "text-zinc-650"}`}>
                       Bizning mijozlarni qo'llab-quvvatlash xizmati mutaxassislarimiz haftada 7 kun, 24 soat davomida sizga tezkor yordam berishga tayyor.
                     </p>
                   </div>
@@ -1150,36 +1247,42 @@ export default function LoginPage() {
                 <div className="w-full space-y-5">
                   {/* Name field */}
                   <div className="space-y-2 text-left">
-                    <label className="block text-xs font-semibold text-zinc-400">Ism/Familiya</label>
+                    <label className={`block text-xs font-semibold ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>Ism/Familiya</label>
                     <input
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="Alisher Raimov"
-                      className="w-full px-4 py-3.5 rounded-xl border border-white/10 bg-[#393939] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors"
+                      className={`w-full px-4 py-3.5 rounded-xl border text-sm font-medium outline-none focus:border-primary/50 transition-colors ${
+                        isDark ? "border-white/10 bg-[#393939] text-white" : "border-zinc-200 bg-zinc-100 text-zinc-900 focus:bg-white"
+                      }`}
                     />
                   </div>
 
                   {/* Phone field */}
                   <div className="space-y-2 text-left">
-                    <label className="block text-xs font-semibold text-zinc-400">Telefon raqam</label>
+                    <label className={`block text-xs font-semibold ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>Telefon raqam</label>
                     <input
                       type="text"
                       value={editPhone}
                       onChange={(e) => setEditPhone(e.target.value)}
                       placeholder="+998 99 219 19 55"
-                      className="w-full px-4 py-3.5 rounded-xl border border-white/10 bg-[#393939] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors"
+                      className={`w-full px-4 py-3.5 rounded-xl border text-sm font-medium outline-none focus:border-primary/50 transition-colors ${
+                        isDark ? "border-white/10 bg-[#393939] text-white" : "border-zinc-200 bg-zinc-100 text-zinc-900 focus:bg-white"
+                      }`}
                     />
                   </div>
 
                   {/* Location field */}
                   <div className="space-y-2 text-left">
-                    <label className="block text-xs font-semibold text-zinc-400">Manzil</label>
+                    <label className={`block text-xs font-semibold ${isDark ? "text-zinc-400" : "text-zinc-500"}`}>Manzil</label>
                     <div className="relative">
                       <select
                         value={editLocation}
                         onChange={(e) => setEditLocation(e.target.value)}
-                        className="w-full px-4 py-3.5 pr-10 rounded-xl border border-white/10 bg-[#393939] text-sm text-white font-medium outline-none focus:border-primary/50 transition-colors appearance-none cursor-pointer"
+                        className={`w-full px-4 py-3.5 pr-10 rounded-xl border text-sm font-medium outline-none focus:border-primary/50 transition-colors appearance-none cursor-pointer ${
+                          isDark ? "border-white/10 bg-[#393939] text-white" : "border-zinc-200 bg-zinc-100 text-zinc-900"
+                        }`}
                       >
                         <option value="Tashkent, Tashkent city">Toshkent</option>
                         <option value="Samarkand, Samarkand region">Samarqand</option>
@@ -1200,15 +1303,17 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setActiveModal("delete_account")}
-                      className="w-full bg-[#393939] border border-white/10 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-[#252528] transition-colors text-left"
+                      className={`w-full border rounded-xl p-4 flex justify-between items-center cursor-pointer transition-colors text-left ${
+                        isDark ? "bg-[#393939] border-white/10 hover:bg-[#252528]" : "bg-zinc-100 border-zinc-200 hover:bg-zinc-200"
+                      }`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center">
                           <Trash2 className="h-4.5 w-4.5" />
                         </span>
-                        <span className="text-sm font-bold text-white/90">Akkauntni o'chirish</span>
+                        <span className={`text-sm font-bold ${isDark ? "text-white/90" : "text-zinc-900"}`}>Akkauntni o'chirish</span>
                       </div>
-                      <ChevronRight className="h-4.5 w-4.5 text-white/30" />
+                      <ChevronRight className={`h-4.5 w-4.5 ${isDark ? "text-white/30" : "text-zinc-400"}`} />
                     </button>
                   </div>
                 </div>
@@ -1221,7 +1326,7 @@ export default function LoginPage() {
 
               <main className="flex-1 flex flex-col items-center justify-start py-8 px-4 pb-10 max-w-md mx-auto w-full">
                 {/* Header Title */}
-                <h1 className="text-xl font-black text-white mb-6">
+                <h1 className={`text-xl font-black mb-6 ${isDark ? "text-white" : "text-zinc-900"}`}>
                   Sozlamalar
                 </h1>
 
@@ -1242,11 +1347,11 @@ export default function LoginPage() {
                   </div>
 
                   <div className="mt-5 space-y-1">
-                    <h2 className="text-2xl font-black text-white tracking-tight">
+                    <h2 className={`text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
                       {fullName || "Alisher Raimov"}
                     </h2>
-                    <div className="flex items-center justify-center gap-1.5 text-xs text-white/60 font-medium">
-                      <MapPin className="h-4 w-4 text-primary" />
+                    <div className={`flex items-center justify-center gap-1.5 text-xs font-medium ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                      <MapPin className={`h-4 w-4 ${isDark ? "text-primary" : "text-[#FF6B00]"}`} />
                       <span>{location.split(",")[0]}</span>
                     </div>
                   </div>
@@ -1260,7 +1365,11 @@ export default function LoginPage() {
                         setEditPhone(phone || "+998 99 219 19 55");
                         setIsEditing(true);
                       }}
-                      className="flex-1 py-3 px-4 rounded-xl bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 text-xs font-bold text-white hover:bg-[#252528] transition-all active:scale-95 shadow-sm"
+                      className={`flex-1 py-3 px-4 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-sm ${
+                        isDark 
+                          ? "bg-white/5 border border-white/10 text-white hover:bg-[#252528]" 
+                          : "bg-white border border-primary text-primary hover:bg-orange-50"
+                      }`}
                     >
                       Edit profile
                     </button>
@@ -1274,7 +1383,9 @@ export default function LoginPage() {
                 </div>
 
                 {/* Options List Dashboard Container */}
-                <div className="w-full border border-white/5 rounded-[32px] p-5.5 space-y-4 bg-transparent shadow-xl">
+                <div className={`w-full border rounded-[32px] p-5.5 space-y-4 bg-transparent shadow-xl ${
+                  isDark ? "border-white/5" : "border-zinc-100 bg-white/50"
+                }`}>
                   {menuItems.map((item, index) => {
                     const Icon = item.icon;
                     const isChiqish = item.label === "Chiqish";
@@ -1284,7 +1395,11 @@ export default function LoginPage() {
                         <button
                           key={index}
                           onClick={item.action}
-                          className="w-full flex items-center justify-between py-4 px-5 rounded-[20px] bg-red-500/10 hover:bg-red-500/20 active:scale-[0.99] border border-red-500/20 transition-all duration-200 text-left cursor-pointer"
+                          className={`w-full flex items-center justify-between py-4 px-5 rounded-[20px] active:scale-[0.99] border transition-all duration-200 text-left cursor-pointer ${
+                            isDark
+                              ? "bg-red-500/10 border-red-500/20 hover:bg-red-500/20 text-red-500"
+                              : "bg-red-50/60 border-red-100/80 hover:bg-red-100/50 text-red-500"
+                          }`}
                         >
                           <div className="flex items-center gap-3.5">
                             <Icon className="w-5.5 h-5.5 text-red-500 shrink-0" />
@@ -1299,13 +1414,17 @@ export default function LoginPage() {
                       <button
                         key={index}
                         onClick={item.action}
-                        className="w-full flex items-center justify-between py-4 px-5 rounded-[20px] bg-[#393939] hover:bg-[#484848] active:scale-[0.99] transition-all duration-200 text-left cursor-pointer shadow-sm"
+                        className={`w-full flex items-center justify-between py-4 px-5 rounded-[20px] active:scale-[0.99] transition-all duration-200 text-left cursor-pointer shadow-sm ${
+                          isDark
+                            ? "bg-[#393939] hover:bg-[#484848] text-white"
+                            : "bg-zinc-100 hover:bg-zinc-200 text-zinc-900"
+                        }`}
                       >
                         <div className="flex items-center gap-3.5">
-                          <Icon className="w-5.5 h-5.5 text-white/90 shrink-0" />
-                          <span className="text-sm font-semibold text-white tracking-wide">{item.label}</span>
+                          <Icon className={`w-5.5 h-5.5 shrink-0 ${isDark ? "text-white/90" : "text-zinc-650"}`} />
+                          <span className={`text-sm font-semibold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>{item.label}</span>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-white/70" />
+                        <ChevronRight className={`w-5 h-5 ${isDark ? "text-white/70" : "text-zinc-400"}`} />
                       </button>
                     );
                   })}
@@ -1509,12 +1628,14 @@ export default function LoginPage() {
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
               <div className="absolute inset-0" onClick={() => setActiveModal(null)} />
               
-              <div className="w-full max-w-md bg-[#393939] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+              <div className={`w-full max-w-md rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t relative ${
+                isDark ? "bg-[#393939] border-white/5" : "bg-white border-zinc-200"
+              }`}>
                 {/* Notch indicator */}
-                <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
+                <div className={`w-12 h-1 rounded-full mb-2 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
                 
                 {/* Title */}
-                <p className="text-white text-base font-bold tracking-wide">Profildan chiqmoqchimisiz?</p>
+                <p className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Profildan chiqmoqchimisiz?</p>
                 
                 {/* Red Profile Logout Button with logout icon */}
                 <button
@@ -1533,7 +1654,9 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="w-full py-4 text-white/60 hover:text-white font-bold text-sm tracking-wide transition-all active:scale-98"
+                  className={`w-full py-4 font-bold text-sm tracking-wide transition-all active:scale-98 ${
+                    isDark ? "text-white/60 hover:text-white" : "text-zinc-500 hover:text-zinc-800"
+                  }`}
                 >
                   Bekor qilish
                 </button>
@@ -1546,12 +1669,14 @@ export default function LoginPage() {
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center transition-opacity duration-300 animate-fade-in">
               <div className="absolute inset-0" onClick={() => setActiveModal(null)} />
               
-              <div className="w-full max-w-md bg-[#393939] rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t border-white/5 relative">
+              <div className={`w-full max-w-md rounded-t-[32px] px-6 pt-3 pb-8 flex flex-col items-center gap-4 z-10 animate-slide-up border-t relative ${
+                isDark ? "bg-[#393939] border-white/5" : "bg-white border-zinc-200"
+              }`}>
                 {/* Notch indicator */}
-                <div className="w-12 h-1 bg-white/20 rounded-full mb-2" />
+                <div className={`w-12 h-1 rounded-full mb-2 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
                 
                 {/* Title */}
-                <p className="text-white text-base font-bold tracking-wide">Akkauntdan chiqmoqchimisiz?</p>
+                <p className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Akkauntni o'chirish tasdiqlansinmi?</p>
                 
                 {/* Red Account Delete Button with trash icon */}
                 <button
@@ -1570,7 +1695,9 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="w-full py-4 text-white/60 hover:text-white font-bold text-sm tracking-wide transition-all active:scale-98"
+                  className={`w-full py-4 font-bold text-sm tracking-wide transition-all active:scale-98 ${
+                    isDark ? "text-white/60 hover:text-white" : "text-zinc-500 hover:text-zinc-800"
+                  }`}
                 >
                   Bekor qilish
                 </button>
