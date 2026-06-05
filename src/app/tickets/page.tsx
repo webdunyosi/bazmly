@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronRight, Check } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 interface Voucher {
   id: string;
@@ -39,6 +40,7 @@ const MOCK_VOUCHERS: Voucher[] = [
 ];
 
 export default function VouchersPage() {
+  const { theme } = useTheme();
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   const [copied, setCopied] = useState(false);
   const [timers, setTimers] = useState<Record<string, number>>({});
@@ -95,12 +97,14 @@ export default function VouchersPage() {
     });
   };
 
+  const isDark = theme === "dark";
+
   return (
     <div className={`absolute inset-0 pb-6 overflow-y-auto bg-[var(--background)] flex flex-col font-sans select-none transition-all duration-300 ${selectedVoucher ? "z-[80]" : "z-40"}`}>
       
       {/* ==================== Header ==================== */}
       <div className="py-4 text-center pt-6">
-        <h1 className="text-[22px] font-extrabold text-white tracking-wide">
+        <h1 className={`text-[22px] font-extrabold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>
           Promokodlar
         </h1>
       </div>
@@ -115,21 +119,27 @@ export default function VouchersPage() {
             <div
               key={voucher.id}
               onClick={() => setSelectedVoucher(voucher)}
-              className="group p-4 flex items-center justify-between gap-4 border border-[#2A2A2A]/40 bg-[#393939] hover:bg-[#252528] rounded-[22px] cursor-pointer transition-all duration-300 shadow-md transform active:scale-[0.98]"
+              className={`group p-4 flex items-center justify-between gap-4 border cursor-pointer transition-all duration-300 shadow-sm transform active:scale-[0.98] ${
+                isDark 
+                  ? "border-[#2A2A2A]/40 bg-[#393939] hover:bg-[#252528] rounded-[22px]" 
+                  : "border-transparent bg-zinc-100 hover:bg-zinc-200/80 rounded-[22px]"
+              }`}
             >
               {/* Logo section */}
-              <div className="w-[50px] h-[50px] shrink-0 rounded-[14px] bg-[#FF5A00] flex flex-col items-center justify-center font-black text-white text-[10px] tracking-tighter leading-none shadow-[0_4px_12px_rgba(255,90,0,0.3)]">
+              <div className={`w-[50px] h-[50px] shrink-0 rounded-[14px] bg-[#FF6B00] flex flex-col items-center justify-center font-black text-white text-[10px] tracking-tighter leading-none ${
+                isDark ? "shadow-[0_4px_12px_rgba(255,90,0,0.3)]" : "shadow-md shadow-[#FF6B00]/10"
+              }`}>
                 <span className="scale-x-95">Bazmly</span>
               </div>
 
               {/* Text info */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-white text-xs font-semibold leading-normal break-words pr-2">
+                <h3 className={`text-xs font-bold leading-normal break-words pr-2 ${isDark ? "text-white" : "text-zinc-900"}`}>
                   {voucher.description}
                 </h3>
                 <div className="mt-1 flex items-center">
                   {isTimerActive ? (
-                    <span className="text-[#FF5A00] text-xs font-bold font-mono tracking-wider animate-pulse">
+                    <span className="text-[#FF6B00] text-xs font-bold font-mono tracking-wider animate-pulse">
                       {formatCountdown(timerVal)}
                     </span>
                   ) : (
@@ -142,7 +152,9 @@ export default function VouchersPage() {
 
               {/* Action Chevron */}
               <div className="shrink-0">
-                <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white transition-colors" />
+                <ChevronRight className={`w-5 h-5 transition-colors ${
+                  isDark ? "text-white/30 group-hover:text-white" : "text-zinc-400 group-hover:text-zinc-600"
+                }`} />
               </div>
             </div>
           );
@@ -160,28 +172,28 @@ export default function VouchersPage() {
       {/* ==================== Dimming Backdrop ==================== */}
       <div
         onClick={() => setSelectedVoucher(null)}
-        className={`fixed inset-0 z-[140] bg-black/75 backdrop-blur-[2px] transition-opacity duration-300 max-w-md mx-auto ${
-          selectedVoucher ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-[140] backdrop-blur-[2px] transition-opacity duration-300 max-w-md mx-auto ${
+          isDark ? "bg-black/75" : "bg-black/40"
+        } ${selectedVoucher ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
       />
 
       {/* ==================== Slide-Up Drawer / Bottom Sheet ==================== */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-[150] max-w-md mx-auto bg-[#393939] border-t border-[#2A2A2A]/40 rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl transition-transform duration-300 flex flex-col items-stretch transform ${
-          selectedVoucher ? "translate-y-0" : "translate-y-full"
-        }`}
+        className={`fixed inset-x-0 bottom-0 z-[150] max-w-md mx-auto border-t rounded-t-[32px] px-6 pb-8 pt-4 shadow-2xl transition-transform duration-300 flex flex-col items-stretch transform ${
+          isDark ? "bg-[#393939] border-[#2A2A2A]/40" : "bg-white border-zinc-100"
+        } ${selectedVoucher ? "translate-y-0" : "translate-y-full"}`}
       >
         {/* Drag pill handle */}
-        <div className="w-9 h-1 bg-white/20 rounded-full mx-auto mb-6" />
+        <div className={`w-9 h-1 rounded-full mx-auto mb-6 ${isDark ? "bg-white/20" : "bg-zinc-200"}`} />
 
         {selectedVoucher && (
           <div className="space-y-6">
             {/* Drawer Content */}
             <div className="space-y-2 text-left">
-              <h2 className="text-white text-xl font-bold tracking-tight">
+              <h2 className={`text-xl font-bold tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
                 Promokod {selectedVoucher.code}
               </h2>
-              <p className="text-white/70 text-xs font-semibold leading-relaxed">
+              <p className={`text-xs font-semibold leading-relaxed ${isDark ? "text-white/70" : "text-zinc-500"}`}>
                 {selectedVoucher.description}
               </p>
             </div>
@@ -191,7 +203,7 @@ export default function VouchersPage() {
               {/* Copy Button */}
               <button
                 onClick={() => handleCopy(selectedVoucher.code)}
-                className="w-full py-4 bg-[#FF5A00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF5A00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2"
+                className="w-full py-4 bg-[#FF6B00] hover:bg-[#E05000] text-white font-extrabold text-sm rounded-[24px] shadow-lg shadow-[#FF6B00]/20 hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {copied ? (
                   <>
@@ -206,7 +218,9 @@ export default function VouchersPage() {
               {/* Close Button */}
               <button
                 onClick={() => setSelectedVoucher(null)}
-                className="w-full py-3 bg-transparent text-white/90 hover:text-white font-bold text-sm tracking-wide transition-colors"
+                className={`w-full py-3 bg-transparent font-bold text-sm tracking-wide transition-colors cursor-pointer ${
+                  isDark ? "text-white/90 hover:text-white" : "text-zinc-500 hover:text-zinc-800"
+                }`}
               >
                 Ortga
               </button>
