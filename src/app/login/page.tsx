@@ -609,18 +609,20 @@ export default function LoginPage() {
                 /* ==================== SCREEN 1: CARDS LIST VIEW ==================== */
                 <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
                   {/* Top Bar Header */}
-                  <div className={`relative flex items-center justify-between px-6 py-5 border-b ${
-                    isDark ? "border-white/5" : "border-zinc-100"
+                  <div className={`relative flex items-center justify-between px-6 py-5 ${
+                    isDark ? "border-b border-white/5" : ""
                   }`}>
                     <button
                       onClick={() => setShowCards(false)}
                       className={`p-2 rounded-xl transition-all active:scale-95 ${
-                        isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                        isDark 
+                          ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" 
+                          : "bg-transparent text-zinc-950 hover:text-zinc-700"
                       }`}
                     >
-                      <ChevronLeft className="h-5 w-5" />
+                      <ChevronLeft className="h-6 w-6" />
                     </button>
-                    <h1 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Sozlamalar</h1>
+                    <h1 className={`text-lg font-semibold tracking-wide ${isDark ? "text-white" : "text-zinc-950"}`}>Sozlamalar</h1>
                     <div className="w-9 h-9" />
                   </div>
 
@@ -631,10 +633,10 @@ export default function LoginPage() {
                       <div
                         key={card.id}
                         onClick={() => setSelectedCardForDelete(card)}
-                        className={`w-full border rounded-[24px] p-6 flex flex-col justify-between h-44 shadow-2xl relative overflow-hidden transition-all duration-300 cursor-pointer active:scale-98 ${
+                        className={`w-full border rounded-[24px] p-6 flex flex-col justify-between h-44 relative overflow-hidden transition-all duration-300 cursor-pointer active:scale-98 ${
                           isDark
-                            ? "border-white/15 bg-[#393939] hover:border-primary/55"
-                            : "border-transparent bg-zinc-900 text-white hover:bg-zinc-950"
+                            ? "border-white/15 bg-[#393939] hover:border-primary/55 shadow-2xl"
+                            : "border-slate-300 bg-white hover:border-slate-400 shadow-sm"
                         }`}
                       >
                         <div className="flex justify-between items-start">
@@ -646,19 +648,21 @@ export default function LoginPage() {
                             />
                           ) : (
                             <div className="flex items-center gap-2 text-primary font-black uppercase text-sm tracking-widest">
-                              <CreditCard className="h-7 w-7 text-white" />
-                              <span>Uzcard</span>
+                              <CreditCard className={`h-7 w-7 ${isDark ? "text-white" : "text-zinc-900"}`} />
+                              <span className={isDark ? "text-white" : "text-zinc-900"}>Uzcard</span>
                             </div>
                           )}
                         </div>
-                        <div className="space-y-4">
-                          <p className="text-white text-base font-semibold tracking-wide capitalize">
-                            {card.name || fullName}
-                          </p>
-                          <p className="text-white text-base font-mono tracking-widest font-semibold">
-                            {card.number}
-                          </p>
-                        </div>
+                        <p className={`text-[15px] font-semibold tracking-wide capitalize ${
+                          isDark ? "text-white/90" : "text-black"
+                        }`}>
+                          {card.name || fullName}
+                        </p>
+                        <p className={`text-[15px] font-semibold tracking-widest ${
+                          isDark ? "text-white/90" : "text-black"
+                        }`}>
+                          {card.number}
+                        </p>
                       </div>
                     ))}
 
@@ -666,9 +670,9 @@ export default function LoginPage() {
                     <div className={`w-full border rounded-[24px] p-6 flex flex-col justify-between h-44 transition-all duration-300 ${
                       isDark
                         ? "border-white/10 bg-[#393939]/20 hover:bg-[#393939]/30"
-                        : "border-zinc-200 bg-zinc-50 hover:bg-zinc-100"
+                        : "border-primary bg-white hover:border-primary/80"
                     }`}>
-                      <div className={`flex justify-between items-start ${isDark ? "text-white/60" : "text-zinc-400"}`}>
+                      <div className={`flex justify-between items-start ${isDark ? "text-white/60" : "text-primary"}`}>
                         <CreditCard className="h-7 w-7" />
                       </div>
                       <div className="flex justify-start">
@@ -679,9 +683,9 @@ export default function LoginPage() {
                             setNewCardExpiry("");
                             setShowAddCard(true);
                           }}
-                          className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all active:scale-95"
+                          className="flex items-center gap-2.5 px-6 py-3 rounded-full bg-[#FF5A00] hover:bg-[#E05000] text-white text-sm font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 cursor-pointer"
                         >
-                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-primary text-xs font-black">+</span>
+                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white text-[#FF5A00] text-xs font-black">+</span>
                           <span>Karta qo'shish</span>
                         </button>
                       </div>
@@ -1211,14 +1215,20 @@ export default function LoginPage() {
             /* ==================== HIGH-FIDELITY REGISTERED EDIT PROFILE VIEW ==================== */
             <div className="flex flex-col flex-1">
               {/* Custom Top Bar Header matching screenshot */}
-              <div className="relative flex items-center justify-between px-6 py-5 border-b border-white/5">
+              <div className={`relative flex items-center justify-between px-6 py-5 border-b ${
+                isDark ? "border-white/5" : "border-zinc-100"
+              }`}>
                 <button
                   onClick={handleSaveProfile}
-                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all active:scale-95"
+                  className={`p-2 rounded-xl transition-all active:scale-95 ${
+                    isDark 
+                      ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" 
+                      : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                  }`}
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <h1 className="text-base font-bold text-white tracking-wide">Sozlamalar</h1>
+                <h1 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Sozlamalar</h1>
                 <div className="w-9 h-9" />
               </div>
 
