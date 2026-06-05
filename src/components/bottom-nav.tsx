@@ -5,8 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, ChevronLeft, CheckCircle, Aperture, AlertCircle } from "lucide-react";
 
+import { useTheme } from "@/components/theme-provider";
+
 export default function BottomNav() {
   const pathname = usePathname();
+  const { theme } = useTheme();
   const [isRegistered, setIsRegistered] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -197,6 +200,8 @@ export default function BottomNav() {
     return <div id="global-bottom-nav" className="hidden" />;
   }
 
+  const isDark = theme === "dark";
+
   return (
     <>
       {/* Dynamic Sliding Bottom Bar Container */}
@@ -204,7 +209,9 @@ export default function BottomNav() {
         
         {/* Dynamic Curved SVG Background with sliding notch */}
         <svg
-          className="absolute inset-0 w-full h-[95px] drop-shadow-[0_-4px_15px_rgba(0,0,0,0.5)] pointer-events-none"
+          className={`absolute inset-0 w-full h-[95px] pointer-events-none transition-all duration-300 ${
+            isDark ? "drop-shadow-[0_-4px_15px_rgba(0,0,0,0.5)]" : "drop-shadow-[0_-4px_10px_rgba(0,0,0,0.06)]"
+          }`}
           viewBox="0 0 400 95"
           preserveAspectRatio="none"
           fill="none"
@@ -213,14 +220,14 @@ export default function BottomNav() {
           {/* Main dynamic path that morphs smoothly */}
           <path
             d={getDynamicPath(cX)}
-            fill="#333333"
+            fill={isDark ? "#333333" : "#FFFFFF"}
             className="transition-all duration-300 ease-out"
           />
           {/* Top dynamic border path that morphs smoothly */}
           <path
             d={getTopBorderPath(cX)}
             fill="none"
-            stroke="#404040"
+            stroke={isDark ? "#404040" : "#E5E7EB"}
             strokeWidth="1.5"
             className="transition-all duration-300 ease-out"
           />
@@ -232,6 +239,42 @@ export default function BottomNav() {
           {navItems.map((item, index) => {
             const isCenterFAB = index === 2;
             const isActive = index === activeIdx;
+
+            // Compute icon class dynamically based on theme and active state
+            let iconClass = "h-5 w-5 object-contain transition-all duration-300 ease-out ";
+            if (isCenterFAB) {
+              iconClass += "opacity-0 scale-50 pointer-events-none translate-y-4";
+            } else if (isDark) {
+              if (isActive) {
+                iconClass += "brightness-0 invert opacity-100";
+              } else {
+                iconClass += "brightness-0 invert opacity-40 hover:opacity-75";
+              }
+            } else {
+              if (isActive) {
+                iconClass += "filter-primary opacity-100";
+              } else {
+                iconClass += "brightness-0 opacity-40 hover:opacity-75";
+              }
+            }
+
+            // Compute text class dynamically based on theme and active state
+            let textClass = "text-[11px] font-bold transition-all duration-300 ease-out ";
+            if (isCenterFAB) {
+              textClass += "opacity-0 scale-50 pointer-events-none translate-y-4";
+            } else if (isDark) {
+              if (isActive) {
+                textClass += "text-white";
+              } else {
+                textClass += "text-[#8E8E93] hover:text-white/80";
+              }
+            } else {
+              if (isActive) {
+                textClass += "text-primary";
+              } else {
+                textClass += "text-[#8E8E93] hover:text-zinc-700";
+              }
+            }
 
             return (
               <div
@@ -246,23 +289,9 @@ export default function BottomNav() {
                     <img
                       src={item.icon}
                       alt={item.name}
-                      className={`h-5 w-5 object-contain transition-all duration-300 ease-out ${
-                        isCenterFAB
-                          ? "opacity-0 scale-50 pointer-events-none translate-y-4"
-                          : isActive
-                            ? "brightness-0 invert opacity-100"
-                            : "brightness-0 invert opacity-40 hover:opacity-75"
-                      }`}
+                      className={iconClass}
                     />
-                    <span
-                      className={`text-[11px] font-medium transition-all duration-300 ease-out ${
-                        isCenterFAB
-                          ? "opacity-0 scale-50 pointer-events-none translate-y-4"
-                          : isActive
-                            ? "text-white"
-                            : "text-[#8E8E93] hover:text-white/80"
-                      }`}
-                    >
+                    <span className={textClass}>
                       {item.name}
                     </span>
                   </button>
@@ -274,23 +303,9 @@ export default function BottomNav() {
                     <img
                       src={item.icon}
                       alt={item.name}
-                      className={`h-5 w-5 object-contain transition-all duration-300 ease-out ${
-                        isCenterFAB
-                          ? "opacity-0 scale-50 pointer-events-none translate-y-4"
-                          : isActive
-                            ? "brightness-0 invert opacity-100"
-                            : "brightness-0 invert opacity-40 hover:opacity-75"
-                      }`}
+                      className={iconClass}
                     />
-                    <span
-                      className={`text-[11px] font-medium transition-all duration-300 ease-out ${
-                        isCenterFAB
-                          ? "opacity-0 scale-50 pointer-events-none translate-y-4"
-                          : isActive
-                            ? "text-white"
-                            : "text-[#8E8E93] hover:text-white/80"
-                      }`}
-                    >
+                    <span className={textClass}>
                       {item.name}
                     </span>
                   </Link>
@@ -304,7 +319,11 @@ export default function BottomNav() {
         {/* ==================== SMOOTH SLIDING ACTIVE CIRCLE (FAB) ==================== */}
         {/* Floating position is centered with perfectly matching concentric space around it */}
         <div
-          className="absolute w-[60px] h-[60px] rounded-full bg-[#3A3A3C] border border-white/10 flex items-center justify-center shadow-2xl z-50 transition-all duration-300 ease-out cursor-pointer active:scale-95"
+          className={`absolute w-[60px] h-[60px] rounded-full flex items-center justify-center shadow-2xl z-50 transition-all duration-300 ease-out cursor-pointer active:scale-95 ${
+            isDark 
+              ? "bg-[#3A3A3C] border border-white/10" 
+              : "bg-white border border-zinc-200 shadow-md"
+          }`}
           style={{
             top: "5px", // Mathematically centered: floats 10px above Y=15, and has 14px gap at the bottom Y=79
             left: "50%",
@@ -312,11 +331,13 @@ export default function BottomNav() {
           }}
           onClick={handleScanClick}
         >
-          <button className="w-full h-full flex items-center justify-center">
+          <button className="w-full h-full flex items-center justify-center cursor-pointer">
             <img
               src="/icons/scan-barcode.png"
               alt="Skaner"
-              className="h-8 w-8 object-contain brightness-0 invert animate-scale-up"
+              className={`h-8 w-8 object-contain animate-scale-up ${
+                isDark ? "brightness-0 invert" : "filter-primary"
+              }`}
             />
           </button>
         </div>

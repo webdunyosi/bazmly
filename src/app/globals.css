@@ -92,3 +92,7 @@ body {
 .animate-laser {
   animation: laser 2s ease-in-out infinite;
 }
+
+.filter-primary {
+  filter: invert(53%) sepia(85%) saturate(3574%) hue-rotate(346deg) brightness(102%) contrast(101%);
+}

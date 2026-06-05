@@ -18,13 +18,14 @@ import {
   ChevronDown,
   Sun,
   Moon,
+  Bookmark,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import { useTheme } from "@/components/theme-provider";
 
 export default function WelcomePage() {
   const [mounted, setMounted] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(true);
   const [fullName, setFullName] = useState("Shahzod");
   const [activeTab, setActiveTab] = useState("Umumiy");
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -139,10 +140,13 @@ export default function WelcomePage() {
 
   useEffect(() => {
     setMounted(true);
-    const registered = localStorage.getItem("isRegistered") === "true";
-    if (registered) {
+    const registered = localStorage.getItem("isRegistered");
+    if (registered === "false") {
+      setIsRegistered(false);
+    } else {
       setIsRegistered(true);
       setFullName(localStorage.getItem("fullName") || "Shahzod");
+      localStorage.setItem("isRegistered", "true");
     }
 
     // Check URL parameters client-side
@@ -202,10 +206,16 @@ export default function WelcomePage() {
     <div className="flex flex-col flex-1 bg-[var(--background)] text-foreground transition-colors duration-300 relative">
       {isRegistered ? (
         /* ==================== HIGH-FIDELITY REGISTERED ASOSIY (HOME) VIEW ==================== */
-        <div className="flex flex-col flex-1 min-h-screen bg-[var(--background)]">
+        <div className="flex flex-col flex-1 min-h-screen bg-white dark:bg-[var(--background)]">
           {/* Header Row */}
-          <div className="flex items-center justify-between px-6 py-5 border-b border-brand-light-border dark:border-brand-dark-border">
-            <h1 className="text-xl font-bold text-foreground dark:text-white tracking-wide">
+          <div className={`flex items-center justify-between px-6 transition-all duration-200 ${
+            theme === "dark" 
+              ? "py-5 border-b border-brand-dark-border" 
+              : "pt-6 pb-2"
+          }`}>
+            <h1 className={`text-xl font-extrabold tracking-tight ${
+              theme === "dark" ? "text-white" : "text-zinc-900"
+            }`}>
               Hayrli kun! {fullName}
             </h1>
             
@@ -214,36 +224,59 @@ export default function WelcomePage() {
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="p-2.5 rounded-xl bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 text-foreground/80 dark:text-white/80 hover:text-primary transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-sm"
+                className={`p-2.5 rounded-2xl transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-sm ${
+                  theme === "dark"
+                    ? "bg-[#393939] border border-white/5 text-white/80"
+                    : "bg-white border border-zinc-200 text-zinc-800"
+                }`}
                 aria-label="Toggle theme"
               >
-                {theme === "dark" ? <Sun className="h-5 w-5 text-orange-400" /> : <Moon className="h-5 w-5 text-indigo-600" />}
+                {theme === "dark" ? <Sun className="h-5 w-5 text-orange-400" /> : <Moon className="h-5 w-5 text-zinc-600" />}
               </button>
 
-              {/* Top Right Voucher Link Button */}
-              <Link
-                href="/tickets"
-                className="p-2.5 rounded-xl bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 text-foreground/80 dark:text-white/80 hover:text-white transition-all active:scale-95 flex items-center justify-center"
-              >
-                <Ticket className="h-5 w-5" />
-              </Link>
+              {theme === "dark" ? (
+                /* Original Voucher button for dark mode */
+                <Link
+                  href="/tickets"
+                  className="p-2.5 rounded-xl bg-[#393939] border border-white/5 text-white/80 hover:text-white transition-all active:scale-95 flex items-center justify-center"
+                >
+                  <Ticket className="h-5 w-5" />
+                </Link>
+              ) : (
+                /* Bookmark button for light mode */
+                <button
+                  type="button"
+                  className="p-2.5 rounded-2xl bg-white border border-zinc-200 text-zinc-800 hover:text-primary transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-sm"
+                  aria-label="Bookmarks"
+                >
+                  <Bookmark className="h-5 w-5" />
+                </button>
+              )}
             </div>
           </div>
 
           {/* Main Scrollable Area */}
-          <main className="flex-1 overflow-y-auto px-6 py-6 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left">
+          <main className={`flex-1 overflow-y-auto px-6 pb-8 flex flex-col gap-6 max-w-md mx-auto w-full text-left ${theme === "dark" ? "py-6" : "py-4"}`}>
             
             {/* Search Input and Filter Button */}
             <div className="flex items-center gap-3">
               {/* Search Field */}
-              <div className="flex-1 relative flex items-center bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-2xl overflow-hidden focus-within:border-primary/50 transition-all duration-300">
-                <span className="pl-4 text-foreground/40 dark:text-white/40">
+              <div className={`flex-1 relative flex items-center rounded-2xl overflow-hidden transition-all duration-300 ${
+                theme === "dark" 
+                  ? "bg-[#393939] border border-white/5 focus-within:border-primary/50" 
+                  : "bg-zinc-100 border border-transparent focus-within:ring-2 focus-within:ring-primary/20"
+              }`}>
+                <span className={`pl-4 ${theme === "dark" ? "text-white/40" : "text-zinc-400"}`}>
                   <Search className="h-5 w-5" />
                 </span>
                 <input
                   type="text"
                   placeholder="Qidirish"
-                  className="w-full pl-3 pr-4 py-4 bg-transparent text-sm text-foreground dark:text-white font-medium outline-none placeholder:text-foreground/30 dark:placeholder:text-white/30"
+                  className={`w-full pl-3 pr-4 py-3.5 bg-transparent text-sm font-medium outline-none ${
+                    theme === "dark" 
+                      ? "text-white placeholder:text-white/30" 
+                      : "text-zinc-800 placeholder:text-zinc-400"
+                  }`}
                 />
               </div>
 
@@ -251,14 +284,16 @@ export default function WelcomePage() {
               <button
                 type="button"
                 onClick={() => setShowPartySheet(true)}
-                className="p-4 bg-[#FF6B00] hover:bg-[#E05000] text-white rounded-2xl shadow-lg shadow-[#FF6B00]/20 transition-all active:scale-95 flex items-center justify-center cursor-pointer"
+                className={`bg-[#FF6B00] hover:bg-[#E05000] text-white rounded-2xl shadow-lg shadow-[#FF6B00]/20 transition-all active:scale-95 flex items-center justify-center cursor-pointer ${
+                  theme === "dark" ? "p-4" : "p-3.5"
+                }`}
               >
                 <SlidersHorizontal className="h-5 w-5" />
               </button>
             </div>
 
             {/* Horizontal Tabs / Pills */}
-            <div className="flex w-full gap-2.5 pb-1">
+            <div className="flex w-full gap-2.5 pb-1 overflow-x-auto scrollbar-none">
               {horizontalTabs.map((tab) => {
                 const isActive = activeTab === tab;
                 return (
@@ -266,10 +301,14 @@ export default function WelcomePage() {
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`flex-1 text-center py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
+                    className={`flex-1 text-center py-2.5 px-5 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
                       isActive
-                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/10"
-                        : "bg-brand-light-card dark:bg-[#393939] border-brand-light-border dark:border-white/5 text-foreground/60 dark:text-white/60 hover:text-foreground/85 dark:hover:text-white/85"
+                        ? (theme === "dark" 
+                            ? "bg-primary text-white border-primary shadow-lg shadow-primary/10" 
+                            : "bg-primary text-white border-primary shadow-md")
+                        : (theme === "dark" 
+                            ? "bg-[#393939] border-white/5 text-white/60 hover:text-white" 
+                            : "bg-white border-zinc-200 text-zinc-800 hover:text-zinc-900")
                     }`}
                   >
                     {tab}
@@ -281,15 +320,22 @@ export default function WelcomePage() {
             {/* Section: Eng yaxshi takliflar */}
             <div className="space-y-4">
               <div className="flex justify-between items-center pr-1">
-                <h2 className="text-lg font-bold text-foreground dark:text-white tracking-wide">Eng yaxshi takliflar</h2>
-                <Link href="/tickets" className="text-xs text-foreground/40 dark:text-white/40 font-semibold hover:text-foreground/70 dark:hover:text-white/70 transition-colors">
+                <h2 className={`text-base font-extrabold tracking-tight ${theme === "dark" ? "text-white" : "text-zinc-900"}`}>Eng yaxshi takliflar</h2>
+                <Link 
+                  href="/tickets" 
+                  className={`text-xs font-bold hover:underline transition-colors ${
+                    theme === "dark" ? "text-white/40" : "text-[#FF6B00]"
+                  }`}
+                >
                   Barchasini ko'rish
                 </Link>
               </div>
 
               {/* Banner Card Carousel */}
               <div className="relative group">
-                <div className="w-full aspect-[2.1/1] rounded-[28px] overflow-hidden border border-brand-light-border dark:border-white/5 shadow-2xl relative bg-brand-light-card dark:bg-[#393939]">
+                <div className={`w-full aspect-[2.1/1] rounded-[28px] overflow-hidden border shadow-lg relative ${
+                  theme === "dark" ? "bg-[#393939] border-white/5" : "bg-white border-zinc-100"
+                }`}>
                   {BANNERS.map((banner, index) => {
                     const isActive = currentSlide === index;
                     return (
@@ -314,8 +360,12 @@ export default function WelcomePage() {
                         key={index}
                         type="button"
                         onClick={() => setCurrentSlide(index)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          isActive ? "w-4 bg-primary" : "w-1.5 bg-white/20 hover:bg-white/40"
+                        className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                          isActive 
+                            ? "w-4 bg-primary" 
+                            : (theme === "dark" 
+                                ? "w-1.5 bg-white/20 hover:bg-white/40" 
+                                : "w-1.5 bg-zinc-300 hover:bg-zinc-400")
                         }`}
                       />
                     );
@@ -327,8 +377,13 @@ export default function WelcomePage() {
             {/* Section: Top Restoranlar */}
             <div className="space-y-4">
               <div className="flex justify-between items-center pr-1">
-                <h2 className="text-lg font-bold text-foreground dark:text-white tracking-wide">Top Restoranlar</h2>
-                <Link href="/feed" className="text-xs text-foreground/40 dark:text-white/40 font-semibold hover:text-foreground/70 dark:hover:text-white/70 transition-colors">
+                <h2 className={`text-base font-extrabold tracking-tight ${theme === "dark" ? "text-white" : "text-zinc-900"}`}>Top Restoranlar</h2>
+                <Link 
+                  href="/feed" 
+                  className={`text-xs font-bold hover:underline transition-colors ${
+                    theme === "dark" ? "text-white/40" : "text-[#FF6B00]"
+                  }`}
+                >
                   Barchasini ko'rish
                 </Link>
               </div>
@@ -336,10 +391,16 @@ export default function WelcomePage() {
               {/* Large Full-Width Restaurant Card */}
               <Link
                 href="/venue/3"
-                className="w-full bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-3xl p-5 flex flex-col gap-4 shadow-xl hover:border-brand-light-border/80 dark:hover:border-white/10 transition-all block text-left"
+                className={`w-full border rounded-3xl flex flex-col gap-4 shadow-lg transition-all block text-left ${
+                  theme === "dark" 
+                    ? "bg-[#393939] border-white/5 p-5 hover:border-white/10" 
+                    : "bg-white border-zinc-100 p-4 hover:border-zinc-200"
+                }`}
               >
                 {/* Visual Image Display */}
-                <div className="w-full h-44 rounded-2xl overflow-hidden relative border border-brand-light-border dark:border-white/5">
+                <div className={`w-full h-44 rounded-2xl overflow-hidden relative border ${
+                  theme === "dark" ? "border-white/5" : "border-zinc-100"
+                }`}>
                   <img
                     src="/images/home/top.png"
                     alt="Rest One"
@@ -351,15 +412,17 @@ export default function WelcomePage() {
                 <div className="space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-base font-bold text-foreground dark:text-white tracking-wide">Rest One</h3>
-                      <div className="flex items-center gap-1.5 text-xs text-[#10B981] font-bold pt-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]" />
+                      <h3 className={`text-base font-extrabold tracking-tight ${theme === "dark" ? "text-white" : "text-zinc-900"}`}>Rest One</h3>
+                      <div className="flex items-center gap-1 text-xs text-green-600 font-bold pt-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                         <span>Ochiq</span>
                       </div>
                     </div>
 
                     {/* Star Rating */}
-                    <div className="flex items-center gap-1 text-xs font-bold text-[#FFB800] bg-foreground/5 dark:bg-white/5 border border-foreground/5 dark:border-white/5 px-2.5 py-1 rounded-lg">
+                    <div className={`flex items-center gap-1 text-xs font-bold text-[#FFB800] border px-2.5 py-1 rounded-xl ${
+                      theme === "dark" ? "bg-white/5 border-white/5" : "bg-yellow-500/5 border-yellow-500/10"
+                    }`}>
                       <Star className="h-3.5 w-3.5 fill-[#FFB800] text-[#FFB800]" />
                       <span>4.8 (356 ta sharh)</span>
                     </div>
@@ -367,21 +430,27 @@ export default function WelcomePage() {
 
                   {/* Metadata Row */}
                   <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-1.5 text-xs text-foreground/60 dark:text-white/60 font-semibold">
-                      <Compass className="h-4 w-4 text-foreground/40 dark:text-white/40" />
+                    <div className={`flex items-center gap-1.5 text-xs font-bold ${theme === "dark" ? "text-white/60" : "text-zinc-500"}`}>
+                      <Compass className="h-4 w-4 text-zinc-400 dark:text-white/40" />
                       <span>1 km uzoqda</span>
                     </div>
 
                     {/* Deposit green badge */}
-                    <div className="flex items-center gap-1 bg-green-500/10 border border-green-500/20 text-[#10B981] font-bold rounded-lg px-2.5 py-1 text-[10px] uppercase tracking-wider">
+                    <div className={`flex items-center gap-1 font-bold rounded-lg px-2.5 py-1 text-[10px] uppercase tracking-wider transition-colors ${
+                      theme === "dark" 
+                        ? "bg-green-500/10 border border-green-500/20 text-[#10B981]" 
+                        : "bg-[#10B981] text-white shadow-sm"
+                    }`}>
                       <Wallet className="h-3.5 w-3.5 shrink-0" />
                       <span>Depozitlik</span>
                     </div>
                   </div>
 
                   {/* Address */}
-                  <div className="flex items-center gap-1.5 text-xs text-foreground/50 dark:text-white/50 font-semibold truncate pt-0.5">
-                    <MapPin className="h-4 w-4 text-foreground/30 dark:text-white/30 shrink-0" />
+                  <div className={`flex items-center gap-1.5 text-xs font-semibold truncate pt-0.5 ${
+                    theme === "dark" ? "text-white/50" : "text-zinc-500"
+                  }`}>
+                    <MapPin className="h-4 w-4 text-zinc-400 dark:text-white/30 shrink-0" />
                     <span className="truncate">O'zbekiston ko'chasi 27 - uy</span>
                   </div>
                 </div>
@@ -398,10 +467,14 @@ export default function WelcomePage() {
               ].map((card) => (
                 <div
                   key={card.id}
-                  className="bg-brand-light-card dark:bg-[#393939] border border-brand-light-border dark:border-white/5 rounded-3xl p-3 flex flex-col gap-3 shadow-lg text-left relative"
+                  className={`border rounded-3xl p-3 flex flex-col gap-3 shadow-md text-left relative ${
+                    theme === "dark" ? "bg-[#393939] border-white/5 shadow-lg" : "bg-white border-zinc-100"
+                  }`}
                 >
                   {/* Image Viewport */}
-                  <div className="w-full aspect-[1.1/1] rounded-2xl overflow-hidden relative border border-brand-light-border dark:border-white/5 bg-zinc-800">
+                  <div className={`w-full aspect-[1.1/1] rounded-2xl overflow-hidden relative border ${
+                    theme === "dark" ? "bg-zinc-800 border-white/5" : "bg-zinc-100 border-zinc-100"
+                  }`}>
                     <img
                       src={card.img}
                       alt={card.name}
@@ -412,7 +485,7 @@ export default function WelcomePage() {
                   {/* Info details */}
                   <div className="space-y-2 pr-0.5">
                     <div className="flex items-center justify-between gap-1">
-                      <h4 className="text-xs font-bold text-foreground dark:text-white tracking-wide truncate">{card.name}</h4>
+                      <h4 className={`text-xs font-bold tracking-wide truncate ${theme === "dark" ? "text-white" : "text-zinc-950"}`}>{card.name}</h4>
                       <div className="flex items-center gap-0.5 text-[10px] font-bold text-[#FFB800] shrink-0">
                         <Star className="h-3 w-3 fill-[#FFB800] text-[#FFB800]" />
                         <span>{card.rating}</span>
@@ -420,26 +493,30 @@ export default function WelcomePage() {
                     </div>
 
                     {/* Distance & Status info */}
-                    <div className="flex items-center gap-1 text-[10px] text-foreground/50 dark:text-white/50 font-bold leading-none">
-                      <Compass className="h-3 w-3 text-foreground/30 dark:text-white/30 shrink-0" />
+                    <div className={`flex items-center gap-1 text-[10px] font-bold leading-none ${theme === "dark" ? "text-white/50" : "text-zinc-500"}`}>
+                      <Compass className="h-3 w-3 text-zinc-400 dark:text-white/30 shrink-0" />
                       <span>2 km</span>
-                      <span className="text-foreground/20 dark:text-white/20">|</span>
+                      <span className="opacity-20">|</span>
                       <span className="text-[#10B981]">Ochiq</span>
                     </div>
 
                     {/* Address */}
-                    <div className="flex items-center gap-1 text-[10px] text-foreground/40 dark:text-white/40 font-semibold truncate leading-none">
-                      <MapPin className="h-3 w-3 text-foreground/20 dark:text-white/20 shrink-0" />
+                    <div className={`flex items-center gap-1 text-[10px] font-semibold truncate leading-none ${theme === "dark" ? "text-white/40" : "text-zinc-400"}`}>
+                      <MapPin className="h-3 w-3 text-zinc-400 dark:text-white/20 shrink-0" />
                       <span className="truncate">Umid qo'rg'...</span>
                     </div>
 
                     {/* View Button */}
                     <Link
                       href={`/venue/${card.id}`}
-                      className="w-full py-2 bg-foreground dark:bg-white hover:bg-foreground/90 dark:hover:bg-zinc-100 text-background dark:text-zinc-950 text-[10px] font-bold rounded-full flex items-center justify-center gap-1 active:scale-95 transition-all shadow-md mt-1"
+                      className={`w-full py-2 text-[10px] font-bold rounded-full flex items-center justify-center gap-1 active:scale-95 transition-all shadow-md mt-1 ${
+                        theme === "dark" 
+                          ? "bg-white text-zinc-950 hover:bg-zinc-100" 
+                          : "bg-[#FF6B00] text-white hover:bg-[#E05000]"
+                      }`}
                     >
                       <span>Ko'rish</span>
-                      <ArrowRight className="h-3 w-3 text-background dark:text-zinc-950 stroke-[3]" />
+                      <ArrowRight className={`h-3 w-3 stroke-[3] ${theme === "dark" ? "text-zinc-950" : "text-white"}`} />
                     </Link>
                   </div>
                 </div>
