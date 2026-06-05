@@ -408,10 +408,12 @@ export default function LoginPage() {
                     <button
                       onClick={() => setShowCardOtp(false)}
                       className={`p-2 rounded-xl transition-all active:scale-95 ${
-                        isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                        isDark 
+                          ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" 
+                          : "bg-transparent text-zinc-950 hover:text-zinc-700"
                       }`}
                     >
-                      <X className="h-5 w-5" />
+                      <X className="h-6 w-6" />
                     </button>
                     <div className="w-9 h-9" />
                   </div>
@@ -419,9 +421,9 @@ export default function LoginPage() {
                   {/* Verification Form Content */}
                   <main className="flex-1 px-6 py-4 flex flex-col justify-between max-w-md mx-auto w-full">
                     <div className="space-y-4">
-                      <h1 className={`text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>Send verification code</h1>
-                      <p className={`text-xs leading-relaxed ${isDark ? "text-white/60" : "text-zinc-500"}`}>
-                        We'll send a code to your phone number to verify your account.
+                      <h1 className={`text-3xl font-bold tracking-tight ${isDark ? "text-white" : "text-black"}`}>Send verification code</h1>
+                      <p className={`text-base leading-relaxed ${isDark ? "text-white/60" : "text-zinc-800"}`}>
+                        We'll send a code to your phone number to verify your card
                       </p>
 
                       {/* 6 OTP Code Slots */}
@@ -430,11 +432,13 @@ export default function LoginPage() {
                           <div
                             key={idx}
                             className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold transition-all duration-200 ${
-                              isDark ? "bg-[#393939]" : "bg-zinc-100"
+                              isDark 
+                                ? "bg-[#393939] border-white/10" 
+                                : "bg-white border-zinc-200 text-black"
                             } ${
                               cardOtp[idx] 
-                                ? "border-primary text-primary scale-105 dark:text-white" 
-                                : isDark ? "border-white/10 text-white/30" : "border-zinc-200 text-zinc-400"
+                                ? "border-[#FF5A00] text-[#FF5A00]" 
+                                : ""
                             }`}
                           >
                             {cardOtp[idx] || ""}
@@ -447,7 +451,7 @@ export default function LoginPage() {
                         <button
                           type="button"
                           onClick={() => showToast("Kod qayta yuborildi!")}
-                          className="text-xs font-bold text-primary hover:text-primary-hover transition-colors"
+                          className="text-xs font-bold text-[#FF5A00] hover:text-primary-hover transition-colors"
                         >
                           Resent code
                         </button>
@@ -482,17 +486,21 @@ export default function LoginPage() {
                           setNewCardExpiry("");
                           setCardOtp(["", "", "", "", "", ""]);
                         }}
-                        className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
-                          cardOtp.every(digit => digit !== "")
-                            ? "bg-primary text-white shadow-primary/20 shadow-lg"
-                            : "bg-primary/20 text-white/30 cursor-not-allowed"
+                        className={`w-full py-4 rounded-3xl font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          cardOtp.some(digit => digit !== "")
+                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer"
+                            : isDark
+                              ? "bg-primary/20 text-white/30 cursor-not-allowed"
+                              : "bg-[#FF5A00]/20 text-white cursor-not-allowed"
                         }`}
                       >
                         Next
                       </button>
 
                       {/* Custom Simulated Numeric Keypad matching screenshot 4 */}
-                      <div className="grid grid-cols-3 gap-y-3.5 gap-x-5 px-4">
+                      <div className={`grid grid-cols-3 gap-y-3 gap-x-4 px-4 py-4 rounded-t-3xl ${
+                        isDark ? "bg-[#2C2C2E]/50" : "bg-[#D1D3D9]/60 backdrop-blur-md"
+                      }`}>
                         {[
                           { val: "1", sub: "" },
                           { val: "2", sub: "abc" },
@@ -506,21 +514,28 @@ export default function LoginPage() {
                           { val: "+*#", sub: "" },
                           { val: "0", sub: "" },
                           { val: "⌫", sub: "" }
-                        ].map((btn, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => handleKeypadPress(btn.val)}
-                            className={`rounded-xl py-3 flex flex-col items-center justify-center transition-all duration-100 ${
-                              isDark ? "bg-[#2C2C2E] hover:bg-[#3A3A3C] active:bg-[#48484A]" : "bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300"
-                            }`}
-                          >
-                            <span className={`text-xl font-bold leading-tight ${isDark ? "text-white" : "text-zinc-900"}`}>{btn.val}</span>
-                            {btn.sub && <span className={`text-[9px] font-medium uppercase tracking-widest leading-none ${
-                              isDark ? "text-white/40" : "text-zinc-500"
-                            }`}>{btn.sub}</span>}
-                          </button>
-                        ))}
+                        ].map((btn, index) => {
+                          const isSpecial = btn.val === "+*#" || btn.val === "⌫";
+                          return (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => handleKeypadPress(btn.val)}
+                              className={`rounded-lg py-2.5 flex flex-col items-center justify-center transition-all duration-100 ${
+                                isDark
+                                  ? "bg-[#2C2C2E] hover:bg-[#3A3A3C] active:bg-[#48484A]"
+                                  : isSpecial
+                                    ? "bg-transparent text-black hover:bg-zinc-200 active:bg-zinc-300"
+                                    : "bg-white text-black shadow-[0_1px_1px_rgba(0,0,0,0.18)] hover:bg-zinc-50 active:bg-zinc-150"
+                              }`}
+                            >
+                              <span className={`text-xl font-bold leading-tight ${isDark ? "text-white" : "text-black"}`}>{btn.val}</span>
+                              {btn.sub && <span className={`text-[9px] font-medium uppercase tracking-widest leading-none ${
+                                isDark ? "text-white/40" : "text-zinc-500"
+                              }`}>{btn.sub}</span>}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </main>
@@ -529,38 +544,46 @@ export default function LoginPage() {
                 /* ==================== SCREEN 2 & 3: ADD CARD DETAILS VIEW ==================== */
                 <div className={`flex flex-col flex-1 bg-[var(--background)] ${isDark ? "text-white" : "text-zinc-900"}`}>
                   {/* Top Bar Header */}
-                  <div className={`relative flex items-center justify-between px-6 py-5 border-b ${
-                    isDark ? "border-white/5" : "border-zinc-100"
+                  <div className={`relative flex items-center justify-between px-6 py-5 ${
+                    isDark ? "border-b border-white/5" : ""
                   }`}>
                     <button
                       onClick={() => setShowAddCard(false)}
                       className={`p-2 rounded-xl transition-all active:scale-95 ${
-                        isDark ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                        isDark 
+                          ? "bg-white/5 text-white/80 hover:bg-white/10 hover:text-white" 
+                          : "bg-transparent text-zinc-950 hover:text-zinc-700"
                       }`}
                     >
-                      <ChevronLeft className="h-5 w-5" />
+                      <ChevronLeft className="h-6 w-6" />
                     </button>
-                    <h1 className={`text-base font-bold tracking-wide ${isDark ? "text-white" : "text-zinc-900"}`}>Karta ma'lumotlari</h1>
+                    <h1 className={`text-lg font-semibold tracking-wide ${isDark ? "text-white" : "text-zinc-950"}`}>Karta ma‘lumotlari</h1>
                     <div className="w-9 h-9" />
                   </div>
 
                   {/* Form Content */}
                   <main className="flex-1 px-6 py-8 flex flex-col justify-between max-w-md mx-auto w-full">
                     <div className="space-y-6">
-                      {/* Card Number field with internal orange icon */}
+                      {/* Card Number field with internal custom orange icon */}
                       <div className="space-y-2">
-                        <div className={`relative flex items-center rounded-2xl border overflow-hidden transition-all duration-300 focus-within:border-primary/50 ${
-                          isDark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+                        <div className={`relative flex items-center rounded-2xl border overflow-hidden transition-all duration-300 ${
+                          isDark 
+                            ? "bg-[#393939] border-white/5 focus-within:border-primary/50" 
+                            : "bg-zinc-100 border-transparent focus-within:bg-zinc-200"
                         }`}>
-                          <span className="pl-4 text-primary shrink-0">
-                            <CreditCard className="h-5 w-5" />
+                          <span className="pl-4 shrink-0 flex items-center justify-center">
+                            <svg className="h-5 w-5 text-[#FF5A00]" viewBox="0 0 24 24" fill="currentColor">
+                              <rect x="2" y="5" width="20" height="14" rx="3" />
+                              <line x1="2" y1="10" x2="22" y2="10" stroke="white" strokeWidth="2" />
+                              <rect x="5" y="14" width="3" height="2" fill="white" />
+                            </svg>
                           </span>
                           <input
                             type="text"
                             value={newCardNumber}
                             onChange={handleCardNumberChange}
                             placeholder="Karta raqami"
-                            className={`w-full pl-3 pr-4 py-4 bg-transparent text-sm font-semibold tracking-wider outline-none placeholder:text-white/30 ${
+                            className={`w-full pl-3 pr-4 py-4 bg-transparent text-sm font-semibold tracking-wider outline-none ${
                               isDark ? "text-white placeholder:text-white/30" : "text-zinc-900 placeholder:text-zinc-400"
                             }`}
                           />
@@ -569,15 +592,17 @@ export default function LoginPage() {
 
                       {/* Expiry field */}
                       <div className="space-y-2">
-                        <div className={`relative flex items-center rounded-2xl border overflow-hidden w-36 transition-all duration-300 focus-within:border-primary/50 ${
-                          isDark ? "bg-[#393939] border-white/5" : "bg-zinc-100 border-zinc-200"
+                        <div className={`relative flex items-center rounded-2xl border overflow-hidden w-36 transition-all duration-300 ${
+                          isDark 
+                            ? "bg-[#393939] border-white/5 focus-within:border-primary/50" 
+                            : "bg-zinc-100 border-transparent focus-within:bg-zinc-200"
                         }`}>
                           <input
                             type="text"
                             value={newCardExpiry}
                             onChange={handleCardExpiryChange}
                             placeholder="OO/YY"
-                            className={`w-full px-4 py-4 bg-transparent text-sm font-semibold tracking-widest text-center outline-none placeholder:text-white/30 ${
+                            className={`w-full px-4 py-4 bg-transparent text-sm font-semibold tracking-wider outline-none ${
                               isDark ? "text-white placeholder:text-white/30" : "text-zinc-900 placeholder:text-zinc-400"
                             }`}
                           />
@@ -594,10 +619,12 @@ export default function LoginPage() {
                           setCardOtp(["", "", "", "", "", ""]);
                           setShowCardOtp(true);
                         }}
-                        className={`w-full py-4 rounded-2xl font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                        className={`w-full py-4 rounded-3xl font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
                           newCardNumber.length === 19 && newCardExpiry.length === 5
-                            ? "bg-primary text-white shadow-primary/20 hover:bg-primary-hover"
-                            : "bg-[#E25C00]/10 text-white/20 cursor-not-allowed"
+                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/20 hover:bg-[#E05000] cursor-pointer"
+                            : isDark
+                              ? "bg-[#E25C00]/10 text-white/20 cursor-not-allowed"
+                              : "bg-[#FF5A00]/20 text-white cursor-not-allowed"
                         }`}
                       >
                         Tasdiqlash
@@ -1344,25 +1371,33 @@ export default function LoginPage() {
                 <div className="w-full flex flex-col items-center text-center mb-8">
                   {/* Circle Avatar with custom styling */}
                   <div className="relative">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl relative bg-zinc-200 dark:bg-zinc-800">
+                    <div className={`w-36 h-36 rounded-full overflow-hidden relative ${
+                      isDark 
+                        ? "border-4 border-primary/20 bg-zinc-800 shadow-2xl" 
+                        : "bg-zinc-150 shadow-md"
+                    }`}>
                       <img
                         src="/images/profil.jpg"
                         alt="User Portrait"
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="absolute bottom-0 right-1 bg-primary text-white p-2.5 rounded-full shadow-lg border-2 border-brand-light dark:border-brand-dark">
-                      <User className="h-4.5 w-4.5" />
-                    </div>
+                    {isDark && (
+                      <div className="absolute bottom-0 right-1 bg-primary text-white p-2.5 rounded-full shadow-lg border-2 border-brand-dark">
+                        <User className="h-4.5 w-4.5" />
+                      </div>
+                    )}
                   </div>
 
-                  <div className="mt-5 space-y-1">
-                    <h2 className={`text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-zinc-900"}`}>
+                  <div className="mt-5 space-y-1.5">
+                    <h2 className={`text-2xl font-bold tracking-tight ${isDark ? "text-white" : "text-black"}`}>
                       {fullName || "Alisher Raimov"}
                     </h2>
-                    <div className={`flex items-center justify-center gap-1.5 text-xs font-medium ${isDark ? "text-white/60" : "text-zinc-500"}`}>
-                      <MapPin className={`h-4 w-4 ${isDark ? "text-primary" : "text-[#FF6B00]"}`} />
-                      <span>{location.split(",")[0]}</span>
+                    <div className={`flex items-center justify-center gap-2 ${
+                      isDark ? "text-xs font-medium text-white/60" : "text-base font-semibold text-black"
+                    }`}>
+                      <MapPin className={isDark ? "h-4 w-4 text-primary" : "h-5.5 w-5.5 text-black"} />
+                      <span>{isDark ? location.split(",")[0] : location}</span>
                     </div>
                   </div>
 
