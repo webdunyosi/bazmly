@@ -4,7 +4,7 @@ import React, { useState, useEffect, use, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, notFound } from "next/navigation";
 import Navbar from "@/components/navbar";
-import { MOCK_VENUES } from "../../feed/page";
+import { MOCK_VENUES } from "@/data/venues";
 import { 
   ChevronLeft, 
   User, 

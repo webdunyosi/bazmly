@@ -4,7 +4,7 @@ import React, { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/navbar";
-import { MOCK_VENUES } from "../feed/page";
+import { MOCK_VENUES } from "@/data/venues";
 
 function SuccessContent() {
   const searchParams = useSearchParams();

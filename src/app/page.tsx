@@ -196,7 +196,7 @@ export default function WelcomePage() {
     },
   ];
 
-  const horizontalTabs = ["Umumiy", "Restoranlar", "To'yxonalar", "Katering", "Bezaklar"];
+  const horizontalTabs = ["Umumiy", "Restoranlar", "To'yxonalar"];
 
   return (
     <div className="flex flex-col flex-1 bg-[var(--background)] text-foreground transition-colors duration-300 relative">
@@ -258,7 +258,7 @@ export default function WelcomePage() {
             </div>
 
             {/* Horizontal Tabs / Pills */}
-            <div className="flex overflow-x-auto gap-2.5 pb-1 scrollbar-none">
+            <div className="flex w-full gap-2.5 pb-1">
               {horizontalTabs.map((tab) => {
                 const isActive = activeTab === tab;
                 return (
@@ -266,7 +266,7 @@ export default function WelcomePage() {
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`px-5 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
+                    className={`flex-1 text-center py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-200 border ${
                       isActive
                         ? "bg-primary text-white border-primary shadow-lg shadow-primary/10"
                         : "bg-brand-light-card dark:bg-[#393939] border-brand-light-border dark:border-white/5 text-foreground/60 dark:text-white/60 hover:text-foreground/85 dark:hover:text-white/85"
