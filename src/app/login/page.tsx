@@ -960,21 +960,6 @@ export default function LoginPage() {
     <div
       className="flex flex-col flex-1 bg-[var(--background)] transition-colors duration-300 relative"
     >
-      {/* Floating Theme Toggle Button */}
-      <div className="absolute top-5 right-5 z-50">
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className={`p-2.5 rounded-2xl transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-md ${
-            isDark
-              ? "bg-[#393939] border border-white/5 text-white/80"
-              : "bg-white border border-zinc-200 text-zinc-800"
-          }`}
-          aria-label="Toggle theme"
-        >
-          {isDark ? <Sun className="h-5 w-5 text-orange-400 animate-scale-up" /> : <Moon className="h-5 w-5 text-zinc-650 animate-scale-up" />}
-        </button>
-      </div>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-xl animate-fade-in flex items-center gap-2 max-w-xs text-center border border-white/20">
@@ -2359,50 +2344,16 @@ export default function LoginPage() {
         <div className="flex flex-col flex-1">
           <Navbar />
 
-          <main className="flex-1 flex items-center justify-center py-10 px-4 max-w-md mx-auto w-full">
-            <div className={`w-full border rounded-[32px] shadow-2xl flex flex-col justify-between p-8 relative overflow-hidden transition-all duration-300 ${
+          <main className="flex-1 flex items-start justify-center pt-2 pb-10 px-4 max-w-md mx-auto w-full">
+            <div className={`w-full flex flex-col justify-between p-2 relative overflow-hidden transition-all duration-300 ${
               isDark
-                ? "border-white/5 bg-[#393939] text-white"
-                : "border-zinc-150 bg-white text-zinc-900"
+                ? "text-white"
+                : "text-zinc-900"
             }`}>
 
               {/* Wizard Navigation Header */}
               {step !== 1 && step !== 2 && (
-                <div className="flex items-center justify-between mb-4">
-                  {step === "register_customer" ? (
-                    <div className="w-9 h-9" />
-                  ) : (
-                    <button
-                      onClick={handleBackStep}
-                      className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                        step === "login" || step === "register_customer_phone_otp" || step === "register_customer_email_otp" || step === "register_customer_name"
-                          ? (isDark ? "bg-white/5 hover:bg-white/10 text-white/80" : "bg-zinc-100 hover:bg-zinc-200 text-zinc-800")
-                          : accountType === "restaurant"
-                            ? "bg-zinc-100 hover:bg-zinc-200 text-zinc-800"
-                            : "bg-white/5 hover:bg-white/10 text-white"
-                      }`}
-                      disabled={loading}
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-                  )}
-                  
-                  <span className="text-xs font-bold tracking-wider opacity-60">
-                    {step === "login" && "Kirish"}
-                    {step === "register_customer" && "Akkaunt yaratish"}
-                    {step === "register_customer_phone_otp" && "Tasdiqlash kodi"}
-                    {step === "register_customer_email_otp" && "Email tasdiqlash"}
-                    {step === "register_customer_name" && "Ism va familiya"}
-                    {step === 3 && "3 / 8 - BOSQICH"}
-                    {step === "region" && "Manzil (Viloyat)"}
-                    {step === "district" && "Manzil (Tuman)"}
-                    {step === 4 && "4 / 8 - BOSQICH"}
-                    {step === 5 && "5 / 8 - BOSQICH"}
-                    {step === 6 && "6 / 8 - BOSQICH"}
-                    {step === 7 && "7 / 8 - BOSQICH"}
-                    {step === 8 && "8 / 8 - BOSQICH"}
-                  </span>
-
+                <div className="flex justify-end mb-4">
                   {["register_customer", "register_customer_phone_otp", "register_customer_email_otp", "register_customer_name"].includes(String(step)) ? (
                     <button
                       onClick={() => setStep(2)}
@@ -2413,7 +2364,7 @@ export default function LoginPage() {
                       <X className="h-5 w-5" />
                     </button>
                   ) : (
-                    <div className="w-9 h-9" />
+                    <div className="h-9" />
                   )}
                 </div>
               )}
@@ -2563,11 +2514,18 @@ export default function LoginPage() {
                   <form onSubmit={handleLoginSubmit} className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 text-left -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
                           <Lock className="h-6 w-6 text-[#FF5A00]" />
                           <h2 className="text-xl font-black text-foreground dark:text-white">Kirish</h2>
                         </div>
-                        <p className="text-xs text-foreground/50 dark:text-white/50">
+                        <p className="text-xs text-foreground/50 dark:text-white/50 pl-7">
                           Login va parolingizni kiritib tizimga kiring
                         </p>
                       </div>
@@ -2636,20 +2594,27 @@ export default function LoginPage() {
                       )}
 
                       {/* Formatted Phone Input Box */}
-                      <div className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border transition-all ${
+                      <div className={`flex items-center gap-3.5 px-4 py-1.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
                         isDark 
-                          ? "bg-[#2C2C2E]/60 border-white/10 text-white focus-within:border-[#FF5A00]" 
-                          : "bg-zinc-50 border-zinc-200 text-black focus-within:border-[#FF5A00]"
+                          ? "bg-[#2C2C2E]/60 text-white" 
+                          : "bg-zinc-50 text-black"
                       }`}>
                         {/* Flag indicator +998 */}
                         <div className="flex items-center gap-2 shrink-0 select-none">
                           <img src="/icons/uzb.png" alt="UZ" className="w-5.5 h-5.5 rounded-full object-cover shadow-sm border border-zinc-200/50" />
                           <span className="text-sm font-bold">+998</span>
                         </div>
-                        {/* Phone digits view */}
-                        <div className="flex-1 text-sm font-bold tracking-wide">
-                          {phone ? formatPhone(phone) : <span className={isDark ? "text-white/20" : "text-zinc-350"}>90 123 45 67</span>}
-                        </div>
+                        <input
+                          type="tel"
+                          maxLength={14}
+                          value={formatPhone(phone)}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, "");
+                            setPhone(val.substring(0, 9));
+                          }}
+                          placeholder="90 123 45 67"
+                          className="flex-1 bg-transparent text-sm font-bold tracking-wide outline-none border-none focus:ring-0 p-0"
+                        />
                       </div>
 
                       {/* Apple and Google Continuation Buttons */}
@@ -2724,8 +2689,7 @@ export default function LoginPage() {
                         Akkaunt yaratish
                       </button>
 
-                      {/* Keypad */}
-                      {renderNumericKeypad(handleCustomKeyPress)}
+
                     </div>
                   </div>
                 )}
@@ -2735,8 +2699,17 @@ export default function LoginPage() {
                   <div className="flex-1 flex flex-col justify-between animate-scale-up space-y-6">
                     <div className="space-y-5">
                       <div className="text-left space-y-1">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Tasdiqlash kodi</h2>
-                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Tasdiqlash kodi</h2>
+                        </div>
+                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Telefon raqamingizga yuborilgan 6 xonali kodni kiriting <span className="text-[#FF5A00] font-semibold">+998 {formatPhone(phone)}</span>
                         </p>
                       </div>
@@ -2747,29 +2720,15 @@ export default function LoginPage() {
                         </div>
                       )}
 
-                      {/* 6-Digit OTP Box Grid */}
-                      <div className="flex gap-2 justify-center py-2">
-                        {[0, 1, 2, 3, 4, 5].map((idx) => {
-                          const digit = otp[idx];
-                          const isActive = otp.findIndex((d) => d === "") === idx;
-                          return (
-                            <div
-                              key={idx}
-                              className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold transition-all duration-200 ${
-                                isDark
-                                  ? "bg-[#2C2C2E] border-white/10 text-white"
-                                  : "bg-zinc-50 border-zinc-200 text-black"
-                              } ${
-                                digit ? "border-[#FF5A00] text-[#FF5A00]" : ""
-                              } ${
-                                isActive ? "ring-2 ring-[#FF5A00]/50 border-[#FF5A00]" : ""
-                              }`}
-                            >
-                              {digit || ""}
-                            </div>
-                          );
-                        })}
-                      </div>
+                      <input
+                        type="text"
+                        value={otp.join("")}
+                        onChange={(e) => setOtp(e.target.value.split(""))}
+                        placeholder="000000"
+                        className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
+                          isDark ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" : "bg-zinc-50 border-zinc-200 text-black focus:border-[#FF5A00]"
+                        } text-sm font-bold tracking-wide`}
+                      />
 
                       {/* Resend Code Link */}
                       <div className="text-center">
@@ -2811,8 +2770,7 @@ export default function LoginPage() {
                         Keyingisi
                       </button>
 
-                      {/* Keypad */}
-                      {renderNumericKeypad(handleCustomKeyPress)}
+
                     </div>
                   </div>
                 )}
@@ -2822,8 +2780,17 @@ export default function LoginPage() {
                   <div className="flex-1 flex flex-col justify-between animate-scale-up space-y-6">
                     <div className="space-y-5">
                       <div className="text-left space-y-1">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Email tasdiqlash</h2>
-                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Email tasdiqlash</h2>
+                        </div>
+                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Tasdiqlash kodi elektron pochtangizga yuborildi: <span className="text-[#FF5A00] font-semibold">all*****mov564@gmail.com</span>
                         </p>
                       </div>
@@ -2834,29 +2801,15 @@ export default function LoginPage() {
                         </div>
                       )}
 
-                      {/* 6-Digit OTP Box Grid */}
-                      <div className="flex gap-2 justify-center py-2">
-                        {[0, 1, 2, 3, 4, 5].map((idx) => {
-                          const digit = otp[idx];
-                          const isActive = otp.findIndex((d) => d === "") === idx;
-                          return (
-                            <div
-                              key={idx}
-                              className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold transition-all duration-200 ${
-                                isDark
-                                  ? "bg-[#2C2C2E] border-white/10 text-white"
-                                  : "bg-zinc-50 border-zinc-200 text-black"
-                              } ${
-                                digit ? "border-[#FF5A00] text-[#FF5A00]" : ""
-                              } ${
-                                isActive ? "ring-2 ring-[#FF5A00]/50 border-[#FF5A00]" : ""
-                              }`}
-                            >
-                              {digit || ""}
-                            </div>
-                          );
-                        })}
-                      </div>
+                      <input
+                        type="text"
+                        value={otp.join("")}
+                        onChange={(e) => setOtp(e.target.value.split(""))}
+                        placeholder="000000"
+                        className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
+                          isDark ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" : "bg-zinc-50 border-zinc-200 text-black focus:border-[#FF5A00]"
+                        } text-sm font-bold tracking-wide`}
+                      />
 
                       {/* Resend Code Link */}
                       <div className="text-center">
@@ -2896,8 +2849,7 @@ export default function LoginPage() {
                         Keyingisi
                       </button>
 
-                      {/* Keypad */}
-                      {renderNumericKeypad(handleCustomKeyPress)}
+
                     </div>
                   </div>
                 )}
@@ -2907,8 +2859,17 @@ export default function LoginPage() {
                   <div className="flex-1 flex flex-col justify-between animate-scale-up space-y-6">
                     <div className="space-y-5">
                       <div className="text-left space-y-1">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Ism va familiya</h2>
-                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"}`}>Ismingizni kiriting</p>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Ism va familiya</h2>
+                        </div>
+                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>Ismingizni kiriting</p>
                       </div>
 
                       {error && (
@@ -2918,15 +2879,17 @@ export default function LoginPage() {
                       )}
 
                       {/* Name Input Box */}
-                      <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all ${
-                        isDark 
-                          ? "bg-[#2C2C2E]/60 border-white/10 text-white focus-within:border-[#FF5A00]" 
-                          : "bg-zinc-50 border-zinc-200 text-black focus-within:border-[#FF5A00]"
-                      }`}>
-                        <div className="flex-1 text-sm font-bold tracking-wide">
-                          {fullName ? fullName : <span className={isDark ? "text-white/20" : "text-zinc-350"}>Ism va familiyangiz</span>}
-                        </div>
-                      </div>
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Ism va familiyangiz"
+                        className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
+                          isDark 
+                            ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" 
+                            : "bg-zinc-50 border-zinc-200 text-black focus:border-[#FF5A00]"
+                        } text-sm font-bold tracking-wide`}
+                      />
                     </div>
 
                     <div className="space-y-4">
@@ -2952,8 +2915,7 @@ export default function LoginPage() {
                         Tasdiqlash
                       </button>
 
-                      {/* Custom QWERTY Keyboard */}
-                      {renderQwertyKeyboard(handleQwertyPress)}
+
                     </div>
                   </div>
                 )}
@@ -2964,10 +2926,19 @@ export default function LoginPage() {
                     <div className="space-y-4">
                       {/* Title & Subtitle */}
                       <div className="space-y-1.5 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          {accountType === "restaurant" ? "Restoraningizni kiriting" : "To'yxonangizni kiriting"}
-                        </h2>
-                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            Restoraningizni kiritish
+                          </h2>
+                        </div>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Ma'lumotlarni to'g'ri kiritilishiga e'tiborli bo'ling!
                         </p>
                       </div>
@@ -2981,29 +2952,28 @@ export default function LoginPage() {
                       <div className="space-y-4 text-left">
                         {/* 1. Venue Name Input */}
                         <div className="space-y-2">
-                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-700"}`}>
-                            Joyingiz nomini kiriting
+                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-750"}`}>
+                            Joyingiz nomini kiritish
                           </label>
-                          <div 
-                            onClick={() => setActivePartnerField("name")}
-                            className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all cursor-pointer ${
-                              activePartnerField === "name"
-                                ? "border-[#FF5A00] ring-2 ring-[#FF5A00]/20"
-                                : isDark ? "bg-[#2C2C2E]/60 border-white/10" : "bg-zinc-50 border-zinc-200"
-                            }`}
-                          >
-                            <div className="flex-1 text-sm font-bold tracking-wide">
-                              {venueName ? venueName : <span className={isDark ? "text-white/20" : "text-zinc-350"}>Yozish</span>}
-                            </div>
-                          </div>
+                          <input 
+                            type="text"
+                            value={venueName}
+                            onChange={(e) => setVenueName(e.target.value)}
+                            placeholder="Yozish"
+                            className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
+                              isDark 
+                                ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" 
+                                : "bg-white border-zinc-200 text-black focus:border-[#FF5A00]"
+                            } text-sm font-bold tracking-wide`}
+                          />
                         </div>
 
                         {/* 2. Activity Category selector */}
                         <div className="space-y-2">
-                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-700"}`}>
+                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-750"}`}>
                             Faoliyat turini tanlang
                           </label>
-                          <div className="flex gap-3">
+                          <div className="flex gap-2.5 flex-wrap">
                             {/* Restoran Pill */}
                             <button
                               type="button"
@@ -3011,21 +2981,21 @@ export default function LoginPage() {
                                 setAccountType("restaurant");
                                 setVenueType("restaurant");
                               }}
-                              className={`flex-1 py-3 px-5 rounded-full border flex items-center justify-between text-sm font-bold transition-all ${
+                              className={`py-2 px-4 rounded-full border flex items-center gap-2 text-sm font-bold transition-all cursor-pointer ${
                                 accountType === "restaurant"
                                   ? "bg-[#FF5A00] border-[#FF5A00] text-white shadow-md shadow-[#FF5A00]/15"
                                   : isDark
-                                    ? "bg-transparent border-white/20 text-white/80 hover:bg-white/5"
-                                    : "bg-white border-[#FF5A00] text-[#FF5A00] hover:bg-[#FF5A00]/5"
+                                    ? "bg-transparent border-white/25 text-white/80 hover:bg-white/5"
+                                    : "bg-white border-zinc-200 text-zinc-800 hover:bg-zinc-50"
                               }`}
                             >
                               <span>Restoran</span>
                               {accountType === "restaurant" ? (
                                 <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0">
-                                  <Check className="h-3.5 w-3.5 text-[#FF5A00] stroke-[3.5px]" />
+                                  <X className="h-3 w-3 text-[#FF5A00] stroke-[3px]" />
                                 </div>
                               ) : (
-                                <div className="w-5 h-5 rounded-full border border-zinc-300 dark:border-white/30 shrink-0" />
+                                <div className="w-5 h-5 rounded-full border border-zinc-350 dark:border-white/25 bg-transparent shrink-0" />
                               )}
                             </button>
 
@@ -3036,21 +3006,21 @@ export default function LoginPage() {
                                 setAccountType("toyxona");
                                 setVenueType("toyxona");
                               }}
-                              className={`flex-1 py-3 px-5 rounded-full border flex items-center justify-between text-sm font-bold transition-all ${
+                              className={`py-2 px-4 rounded-full border flex items-center gap-2 text-sm font-bold transition-all cursor-pointer ${
                                 accountType === "toyxona"
                                   ? "bg-[#FF5A00] border-[#FF5A00] text-white shadow-md shadow-[#FF5A00]/15"
                                   : isDark
-                                    ? "bg-transparent border-white/20 text-white/80 hover:bg-white/5"
-                                    : "bg-white border-[#FF5A00] text-[#FF5A00] hover:bg-[#FF5A00]/5"
+                                    ? "bg-transparent border-white/25 text-white/80 hover:bg-white/5"
+                                    : "bg-white border-zinc-200 text-zinc-800 hover:bg-zinc-50"
                               }`}
                             >
                               <span>To'yxona</span>
                               {accountType === "toyxona" ? (
                                 <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0">
-                                  <Check className="h-3.5 w-3.5 text-[#FF5A00] stroke-[3.5px]" />
+                                  <X className="h-3 w-3 text-[#FF5A00] stroke-[3px]" />
                                 </div>
                               ) : (
-                                <div className="w-5 h-5 rounded-full border border-zinc-300 dark:border-white/30 shrink-0" />
+                                <div className="w-5 h-5 rounded-full border border-zinc-350 dark:border-white/25 bg-transparent shrink-0" />
                               )}
                             </button>
                           </div>
@@ -3058,14 +3028,14 @@ export default function LoginPage() {
 
                         {/* 3. Address select trigger */}
                         <div className="space-y-2">
-                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-700"}`}>
+                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-750"}`}>
                             Manzilni kiritish
                           </label>
                           <button
                             type="button"
                             onClick={() => setStep("region")}
-                            className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border transition-all text-left ${
-                              isDark ? "bg-[#2C2C2E]/60 border-white/10 text-white" : "bg-zinc-50 border-zinc-200 text-zinc-800"
+                            className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border transition-all text-left cursor-pointer ${
+                              isDark ? "bg-[#2C2C2E]/60 border-white/10 text-white" : "bg-white border-zinc-200 text-zinc-800"
                             }`}
                           >
                             <span className={`text-sm font-bold ${reg && dist ? "" : isDark ? "text-white/20" : "text-zinc-350"}`}>
@@ -3077,28 +3047,26 @@ export default function LoginPage() {
                       </div>
                     </div>
 
-                    {/* Bottom Action Button & Keyboard */}
+                    {/* Bottom Action Button */}
                     <div className="space-y-4">
-                      {venueName.trim() && reg && dist ? (
-                        <button
-                          type="button"
-                          onClick={handleNextStep}
-                          className="w-full py-4 rounded-[20px] bg-[#FF5A00] hover:bg-[#E04F00] text-white font-bold text-sm shadow-lg shadow-[#FF5A00]/15 transition-all active:scale-[0.99] cursor-pointer"
-                        >
-                          Tasdiqlash
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          disabled
-                          className="w-full py-4 rounded-[20px] bg-[#FF5A00]/20 text-white/50 font-bold text-sm cursor-not-allowed"
-                        >
-                          Keyingisi
-                        </button>
-                      )}
-
-                      {/* Display QWERTY keyboard if name field is active */}
-                      {activePartnerField === "name" && renderQwertyKeyboard(handleQwertyPress)}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!venueName.trim()) {
+                            setError("Iltimos joyingiz nomini kiriting!");
+                            return;
+                          }
+                          if (!reg || !dist) {
+                            setError("Iltimos manzilni kiriting!");
+                            return;
+                          }
+                          setError("");
+                          handleNextStep();
+                        }}
+                        className="w-full py-4 rounded-full bg-[#FF5A00] hover:bg-[#E04F00] text-white font-bold text-sm shadow-lg shadow-[#FF5A00]/15 transition-all active:scale-[0.99] cursor-pointer"
+                      >
+                        Tasdiqlash
+                      </button>
                     </div>
                   </div>
                 )}
@@ -3108,10 +3076,19 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          Viloyatni tanlang
-                        </h2>
-                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            Viloyatni tanlang
+                          </h2>
+                        </div>
+                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Muassasa joylashgan viloyatni belgilang
                         </p>
                       </div>
@@ -3165,10 +3142,19 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          Tumanni tanlang
-                        </h2>
-                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            Tumanni tanlang
+                          </h2>
+                        </div>
+                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           {reg} viloyati bo'yicha tumanni tanlang
                         </p>
                       </div>
@@ -3214,10 +3200,19 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1.5 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          Ish tartibi (soat)
-                        </h2>
-                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            Ish tartibi (soat)
+                          </h2>
+                        </div>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Ishlash soatlarini kiriting (masalan: 09:00 - 23:00)
                         </p>
                       </div>
@@ -3229,23 +3224,32 @@ export default function LoginPage() {
                       )}
 
                       <div className="space-y-4 text-left">
-                        <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
-                          isDark 
-                            ? "bg-[#2C2C2E]/60 text-white" 
-                            : "bg-zinc-50 text-black"
-                        }`}>
-                          <div className="flex-1 text-sm font-bold tracking-wide">
-                            {venueHours ? venueHours : <span className={isDark ? "text-white/20" : "text-zinc-350"}>09:00 - 23:00</span>}
-                          </div>
-                        </div>
+                        <input
+                          type="text"
+                          value={venueHours}
+                          onChange={(e) => setVenueHours(e.target.value)}
+                          placeholder="09:00 - 23:00"
+                          className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
+                            isDark 
+                              ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" 
+                              : "bg-white border-zinc-200 text-black focus:border-[#FF5A00]"
+                          } text-sm font-bold tracking-wide`}
+                        />
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       <button
                         type="button"
-                        onClick={handleNextStep}
-                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                        onClick={() => {
+                          if (!venueHours.trim()) {
+                            setError("Iltimos ish tartibini kiriting!");
+                            return;
+                          }
+                          setError("");
+                          handleNextStep();
+                        }}
+                        className={`w-full py-4 rounded-full font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
                           venueHours.trim()
                             ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
                             : isDark
@@ -3255,8 +3259,6 @@ export default function LoginPage() {
                       >
                         Keyingisi
                       </button>
-
-                      {renderQwertyKeyboard(handleQwertyPress)}
                     </div>
                   </div>
                 )}
@@ -3266,10 +3268,19 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1.5 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          Mijozlar sig'imi
-                        </h2>
-                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            Mijozlar sig'imi
+                          </h2>
+                        </div>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Muassasangizning umumiy sig'imini belgilang (kishi soni)
                         </p>
                       </div>
@@ -3281,23 +3292,32 @@ export default function LoginPage() {
                       )}
 
                       <div className="space-y-4 text-left">
-                        <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
-                          isDark 
-                            ? "bg-[#2C2C2E]/60 text-white" 
-                            : "bg-zinc-50 text-black"
-                        }`}>
-                          <div className="flex-1 text-sm font-bold tracking-wide">
-                            {venueCapacity ? `${venueCapacity} kishi` : <span className={isDark ? "text-white/20" : "text-zinc-350"}>Sig'imi (masalan: 150)</span>}
-                          </div>
-                        </div>
+                        <input
+                          type="number"
+                          value={venueCapacity}
+                          onChange={(e) => setVenueCapacity(e.target.value)}
+                          placeholder="Sig'imi (masalan: 150)"
+                          className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
+                            isDark 
+                              ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" 
+                              : "bg-white border-zinc-200 text-black focus:border-[#FF5A00]"
+                          } text-sm font-bold tracking-wide`}
+                        />
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       <button
                         type="button"
-                        onClick={handleNextStep}
-                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                        onClick={() => {
+                          if (!venueCapacity.trim()) {
+                            setError("Iltimos mijozlar sig'imini kiriting!");
+                            return;
+                          }
+                          setError("");
+                          handleNextStep();
+                        }}
+                        className={`w-full py-4 rounded-full font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
                           venueCapacity.trim()
                             ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
                             : isDark
@@ -3307,8 +3327,6 @@ export default function LoginPage() {
                       >
                         Keyingisi
                       </button>
-
-                      {renderNumericKeypad(handleCustomKeyPress)}
                     </div>
                   </div>
                 )}
@@ -3318,10 +3336,19 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1.5 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          O'rtacha narx
-                        </h2>
-                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            O'rtacha narx
+                          </h2>
+                        </div>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Bir kishi uchun o'rtacha xizmat narxini belgilang (UZS)
                         </p>
                       </div>
@@ -3333,23 +3360,32 @@ export default function LoginPage() {
                       )}
 
                       <div className="space-y-4 text-left">
-                        <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
-                          isDark 
-                            ? "bg-[#2C2C2E]/60 text-white" 
-                            : "bg-zinc-50 text-black"
-                        }`}>
-                          <div className="flex-1 text-sm font-bold tracking-wide">
-                            {venuePrice ? `${Number(venuePrice).toLocaleString("uz-UZ")} UZS` : <span className={isDark ? "text-white/20" : "text-zinc-350"}>O'rtacha narx (masalan: 150 000)</span>}
-                          </div>
-                        </div>
+                        <input
+                          type="number"
+                          value={venuePrice}
+                          onChange={(e) => setVenuePrice(e.target.value)}
+                          placeholder="O'rtacha narx (masalan: 150 000)"
+                          className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
+                            isDark 
+                              ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" 
+                              : "bg-white border-zinc-200 text-black focus:border-[#FF5A00]"
+                          } text-sm font-bold tracking-wide`}
+                        />
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       <button
                         type="button"
-                        onClick={handleNextStep}
-                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                        onClick={() => {
+                          if (!venuePrice.trim()) {
+                            setError("Iltimos o'rtacha narxni kiriting!");
+                            return;
+                          }
+                          setError("");
+                          handleNextStep();
+                        }}
+                        className={`w-full py-4 rounded-full font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
                           venuePrice.trim()
                             ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
                             : isDark
@@ -3359,8 +3395,6 @@ export default function LoginPage() {
                       >
                         Keyingisi
                       </button>
-
-                      {renderNumericKeypad(handleCustomKeyPress)}
                     </div>
                   </div>
                 )}
@@ -3370,10 +3404,19 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1.5 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          Fotogalereya yuklash
-                        </h2>
-                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            Fotogalereya yuklash
+                          </h2>
+                        </div>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Jozibali rasmlardan kamida bittasini tanlang
                         </p>
                       </div>
@@ -3447,10 +3490,19 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1.5 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          Telefon raqami
-                        </h2>
-                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            Telefon raqami
+                          </h2>
+                        </div>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Tizimga kirish uchun telefon raqamingizni kiriting
                         </p>
                       </div>
@@ -3463,20 +3515,29 @@ export default function LoginPage() {
 
                       <div className="space-y-4 text-left">
                         {/* Phone Input Box */}
-                        <div className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
+                        <div className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border transition-all ${
                           isDark 
-                            ? "bg-[#2C2C2E]/60 text-white" 
-                            : "bg-zinc-50 text-black"
+                            ? "bg-[#2C2C2E]/60 border-white/10 text-white focus-within:border-[#FF5A00]" 
+                            : "bg-white border-zinc-200 text-black focus-within:border-[#FF5A00]"
                         }`}>
                           {/* Flag indicator +998 */}
                           <div className="flex items-center gap-2 shrink-0 select-none">
                             <img src="/icons/uzb.png" alt="UZ" className="w-5.5 h-5.5 rounded-full object-cover shadow-sm border border-zinc-200/50" />
                             <span className="text-sm font-bold">+998</span>
                           </div>
-                          {/* Phone digits view */}
-                          <div className="flex-1 text-sm font-bold tracking-wide">
-                            {phone ? formatPhone(phone) : <span className={isDark ? "text-white/20" : "text-zinc-350"}>90 123 45 67</span>}
-                          </div>
+                          {/* Phone digits input */}
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => {
+                              const cleaned = e.target.value.replace(/\D/g, "");
+                              if (cleaned.length <= 9) {
+                                setPhone(cleaned);
+                              }
+                            }}
+                            placeholder="90 123 45 67"
+                            className="flex-1 bg-transparent border-0 p-0 text-sm font-bold tracking-wide outline-none focus:ring-0 focus:outline-none"
+                          />
                         </div>
                       </div>
                     </div>
@@ -3484,8 +3545,15 @@ export default function LoginPage() {
                     <div className="space-y-4">
                       <button
                         type="button"
-                        onClick={handleNextStep}
-                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                        onClick={() => {
+                          if (phone.length !== 9) {
+                            setError("Telefon raqamini to'liq kiriting (9 ta raqam)!");
+                            return;
+                          }
+                          setError("");
+                          handleNextStep();
+                        }}
+                        className={`w-full py-4 rounded-full font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
                           phone.length === 9
                             ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
                             : isDark
@@ -3495,8 +3563,6 @@ export default function LoginPage() {
                       >
                         Kodni olish
                       </button>
-
-                      {renderNumericKeypad(handleCustomKeyPress)}
                     </div>
                   </div>
                 )}
@@ -3506,10 +3572,19 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1.5 text-left">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
-                          Parol yarating
-                        </h2>
-                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                            Parol yarating
+                          </h2>
+                        </div>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           Akkauntingiz uchun xavfsiz parol kiriting
                         </p>
                       </div>
@@ -3521,24 +3596,33 @@ export default function LoginPage() {
                       )}
 
                       <div className="space-y-4 text-left">
-                        <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
-                          isDark 
-                            ? "bg-[#2C2C2E]/60 text-white" 
-                            : "bg-zinc-50 text-black"
-                        }`}>
-                          <div className="flex-1 text-sm font-bold tracking-widest">
-                            {password ? "•".repeat(password.length) : <span className={isDark ? "text-white/20" : "text-zinc-350"}>••••••</span>}
-                          </div>
-                        </div>
+                        <input
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="••••••"
+                          className={`w-full px-4 py-3.5 rounded-2xl border transition-all outline-none ${
+                            isDark 
+                              ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]" 
+                              : "bg-white border-zinc-200 text-black focus:border-[#FF5A00]"
+                          } text-sm font-bold tracking-widest`}
+                        />
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       <button
                         type="button"
-                        onClick={handleNextStep}
-                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
-                          password.trim()
+                        onClick={() => {
+                          if (password.length < 6) {
+                            setError("Parol kamida 6 ta belgidan iborat bo'lishi kerak!");
+                            return;
+                          }
+                          setError("");
+                          handleNextStep();
+                        }}
+                        className={`w-full py-4 rounded-full font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          password.trim().length >= 6
                             ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
                             : isDark
                               ? "bg-white/10 text-white/30 cursor-not-allowed"
@@ -3547,8 +3631,6 @@ export default function LoginPage() {
                       >
                         Parolni tasdiqlash
                       </button>
-
-                      {renderNumericKeypad(handleCustomKeyPress)}
                     </div>
                   </div>
                 )}
@@ -3558,8 +3640,17 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="text-left space-y-1.5">
-                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Tasdiqlash kodi</h2>
-                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                        <div className="flex items-center gap-1.5 -ml-2">
+                          <button
+                            type="button"
+                            onClick={handleBackStep}
+                            className="p-1 rounded-lg transition-colors cursor-pointer text-zinc-950 dark:text-white hover:opacity-75"
+                          >
+                            <ChevronLeft className="h-7 w-7 stroke-[2.5px]" />
+                          </button>
+                          <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Tasdiqlash kodi</h2>
+                        </div>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"} pl-7`}>
                           +998 {formatPhone(phone)} raqamiga yuborilgan 6 xonali tasdiqlash kodini kiriting
                         </p>
                       </div>
@@ -3570,28 +3661,26 @@ export default function LoginPage() {
                         </div>
                       )}
 
-                      {/* 6-Digit OTP Box Grid */}
-                      <div className="flex gap-2 justify-center py-2">
-                        {[0, 1, 2, 3, 4, 5].map((idx) => {
-                          const digit = otp[idx];
-                          const isActive = otp.findIndex((d) => d === "") === idx;
-                          return (
-                            <div
-                              key={idx}
-                              className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold transition-all duration-200 ${
-                                isDark
-                                  ? "bg-[#2C2C2E] border-white/10 text-white"
-                                  : "bg-zinc-50 border-zinc-200 text-black"
-                              } ${
-                                digit ? "border-[#FF5A00] text-[#FF5A00]" : ""
-                              } ${
-                                isActive ? "ring-2 ring-[#FF5A00]/50 border-[#FF5A00]" : ""
-                              }`}
-                            >
-                              {digit || ""}
-                            </div>
-                          );
-                        })}
+                      <div className="space-y-4 text-left">
+                        <input
+                          type="text"
+                          maxLength={6}
+                          value={otp.join("")}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                            const newOtp = ["", "", "", "", "", ""];
+                            for (let i = 0; i < val.length; i++) {
+                              newOtp[i] = val[i];
+                            }
+                            setOtp(newOtp);
+                          }}
+                          placeholder="000000"
+                          className={`w-full px-4 py-3.5 rounded-2xl border text-center transition-all outline-none ${
+                            isDark
+                              ? "bg-[#2C2C2E]/60 border-white/10 text-white focus:border-[#FF5A00]"
+                              : "bg-white border-zinc-200 text-black focus:border-[#FF5A00]"
+                          } text-sm font-bold tracking-[0.5em]`}
+                        />
                       </div>
 
                       <div className="text-center">
@@ -3612,8 +3701,15 @@ export default function LoginPage() {
                       {/* Next Button */}
                       <button
                         type="button"
-                        onClick={handleOtpConfirm}
-                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                        onClick={() => {
+                          if (otp.some((d) => d === "")) {
+                            setError("Tasdiqlash kodini to'liq kiriting!");
+                            return;
+                          }
+                          setError("");
+                          handleOtpConfirm();
+                        }}
+                        className={`w-full py-4 rounded-full font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
                           !otp.some((d) => d === "")
                             ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
                             : isDark
@@ -3634,9 +3730,6 @@ export default function LoginPage() {
                           "Tasdiqlash"
                         )}
                       </button>
-
-                      {/* Keypad */}
-                      {renderNumericKeypad(handleCustomKeyPress)}
                     </div>
                   </div>
                 )}

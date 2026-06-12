@@ -23,6 +23,7 @@ export default function BottomNav() {
     pathname.startsWith("/booking/") ||
     pathname.startsWith("/payment/") ||
     pathname.startsWith("/payment-success") ||
+    pathname.startsWith("/login") ||
     (pathname === "/" && mounted && !isRegistered);
 
   useEffect(() => {
