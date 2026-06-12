@@ -42,11 +42,15 @@ type Step =
   | "register_customer_email_otp"
   | "register_customer_name"
   | 3
+  | "partner_address"
   | "region"
   | "district"
+  | "partner_hours"
   | 4
+  | "partner_price"
   | 5
   | 6
+  | "partner_password"
   | 7
   | 8;
 
@@ -103,6 +107,8 @@ export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [step, setStep] = useState<Step>(1);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   
   // Registration / Profile States
   const [searchLang, setSearchLang] = useState("");
@@ -123,6 +129,8 @@ export default function LoginPage() {
   const [venueCapacity, setVenueCapacity] = useState("");
   const [venuePrice, setVenuePrice] = useState("");
   const [venueImages, setVenueImages] = useState<string[]>([]);
+  const [activePartnerField, setActivePartnerField] = useState<"name" | "hours" | "capacity" | "price" | "phone" | "password" | "">("name");
+  const [isNumLayout, setIsNumLayout] = useState(false);
   const [reg, setReg] = useState("");
   const [dist, setDist] = useState("");
 
@@ -270,23 +278,93 @@ export default function LoginPage() {
         }
         setOtp(newOtp);
       }
+    } else if (step === 4) {
+      if (key === "⌫") {
+        setVenueCapacity(prev => prev.slice(0, -1));
+      } else if (key !== "+*#" && key !== "") {
+        setVenueCapacity(prev => prev + key);
+      }
+    } else if (step === "partner_price") {
+      if (key === "⌫") {
+        setVenuePrice(prev => prev.slice(0, -1));
+      } else if (key !== "+*#" && key !== "") {
+        setVenuePrice(prev => prev + key);
+      }
+    } else if (step === 6) {
+      if (key === "⌫") {
+        setPhone(prev => prev.slice(0, -1));
+      } else if (key !== "+*#" && key !== "") {
+        if (phone.length < 9) {
+          setPhone(prev => prev + key);
+        }
+      }
+    } else if (step === "partner_password") {
+      if (key === "⌫") {
+        setPassword(prev => prev.slice(0, -1));
+      } else if (key !== "+*#" && key !== "") {
+        setPassword(prev => prev + key);
+      }
+    } else if (step === 7) {
+      if (key === "⌫") {
+        const newOtp = [...otp];
+        for (let i = 5; i >= 0; i--) {
+          if (newOtp[i] !== "") {
+            newOtp[i] = "";
+            break;
+          }
+        }
+        setOtp(newOtp);
+      } else if (key !== "+*#" && key !== "") {
+        const newOtp = [...otp];
+        for (let i = 0; i < 6; i++) {
+          if (newOtp[i] === "") {
+            newOtp[i] = key;
+            break;
+          }
+        }
+        setOtp(newOtp);
+      }
     }
   };
 
   const handleQwertyPress = (key: string) => {
     if (key === "⌫") {
-      setFullName(prev => prev.slice(0, -1));
+      if (step === "register_customer_name") {
+        setFullName(prev => prev.slice(0, -1));
+      } else if (step === 3) {
+        setVenueName(prev => prev.slice(0, -1));
+      } else if (step === "partner_hours") {
+        setVenueHours(prev => prev.slice(0, -1));
+      }
     } else if (key === "space") {
-      setFullName(prev => prev + " ");
+      if (step === "register_customer_name") {
+        setFullName(prev => prev + " ");
+      } else if (step === 3) {
+        setVenueName(prev => prev + " ");
+      } else if (step === "partner_hours") {
+        setVenueHours(prev => prev + " ");
+      }
     } else if (key === "shift") {
       setIsCaps(prev => !prev);
+    } else if (key === "123" || key === "abc") {
+      setIsNumLayout(prev => !prev);
     } else if (key === "return") {
-      handleCustomerFinalRegister();
-    } else if (key === "123" || key === "globe" || key === "mic") {
+      if (step === "register_customer_name") {
+        handleCustomerFinalRegister();
+      } else {
+        handleNextStep();
+      }
+    } else if (key === "globe" || key === "mic") {
       // do nothing or mock
     } else {
       const char = isCaps ? key.toUpperCase() : key;
-      setFullName(prev => prev + char);
+      if (step === "register_customer_name") {
+        setFullName(prev => prev + char);
+      } else if (step === 3) {
+        setVenueName(prev => prev + char);
+      } else if (step === "partner_hours") {
+        setVenueHours(prev => prev + char);
+      }
     }
   };
 
@@ -338,9 +416,15 @@ export default function LoginPage() {
   };
 
   const renderQwertyKeyboard = (onKeyPress: (key: string) => void) => {
-    const row1 = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"];
-    const row2 = ["a", "s", "d", "f", "g", "h", "j", "k", "l"];
-    const row3 = ["shift", "z", "x", "c", "v", "b", "n", "m", "⌫"];
+    const row1 = isNumLayout
+      ? ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+      : ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"];
+    const row2 = isNumLayout
+      ? ["-", "/", ":", ";", "(", ")", "$", "&", "@"]
+      : ["a", "s", "d", "f", "g", "h", "j", "k", "l"];
+    const row3 = isNumLayout
+      ? ["abc", ".", ",", "?", "!", "'", "⌫"]
+      : ["shift", "z", "x", "c", "v", "b", "n", "m", "⌫"];
     const row4 = ["123", "globe", "space", "return"];
 
     return (
@@ -382,7 +466,7 @@ export default function LoginPage() {
         {/* Row 3 */}
         <div className="flex gap-1 justify-center">
           {row3.map((char) => {
-            const isSpecial = char === "shift" || char === "⌫";
+            const isSpecial = char === "shift" || char === "abc" || char === "⌫";
             return (
               <button
                 key={char}
@@ -391,12 +475,14 @@ export default function LoginPage() {
                 className={`rounded-lg py-3 text-sm font-semibold transition-all active:scale-95 cursor-pointer flex justify-center items-center h-11 ${
                   char === "shift"
                     ? `w-12 ${isCaps ? "bg-[#FF5A00] text-white" : isDark ? "bg-[#2C2C2E] text-white" : "bg-[#B0B3BC] text-black"}`
-                    : char === "⌫"
+                    : char === "abc"
                       ? `w-12 ${isDark ? "bg-[#2C2C2E] text-white" : "bg-[#B0B3BC] text-black"}`
-                      : `flex-1 ${isDark ? "bg-[#3A3A3C] text-white hover:bg-[#48484A]" : "bg-white text-black shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:bg-zinc-50"}`
+                      : char === "⌫"
+                        ? `w-12 ${isDark ? "bg-[#2C2C2E] text-white" : "bg-[#B0B3BC] text-black"}`
+                        : `flex-1 ${isDark ? "bg-[#3A3A3C] text-white hover:bg-[#48484A]" : "bg-white text-black shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:bg-zinc-50"}`
                 }`}
               >
-                {char === "shift" ? "⇧" : isCaps && !isSpecial ? char.toUpperCase() : char}
+                {char === "shift" ? "⇧" : char === "abc" ? "abc" : isCaps && !isSpecial ? char.toUpperCase() : char}
               </button>
             );
           })}
@@ -405,11 +491,13 @@ export default function LoginPage() {
         {/* Row 4 */}
         <div className="flex gap-1 justify-center">
           {row4.map((char) => {
+            const displayChar = char === "123" ? (isNumLayout ? "abc" : "123") : char;
+            const actionKey = char === "123" ? (isNumLayout ? "abc" : "123") : char;
             return (
               <button
                 key={char}
                 type="button"
-                onClick={() => onKeyPress(char)}
+                onClick={() => onKeyPress(actionKey)}
                 className={`rounded-lg py-3 text-xs font-bold transition-all active:scale-95 cursor-pointer flex justify-center items-center h-11 ${
                   char === "space"
                     ? `flex-1 ${isDark ? "bg-[#3A3A3C] text-white hover:bg-[#48484A]" : "bg-white text-black shadow-[0_1px_2px_rgba(0,0,0,0.1)] hover:bg-zinc-50"}`
@@ -418,7 +506,7 @@ export default function LoginPage() {
                       : `w-12 ${isDark ? "bg-[#2C2C2E] text-white" : "bg-[#B0B3BC] text-black"}`
                 }`}
               >
-                {char === "space" ? "Space" : char === "return" ? "Next" : char}
+                {char === "space" ? "Space" : char === "return" ? "Next" : displayChar}
               </button>
             );
           })}
@@ -427,8 +515,6 @@ export default function LoginPage() {
     );
   };
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -537,13 +623,25 @@ export default function LoginPage() {
         return;
       }
       if (!reg || !dist) {
-        setError("Manzilni kiritish tugmasini bosib, viloyat va tumanni belgilang!");
+        setError("Viloyat va tumanni belgilang!");
+        return;
+      }
+      setStep("partner_hours");
+    } else if (step === "partner_hours") {
+      if (!venueHours.trim()) {
+        setError("Ish tartibini kiriting!");
         return;
       }
       setStep(4);
     } else if (step === 4) {
-      if (!venueCapacity.trim() || !venuePrice.trim()) {
-        setError("Barcha maydonlarni to'ldiring!");
+      if (!venueCapacity.trim()) {
+        setError("Sig'imni kiriting!");
+        return;
+      }
+      setStep("partner_price");
+    } else if (step === "partner_price") {
+      if (!venuePrice.trim()) {
+        setError("Narxni kiriting!");
         return;
       }
       setStep(5);
@@ -558,8 +656,10 @@ export default function LoginPage() {
         setError("Telefon raqamini to'liq kiriting!");
         return;
       }
-      if (accountType !== "customer" && !password.trim()) {
-        setError("Akkauntingiz uchun parol yarating!");
+      setStep("partner_password");
+    } else if (step === "partner_password") {
+      if (!password.trim()) {
+        setError("Parol kiriting!");
         return;
       }
       setLoading(true);
@@ -584,22 +684,26 @@ export default function LoginPage() {
       setStep("register_customer_email_otp");
     } else if (step === 3) {
       setStep(2);
+    } else if (step === "partner_address") {
+      setStep(3);
     } else if (step === "region") {
       setStep(3);
     } else if (step === "district") {
       setStep("region");
-    } else if (step === 4) {
+    } else if (step === "partner_hours") {
       setStep(3);
-    } else if (step === 5) {
+    } else if (step === 4) {
+      setStep("partner_hours");
+    } else if (step === "partner_price") {
       setStep(4);
+    } else if (step === 5) {
+      setStep("partner_price");
     } else if (step === 6) {
-      if (accountType === "customer") {
-        setStep("register_customer");
-      } else {
-        setStep(5);
-      }
-    } else if (step === 7) {
+      setStep(5);
+    } else if (step === "partner_password") {
       setStep(6);
+    } else if (step === 7) {
+      setStep("partner_password");
     } else if (step === 8) {
       setStep(7);
     }
@@ -2257,19 +2361,9 @@ export default function LoginPage() {
 
           <main className="flex-1 flex items-center justify-center py-10 px-4 max-w-md mx-auto w-full">
             <div className={`w-full border rounded-[32px] shadow-2xl flex flex-col justify-between p-8 relative overflow-hidden transition-all duration-300 ${
-              step === 1 ||
-              step === 2 ||
-              step === "login" ||
-              step === "register_customer" ||
-              step === "register_customer_phone_otp" ||
-              step === "register_customer_email_otp" ||
-              step === "register_customer_name"
-                ? (isDark
-                    ? "border-white/5 bg-[#393939] text-white"
-                    : "border-zinc-150 bg-white text-zinc-900")
-                : accountType === "restaurant"
-                  ? "border-zinc-200 bg-white text-zinc-900 shadow-xl"
-                  : "border-white/5 bg-[#1C1C1E] text-white shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+              isDark
+                ? "border-white/5 bg-[#393939] text-white"
+                : "border-zinc-150 bg-white text-zinc-900"
             }`}>
 
               {/* Wizard Navigation Header */}
@@ -2864,110 +2958,148 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                {/* Step 3: Venue Basic Info Details */}
+                 {/* Step 3: Venue Basic Info Details */}
                 {step === 3 && (
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
-                      <div className="space-y-1 text-left">
-                        <h2 className={`text-xl font-black ${accountType === "restaurant" ? "text-zinc-900" : "text-white"}`}>
-                          {accountType === "restaurant" ? "Restoran ma'lumotlari" : "To'yxona ma'lumotlari"}
+                      {/* Title & Subtitle */}
+                      <div className="space-y-1.5 text-left">
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                          {accountType === "restaurant" ? "Restoraningizni kiriting" : "To'yxonangizni kiriting"}
                         </h2>
-                        <p className={`text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/60"}`}>
-                          Muassasa nomi va manzilini belgilang
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                          Ma'lumotlarni to'g'ri kiritilishiga e'tiborli bo'ling!
                         </p>
                       </div>
 
                       {error && (
-                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-500 text-center font-bold">
+                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
                           {error}
                         </div>
                       )}
 
-                      <div className="space-y-3 text-left">
-                        {/* Venue Name Input */}
-                        <div className={`rounded-xl border p-3.5 transition-all ${
-                          accountType === "restaurant"
-                            ? "bg-zinc-100 border-zinc-200 focus-within:border-[#FF5A00]"
-                            : "bg-white/5 border-white/10 focus-within:border-[#FF5A00]"
-                        }`}>
-                          <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${
-                            accountType === "restaurant" ? "text-zinc-500" : "text-white/40"
-                          }`}>
-                            Joyingiz nomi
+                      <div className="space-y-4 text-left">
+                        {/* 1. Venue Name Input */}
+                        <div className="space-y-2">
+                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-700"}`}>
+                            Joyingiz nomini kiriting
                           </label>
-                          <input
-                            type="text"
-                            required
-                            placeholder={accountType === "restaurant" ? "Oqshom restorani" : "Visol to'yxonasi"}
-                            value={venueName}
-                            onChange={(e) => setVenueName(e.target.value)}
-                            className={`block w-full border-0 bg-transparent p-0 font-bold outline-none text-sm ${
-                              accountType === "restaurant"
-                                ? "text-zinc-955 placeholder-zinc-400"
-                                : "text-white placeholder-white/20"
-                            } focus:ring-0`}
-                          />
-                        </div>
-
-                        {/* Working Hours Input */}
-                        <div className={`rounded-xl border p-3.5 transition-all ${
-                          accountType === "restaurant"
-                            ? "bg-zinc-100 border-zinc-200 focus-within:border-[#FF5A00]"
-                            : "bg-white/5 border-white/10 focus-within:border-[#FF5A00]"
-                        }`}>
-                          <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${
-                            accountType === "restaurant" ? "text-zinc-500" : "text-white/40"
-                          }`}>
-                            Ish tartibi (soat)
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="09:00 - 23:00"
-                            value={venueHours}
-                            onChange={(e) => setVenueHours(e.target.value)}
-                            className={`block w-full border-0 bg-transparent p-0 font-bold outline-none text-sm ${
-                              accountType === "restaurant"
-                                ? "text-zinc-955 placeholder-zinc-400"
-                                : "text-white placeholder-white/20"
-                            } focus:ring-0`}
-                          />
-                        </div>
-
-                        {/* Region/District Trigger Button */}
-                        <button
-                          type="button"
-                          onClick={() => setStep("region")}
-                          className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left ${
-                            accountType === "restaurant"
-                              ? "bg-zinc-100 border-zinc-200 hover:bg-zinc-200 text-zinc-900"
-                              : "bg-white/5 border-white/10 hover:bg-white/10 text-white"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <MapPin className="h-5 w-5 text-[#FF5A00]" />
-                            <div>
-                              <p className={`text-[10px] font-bold uppercase tracking-wider ${
-                                accountType === "restaurant" ? "text-zinc-500" : "text-white/40"
-                              }`}>
-                                Manzil
-                              </p>
-                              <p className="text-sm font-bold">
-                                {reg && dist ? `${reg}, ${dist}` : "Viloyat va tumanni tanlash"}
-                              </p>
+                          <div 
+                            onClick={() => setActivePartnerField("name")}
+                            className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all cursor-pointer ${
+                              activePartnerField === "name"
+                                ? "border-[#FF5A00] ring-2 ring-[#FF5A00]/20"
+                                : isDark ? "bg-[#2C2C2E]/60 border-white/10" : "bg-zinc-50 border-zinc-200"
+                            }`}
+                          >
+                            <div className="flex-1 text-sm font-bold tracking-wide">
+                              {venueName ? venueName : <span className={isDark ? "text-white/20" : "text-zinc-350"}>Yozish</span>}
                             </div>
                           </div>
-                          <ChevronRight className="h-4 w-4 opacity-60" />
-                        </button>
+                        </div>
+
+                        {/* 2. Activity Category selector */}
+                        <div className="space-y-2">
+                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-700"}`}>
+                            Faoliyat turini tanlang
+                          </label>
+                          <div className="flex gap-3">
+                            {/* Restoran Pill */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAccountType("restaurant");
+                                setVenueType("restaurant");
+                              }}
+                              className={`flex-1 py-3 px-5 rounded-full border flex items-center justify-between text-sm font-bold transition-all ${
+                                accountType === "restaurant"
+                                  ? "bg-[#FF5A00] border-[#FF5A00] text-white shadow-md shadow-[#FF5A00]/15"
+                                  : isDark
+                                    ? "bg-transparent border-white/20 text-white/80 hover:bg-white/5"
+                                    : "bg-white border-[#FF5A00] text-[#FF5A00] hover:bg-[#FF5A00]/5"
+                              }`}
+                            >
+                              <span>Restoran</span>
+                              {accountType === "restaurant" ? (
+                                <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0">
+                                  <Check className="h-3.5 w-3.5 text-[#FF5A00] stroke-[3.5px]" />
+                                </div>
+                              ) : (
+                                <div className="w-5 h-5 rounded-full border border-zinc-300 dark:border-white/30 shrink-0" />
+                              )}
+                            </button>
+
+                            {/* To'yxona Pill */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAccountType("toyxona");
+                                setVenueType("toyxona");
+                              }}
+                              className={`flex-1 py-3 px-5 rounded-full border flex items-center justify-between text-sm font-bold transition-all ${
+                                accountType === "toyxona"
+                                  ? "bg-[#FF5A00] border-[#FF5A00] text-white shadow-md shadow-[#FF5A00]/15"
+                                  : isDark
+                                    ? "bg-transparent border-white/20 text-white/80 hover:bg-white/5"
+                                    : "bg-white border-[#FF5A00] text-[#FF5A00] hover:bg-[#FF5A00]/5"
+                              }`}
+                            >
+                              <span>To'yxona</span>
+                              {accountType === "toyxona" ? (
+                                <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center shrink-0">
+                                  <Check className="h-3.5 w-3.5 text-[#FF5A00] stroke-[3.5px]" />
+                                </div>
+                              ) : (
+                                <div className="w-5 h-5 rounded-full border border-zinc-300 dark:border-white/30 shrink-0" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* 3. Address select trigger */}
+                        <div className="space-y-2">
+                          <label className={`block text-xs font-bold ${isDark ? "text-white/80" : "text-zinc-700"}`}>
+                            Manzilni kiritish
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setStep("region")}
+                            className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl border transition-all text-left ${
+                              isDark ? "bg-[#2C2C2E]/60 border-white/10 text-white" : "bg-zinc-50 border-zinc-200 text-zinc-800"
+                            }`}
+                          >
+                            <span className={`text-sm font-bold ${reg && dist ? "" : isDark ? "text-white/20" : "text-zinc-350"}`}>
+                              {reg && dist ? `${reg}, ${dist}` : "Manzilni kiriting"}
+                            </span>
+                            <ChevronRight className="h-4.5 w-4.5 opacity-60 text-zinc-400" />
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    <button
-                      onClick={handleNextStep}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg hover:bg-primary-hover transition-colors mt-6"
-                    >
-                      Keyingisi <ArrowRight className="h-4 w-4" />
-                    </button>
+                    {/* Bottom Action Button & Keyboard */}
+                    <div className="space-y-4">
+                      {venueName.trim() && reg && dist ? (
+                        <button
+                          type="button"
+                          onClick={handleNextStep}
+                          className="w-full py-4 rounded-[20px] bg-[#FF5A00] hover:bg-[#E04F00] text-white font-bold text-sm shadow-lg shadow-[#FF5A00]/15 transition-all active:scale-[0.99] cursor-pointer"
+                        >
+                          Tasdiqlash
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          className="w-full py-4 rounded-[20px] bg-[#FF5A00]/20 text-white/50 font-bold text-sm cursor-not-allowed"
+                        >
+                          Keyingisi
+                        </button>
+                      )}
+
+                      {/* Display QWERTY keyboard if name field is active */}
+                      {activePartnerField === "name" && renderQwertyKeyboard(handleQwertyPress)}
+                    </div>
                   </div>
                 )}
 
@@ -2976,10 +3108,10 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1 text-left">
-                        <h2 className={`text-xl font-black ${accountType === "restaurant" ? "text-zinc-900" : "text-white"}`}>
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
                           Viloyatni tanlang
                         </h2>
-                        <p className={`text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/60"}`}>
+                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"}`}>
                           Muassasa joylashgan viloyatni belgilang
                         </p>
                       </div>
@@ -3000,25 +3132,29 @@ export default function LoginPage() {
                           "Surxondaryo",
                           "Xorazm",
                           "Qoraqalpog'iston Resp."
-                        ].map((regionName) => (
-                          <button
-                            key={regionName}
-                            onClick={() => {
-                              setReg(regionName);
-                              setStep("district");
-                            }}
-                            className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${
-                              reg === regionName
-                                ? "bg-[#FF5A00]/10 border-[#FF5A00] font-bold"
-                                : accountType === "restaurant"
-                                  ? "bg-zinc-100 border-zinc-200 hover:bg-zinc-200 text-zinc-900"
-                                  : "bg-white/5 border-white/5 hover:bg-white/10 text-white"
-                            }`}
-                          >
-                            <span>{regionName}</span>
-                            <ChevronRight className="h-4 w-4 opacity-50" />
-                          </button>
-                        ))}
+                        ].map((regionName) => {
+                          const isSelected = reg === regionName;
+                          return (
+                            <button
+                              key={regionName}
+                              type="button"
+                              onClick={() => {
+                                setReg(regionName);
+                                setStep("district");
+                              }}
+                              className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                                isSelected
+                                  ? "bg-[#FF5A00]/10 border-[#FF5A00] font-bold text-[#FF5A00]"
+                                  : isDark
+                                    ? "bg-[#2C2C2E]/60 border-white/5 hover:bg-[#3A3A3C] text-white"
+                                    : "bg-zinc-50 border-zinc-200 hover:bg-zinc-100 text-zinc-900"
+                              }`}
+                            >
+                              <span>{regionName}</span>
+                              <ChevronRight className="h-4 w-4 opacity-50" />
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
@@ -3029,10 +3165,10 @@ export default function LoginPage() {
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
                       <div className="space-y-1 text-left">
-                        <h2 className={`text-xl font-black ${accountType === "restaurant" ? "text-zinc-900" : "text-white"}`}>
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
                           Tumanni tanlang
                         </h2>
-                        <p className={`text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/60"}`}>
+                        <p className={`text-sm ${isDark ? "text-white/60" : "text-zinc-500"}`}>
                           {reg} viloyati bo'yicha tumanni tanlang
                         </p>
                       </div>
@@ -3045,108 +3181,187 @@ export default function LoginPage() {
                           : reg === "Samarqand"
                           ? ["Samarqand sh.", "Pastdarg'om", "Urgut", "Toyloq", "Bulung'ur", "Kattaqo'rg'on"]
                           : ["Markaziy tuman", "Shimoliy tuman", "G'arbiy tuman", "Janubiy tuman"]
-                        ).map((districtName) => (
-                          <button
-                            key={districtName}
-                            onClick={() => {
-                              setDist(districtName);
-                              setStep(3);
-                            }}
-                            className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all ${
-                              dist === districtName
-                                ? "bg-[#FF5A00]/10 border-[#FF5A00] font-bold"
-                                : accountType === "restaurant"
-                                  ? "bg-zinc-100 border-zinc-200 hover:bg-zinc-200 text-zinc-900"
-                                  : "bg-white/5 border-white/5 hover:bg-white/10 text-white"
-                            }`}
-                          >
-                            <span>{districtName}</span>
-                            <Check className="h-4 w-4 text-[#FF5A00] opacity-0" />
-                          </button>
-                        ))}
+                        ).map((districtName) => {
+                          const isSelected = dist === districtName;
+                          return (
+                            <button
+                              key={districtName}
+                              type="button"
+                              onClick={() => {
+                                setDist(districtName);
+                                setStep(3);
+                              }}
+                              className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                                isSelected
+                                  ? "bg-[#FF5A00]/10 border-[#FF5A00] font-bold text-[#FF5A00]"
+                                  : isDark
+                                    ? "bg-[#2C2C2E]/60 border-white/5 hover:bg-[#3A3A3C] text-white"
+                                    : "bg-zinc-50 border-zinc-200 hover:bg-zinc-100 text-zinc-900"
+                              }`}
+                            >
+                              <span>{districtName}</span>
+                              <Check className={`h-4 w-4 text-[#FF5A00] ${isSelected ? "opacity-100" : "opacity-0"}`} />
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Step 4: Venue Capacity & Pricing */}
-                {step === 4 && (
+                {/* Step "partner_hours": Ish tartibi */}
+                {step === "partner_hours" && (
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
-                      <div className="space-y-1 text-left">
-                        <h2 className={`text-xl font-black ${accountType === "restaurant" ? "text-zinc-900" : "text-white"}`}>
-                          Sig'im va Narx
+                      <div className="space-y-1.5 text-left">
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                          Ish tartibi (soat)
                         </h2>
-                        <p className={`text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/60"}`}>
-                          Mijozlar sig'imi va o'rtacha bir kishilik narxni belgilang
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                          Ishlash soatlarini kiriting (masalan: 09:00 - 23:00)
                         </p>
                       </div>
 
                       {error && (
-                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-500 text-center font-bold">
+                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
                           {error}
                         </div>
                       )}
 
-                      <div className="space-y-3 text-left">
-                        {/* Capacity Input */}
-                        <div className={`rounded-xl border p-3.5 transition-all ${
-                          accountType === "restaurant"
-                            ? "bg-zinc-100 border-zinc-200 focus-within:border-[#FF5A00]"
-                            : "bg-white/5 border-white/10 focus-within:border-[#FF5A00]"
+                      <div className="space-y-4 text-left">
+                        <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
+                          isDark 
+                            ? "bg-[#2C2C2E]/60 text-white" 
+                            : "bg-zinc-50 text-black"
                         }`}>
-                          <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${
-                            accountType === "restaurant" ? "text-zinc-500" : "text-white/40"
-                          }`}>
-                            Mijozlar sig'imi (kishi soni)
-                          </label>
-                          <input
-                            type="number"
-                            required
-                            placeholder="150"
-                            value={venueCapacity}
-                            onChange={(e) => setVenueCapacity(e.target.value)}
-                            className={`block w-full border-0 bg-transparent p-0 font-bold outline-none text-sm ${
-                              accountType === "restaurant"
-                                ? "text-zinc-955 placeholder-zinc-400"
-                                : "text-white placeholder-white/20"
-                            } focus:ring-0`}
-                          />
-                        </div>
-
-                        {/* Pricing Input */}
-                        <div className={`rounded-xl border p-3.5 transition-all ${
-                          accountType === "restaurant"
-                            ? "bg-zinc-100 border-zinc-200 focus-within:border-[#FF5A00]"
-                            : "bg-white/5 border-white/10 focus-within:border-[#FF5A00]"
-                        }`}>
-                          <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${
-                            accountType === "restaurant" ? "text-zinc-500" : "text-white/40"
-                          }`}>
-                            O'rtacha narx bir kishi uchun (UZS)
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="150 000"
-                            value={venuePrice}
-                            onChange={(e) => setVenuePrice(e.target.value.replace(/\D/g, ""))}
-                            className={`block w-full border-0 bg-transparent p-0 font-bold outline-none text-sm ${
-                              accountType === "restaurant"
-                                ? "text-zinc-955 placeholder-zinc-400"
-                                : "text-white placeholder-white/20"
-                            } focus:ring-0`}
-                          />
+                          <div className="flex-1 text-sm font-bold tracking-wide">
+                            {venueHours ? venueHours : <span className={isDark ? "text-white/20" : "text-zinc-350"}>09:00 - 23:00</span>}
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    <button
-                      onClick={handleNextStep}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg hover:bg-primary-hover transition-colors mt-6"
-                    >
-                      Keyingisi <ArrowRight className="h-4 w-4" />
-                    </button>
+                    <div className="space-y-4">
+                      <button
+                        type="button"
+                        onClick={handleNextStep}
+                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          venueHours.trim()
+                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
+                            : isDark
+                              ? "bg-white/10 text-white/30 cursor-not-allowed"
+                              : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
+                        }`}
+                      >
+                        Keyingisi
+                      </button>
+
+                      {renderQwertyKeyboard(handleQwertyPress)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 4: Venue Capacity */}
+                {step === 4 && (
+                  <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
+                    <div className="space-y-4">
+                      <div className="space-y-1.5 text-left">
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                          Mijozlar sig'imi
+                        </h2>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                          Muassasangizning umumiy sig'imini belgilang (kishi soni)
+                        </p>
+                      </div>
+
+                      {error && (
+                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
+                          {error}
+                        </div>
+                      )}
+
+                      <div className="space-y-4 text-left">
+                        <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
+                          isDark 
+                            ? "bg-[#2C2C2E]/60 text-white" 
+                            : "bg-zinc-50 text-black"
+                        }`}>
+                          <div className="flex-1 text-sm font-bold tracking-wide">
+                            {venueCapacity ? `${venueCapacity} kishi` : <span className={isDark ? "text-white/20" : "text-zinc-350"}>Sig'imi (masalan: 150)</span>}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <button
+                        type="button"
+                        onClick={handleNextStep}
+                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          venueCapacity.trim()
+                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
+                            : isDark
+                              ? "bg-white/10 text-white/30 cursor-not-allowed"
+                              : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
+                        }`}
+                      >
+                        Keyingisi
+                      </button>
+
+                      {renderNumericKeypad(handleCustomKeyPress)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step "partner_price": Venue Price */}
+                {step === "partner_price" && (
+                  <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
+                    <div className="space-y-4">
+                      <div className="space-y-1.5 text-left">
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                          O'rtacha narx
+                        </h2>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                          Bir kishi uchun o'rtacha xizmat narxini belgilang (UZS)
+                        </p>
+                      </div>
+
+                      {error && (
+                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
+                          {error}
+                        </div>
+                      )}
+
+                      <div className="space-y-4 text-left">
+                        <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
+                          isDark 
+                            ? "bg-[#2C2C2E]/60 text-white" 
+                            : "bg-zinc-50 text-black"
+                        }`}>
+                          <div className="flex-1 text-sm font-bold tracking-wide">
+                            {venuePrice ? `${Number(venuePrice).toLocaleString("uz-UZ")} UZS` : <span className={isDark ? "text-white/20" : "text-zinc-350"}>O'rtacha narx (masalan: 150 000)</span>}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <button
+                        type="button"
+                        onClick={handleNextStep}
+                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          venuePrice.trim()
+                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
+                            : isDark
+                              ? "bg-white/10 text-white/30 cursor-not-allowed"
+                              : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
+                        }`}
+                      >
+                        Keyingisi
+                      </button>
+
+                      {renderNumericKeypad(handleCustomKeyPress)}
+                    </div>
                   </div>
                 )}
 
@@ -3154,17 +3369,17 @@ export default function LoginPage() {
                 {step === 5 && (
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
-                      <div className="space-y-1 text-left">
-                        <h2 className={`text-xl font-black ${accountType === "restaurant" ? "text-zinc-900" : "text-white"}`}>
+                      <div className="space-y-1.5 text-left">
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
                           Fotogalereya yuklash
                         </h2>
-                        <p className={`text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/60"}`}>
-                          Joyingizning chiroyli suratlaridan kamida bittasini tanlang
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                          Jozibali rasmlardan kamida bittasini tanlang
                         </p>
                       </div>
 
                       {error && (
-                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-500 text-center font-bold">
+                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
                           {error}
                         </div>
                       )}
@@ -3191,7 +3406,7 @@ export default function LoginPage() {
                                   setVenueImages([...venueImages, imgUrl]);
                                 }
                               }}
-                              className={`aspect-square rounded-xl overflow-hidden relative border-2 transition-all ${
+                              className={`aspect-square rounded-xl overflow-hidden relative border-2 transition-all cursor-pointer ${
                                 isSelected
                                   ? "border-[#FF5A00] scale-95"
                                   : "border-transparent opacity-60 hover:opacity-100"
@@ -3199,7 +3414,7 @@ export default function LoginPage() {
                             >
                               <img src={imgUrl} alt="Mock Venue" className="w-full h-full object-cover" />
                               {isSelected && (
-                                <div className="absolute inset-0 bg-[#FF5A00]/20 flex items-center justify-center">
+                                <div className="absolute inset-0 bg-[#FF5A00]/25 flex items-center justify-center">
                                   <div className="bg-[#FF5A00] rounded-full p-1 text-white">
                                     <Check className="h-3 w-3" />
                                   </div>
@@ -3212,10 +3427,17 @@ export default function LoginPage() {
                     </div>
 
                     <button
+                      type="button"
                       onClick={handleNextStep}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg hover:bg-primary-hover transition-colors mt-6"
+                      className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                        venueImages.length > 0
+                          ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
+                          : isDark
+                            ? "bg-white/10 text-white/30 cursor-not-allowed"
+                            : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
+                      }`}
                     >
-                      Keyingisi <ArrowRight className="h-4 w-4" />
+                      Keyingisi
                     </button>
                   </div>
                 )}
@@ -3224,111 +3446,110 @@ export default function LoginPage() {
                 {step === 6 && (
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
-                      {accountType === "customer" ? (
-                        <div className="space-y-4 text-left">
-                          <div className="space-y-1">
-                            <h2 className="text-xl font-black text-foreground dark:text-white">Telefon raqamni tasdiqlash</h2>
-                            <p className="text-xs text-foreground/50 dark:text-white/50">
-                              Biz sizning +998 {phone} telefon raqamingizga tasdiqlash kodini yuboramiz.
-                            </p>
-                          </div>
-                          {error && (
-                            <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-500 text-center font-bold">
-                              {error}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="space-y-4 text-left">
-                          <div className="space-y-1">
-                            <h2 className={`text-xl font-black ${accountType === "restaurant" ? "text-zinc-900" : "text-white"}`}>
-                              Hisob ma'lumotlari
-                            </h2>
-                            <p className={`text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/60"}`}>
-                              Tizimga kirish uchun telefon raqamingiz va parolingizni belgilang
-                            </p>
-                          </div>
+                      <div className="space-y-1.5 text-left">
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                          Telefon raqami
+                        </h2>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                          Tizimga kirish uchun telefon raqamingizni kiriting
+                        </p>
+                      </div>
 
-                          {error && (
-                            <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-500 text-center font-bold">
-                              {error}
-                            </div>
-                          )}
-
-                          <div className="space-y-3">
-                            {/* Phone Input */}
-                            <div className="flex gap-2">
-                              <div className={`flex items-center justify-center gap-2 border rounded-xl h-12 px-3 text-sm font-bold select-none min-w-[90px] ${
-                                accountType === "restaurant"
-                                  ? "bg-zinc-150 border-zinc-200 text-zinc-900"
-                                  : "bg-white/5 border-white/10 text-white"
-                              }`}>
-                                <span>+998</span>
-                              </div>
-                              <div className={`flex-1 flex items-center border rounded-xl h-12 px-4 focus-within:border-[#FF5A00] transition-all ${
-                                accountType === "restaurant"
-                                  ? "bg-zinc-100 border-zinc-200 text-zinc-900"
-                                  : "bg-white/5 border-white/10 text-white"
-                              }`}>
-                                <input
-                                  type="tel"
-                                  required
-                                  placeholder="991234567"
-                                  value={phone}
-                                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").substring(0, 9))}
-                                  className={`block w-full border-0 bg-transparent p-0 font-semibold outline-none focus:ring-0 text-sm ${
-                                    accountType === "restaurant" ? "text-zinc-900 placeholder-zinc-400" : "text-white placeholder-white/35"
-                                  }`}
-                                />
-                              </div>
-                            </div>
-
-                            {/* Password Input */}
-                            <div className={`rounded-xl border p-3.5 transition-all focus-within:border-[#FF5A00] ${
-                              accountType === "restaurant"
-                                ? "bg-zinc-100 border-zinc-200 focus-within:ring-2 focus-within:ring-[#FF5A00]/50"
-                                : "bg-white/5 border-white/10 focus-within:ring-2 focus-within:ring-[#FF5A00]/50"
-                            }`}>
-                              <label className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${
-                                accountType === "restaurant" ? "text-zinc-500" : "text-white/40"
-                              }`}>
-                                Parol yarating
-                              </label>
-                              <input
-                                type="password"
-                                required
-                                placeholder="••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className={`block w-full border-0 bg-transparent p-0 font-bold outline-none text-sm focus:ring-0 ${
-                                  accountType === "restaurant" ? "text-zinc-955" : "text-white"
-                                }`}
-                              />
-                            </div>
-                          </div>
+                      {error && (
+                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
+                          {error}
                         </div>
                       )}
+
+                      <div className="space-y-4 text-left">
+                        {/* Phone Input Box */}
+                        <div className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
+                          isDark 
+                            ? "bg-[#2C2C2E]/60 text-white" 
+                            : "bg-zinc-50 text-black"
+                        }`}>
+                          {/* Flag indicator +998 */}
+                          <div className="flex items-center gap-2 shrink-0 select-none">
+                            <img src="/icons/uzb.png" alt="UZ" className="w-5.5 h-5.5 rounded-full object-cover shadow-sm border border-zinc-200/50" />
+                            <span className="text-sm font-bold">+998</span>
+                          </div>
+                          {/* Phone digits view */}
+                          <div className="flex-1 text-sm font-bold tracking-wide">
+                            {phone ? formatPhone(phone) : <span className={isDark ? "text-white/20" : "text-zinc-350"}>90 123 45 67</span>}
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <button
-                      onClick={handleNextStep}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg hover:bg-primary-hover transition-colors mt-6"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <span className="flex items-center gap-1.5">
-                          <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Jo'natilmoqda...
-                        </span>
-                      ) : (
-                        <>
-                          Kodni olish <ArrowRight className="h-4 w-4" />
-                        </>
+                    <div className="space-y-4">
+                      <button
+                        type="button"
+                        onClick={handleNextStep}
+                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          phone.length === 9
+                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
+                            : isDark
+                              ? "bg-white/10 text-white/30 cursor-not-allowed"
+                              : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
+                        }`}
+                      >
+                        Kodni olish
+                      </button>
+
+                      {renderNumericKeypad(handleCustomKeyPress)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step "partner_password": Password */}
+                {step === "partner_password" && (
+                  <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
+                    <div className="space-y-4">
+                      <div className="space-y-1.5 text-left">
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>
+                          Parol yarating
+                        </h2>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                          Akkauntingiz uchun xavfsiz parol kiriting
+                        </p>
+                      </div>
+
+                      {error && (
+                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
+                          {error}
+                        </div>
                       )}
-                    </button>
+
+                      <div className="space-y-4 text-left">
+                        <div className={`flex items-center px-4 py-3.5 rounded-2xl border transition-all border-[#FF5A00] ring-2 ring-[#FF5A00]/20 ${
+                          isDark 
+                            ? "bg-[#2C2C2E]/60 text-white" 
+                            : "bg-zinc-50 text-black"
+                        }`}>
+                          <div className="flex-1 text-sm font-bold tracking-widest">
+                            {password ? "•".repeat(password.length) : <span className={isDark ? "text-white/20" : "text-zinc-350"}>••••••</span>}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <button
+                        type="button"
+                        onClick={handleNextStep}
+                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          password.trim()
+                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
+                            : isDark
+                              ? "bg-white/10 text-white/30 cursor-not-allowed"
+                              : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
+                        }`}
+                      >
+                        Parolni tasdiqlash
+                      </button>
+
+                      {renderNumericKeypad(handleCustomKeyPress)}
+                    </div>
                   </div>
                 )}
 
@@ -3336,79 +3557,87 @@ export default function LoginPage() {
                 {step === 7 && (
                   <div className="space-y-4 flex-1 flex flex-col justify-between animate-scale-up">
                     <div className="space-y-4">
-                      <div className="space-y-1 text-left">
-                        <div className="flex items-center gap-2">
-                          <Lock className="h-6 w-6 text-[#FF5A00]" />
-                          <h2 className={`text-xl font-black ${accountType === "restaurant" ? "text-zinc-900" : "text-white"}`}>
-                            Tasdiqlash kodi
-                          </h2>
-                        </div>
-                        <p className={`text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/60"}`}>
-                          +998 {phone.substring(0, 2)} ••• {phone.substring(5, 9)} raqamiga yuborilgan 6 xonali tasdiqlash kodini kiriting
+                      <div className="text-left space-y-1.5">
+                        <h2 className={`text-2xl font-extrabold ${isDark ? "text-white" : "text-black"}`}>Tasdiqlash kodi</h2>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-500"}`}>
+                          +998 {formatPhone(phone)} raqamiga yuborilgan 6 xonali tasdiqlash kodini kiriting
                         </p>
                       </div>
 
                       {error && (
-                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-500 text-center font-bold">
+                        <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-400 text-center font-bold">
                           {error}
                         </div>
                       )}
 
-                      {/* 6 Digit Input Grid */}
-                      <div className="grid grid-cols-6 gap-2 py-2">
-                        {otp.map((val, idx) => (
-                          <input
-                            key={idx}
-                            id={`otp-${idx}`}
-                            type="text"
-                            required
-                            maxLength={1}
-                            value={val}
-                            onChange={(e) => handleOtpChange(e.target.value, idx)}
-                            onKeyDown={(e) => handleOtpKeyDown(e, idx)}
-                            disabled={loading}
-                            className={`w-full h-12 text-center text-lg font-bold rounded-xl border focus:ring-2 focus:ring-[#FF5A00] focus:border-[#FF5A00] outline-none transition-all ${
-                              accountType === "restaurant"
-                                ? "bg-zinc-100 border-zinc-200 text-zinc-900"
-                                : "bg-white/5 border-white/10 text-white"
-                            }`}
-                          />
-                        ))}
+                      {/* 6-Digit OTP Box Grid */}
+                      <div className="flex gap-2 justify-center py-2">
+                        {[0, 1, 2, 3, 4, 5].map((idx) => {
+                          const digit = otp[idx];
+                          const isActive = otp.findIndex((d) => d === "") === idx;
+                          return (
+                            <div
+                              key={idx}
+                              className={`w-11 h-14 rounded-xl border flex items-center justify-center text-lg font-bold transition-all duration-200 ${
+                                isDark
+                                  ? "bg-[#2C2C2E] border-white/10 text-white"
+                                  : "bg-zinc-50 border-zinc-200 text-black"
+                              } ${
+                                digit ? "border-[#FF5A00] text-[#FF5A00]" : ""
+                              } ${
+                                isActive ? "ring-2 ring-[#FF5A00]/50 border-[#FF5A00]" : ""
+                              }`}
+                            >
+                              {digit || ""}
+                            </div>
+                          );
+                        })}
                       </div>
 
-                      <div className={`text-center text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/40"}`}>
-                        Kodni olmadingizmi?{" "}
+                      <div className="text-center">
                         <button
                           type="button"
                           onClick={() => {
-                            showToast("Kod qayta yuborildi!");
+                            showToast("Tasdiqlash kodi qayta yuborildi!");
+                            setOtp(["", "", "", "", "", ""]);
                           }}
-                          className="text-[#FF5A00] font-bold hover:underline"
+                          className="text-xs font-bold text-[#FF5A00] hover:text-[#E04F00] transition-colors"
                         >
-                          Qaytadan yuborish
+                          Kod qayta yuborilsinmi?
                         </button>
                       </div>
                     </div>
 
-                    <button
-                      onClick={handleOtpConfirm}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg hover:bg-primary-hover transition-colors mt-6"
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <span className="flex items-center gap-1.5">
-                          <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          Tekshirilmoqda...
-                        </span>
-                      ) : (
-                        <>
-                          Kodni tasdiqlash <ArrowRight className="h-4 w-4" />
-                        </>
-                      )}
-                    </button>
+                    <div className="space-y-4">
+                      {/* Next Button */}
+                      <button
+                        type="button"
+                        onClick={handleOtpConfirm}
+                        className={`w-full py-3.5 rounded-[20px] font-bold text-sm tracking-wide transition-all active:scale-98 shadow-lg ${
+                          !otp.some((d) => d === "")
+                            ? "bg-[#FF5A00] text-white shadow-[#FF5A00]/25 cursor-pointer hover:bg-[#E04F00]"
+                            : isDark
+                              ? "bg-white/10 text-white/30 cursor-not-allowed"
+                              : "bg-[#FF5A00]/20 text-[#FF5A00]/45 cursor-not-allowed"
+                        }`}
+                        disabled={loading}
+                      >
+                        {loading ? (
+                          <span className="flex items-center justify-center gap-1.5">
+                            <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Tekshirilmoqda...
+                          </span>
+                        ) : (
+                          "Tasdiqlash"
+                        )}
+                      </button>
+
+                      {/* Keypad */}
+                      {renderNumericKeypad(handleCustomKeyPress)}
+                    </div>
                   </div>
                 )}
 
@@ -3421,19 +3650,17 @@ export default function LoginPage() {
                         <div className="w-16 h-16 rounded-full bg-[#10B981]/15 flex items-center justify-center text-[#10B981] animate-bounce">
                           <CheckCircle className="h-10 w-10" />
                         </div>
-                        <h2 className={`text-2xl font-black ${accountType === "restaurant" ? "text-zinc-900" : "text-white"}`}>
-                          Muvaffaqiyatli!
+                        <h2 className={`text-2xl font-black ${isDark ? "text-white" : "text-black"}`}>
+                          {accountType === "restaurant" ? "Restoran faollashdi!" : "To'yxona faollashdi!"}
                         </h2>
-                        <p className={`text-xs ${accountType === "restaurant" ? "text-zinc-500" : "text-white/60"}`}>
+                        <p className={`text-xs ${isDark ? "text-white/60" : "text-zinc-505"}`}>
                           Akkauntingiz faollashtirildi. Quyida sizning joyingiz haqidagi ma'lumotlar keltirilgan:
                         </p>
                       </div>
 
                       {/* Live Summary Preview Box */}
                       <div className={`p-4 rounded-2xl border text-left space-y-2.5 ${
-                        accountType === "restaurant"
-                          ? "bg-zinc-100 border-zinc-200 text-zinc-900"
-                          : "bg-white/5 border-white/10 text-white"
+                        isDark ? "bg-[#2C2C2E]/60 border-white/10 text-white" : "bg-zinc-50 border-zinc-200 text-zinc-900"
                       }`}>
                         <div className="flex justify-between items-center text-xs">
                           <span className="opacity-60">Nomi:</span>
@@ -3464,7 +3691,7 @@ export default function LoginPage() {
 
                     <button
                       onClick={handleCompletePartnerRegistration}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg hover:bg-primary-hover transition-colors mt-6"
+                      className="w-full flex items-center justify-center gap-2 rounded-[20px] bg-[#FF5A00] hover:bg-[#E04F00] text-white font-bold text-sm shadow-lg hover:shadow-primary/20 transition-all mt-6 cursor-pointer"
                     >
                       Admin panelga o'tish <ArrowRight className="h-4 w-4" />
                     </button>
