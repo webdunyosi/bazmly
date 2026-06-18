@@ -15,15 +15,29 @@ export default function BottomNav() {
 
   useEffect(() => {
     setMounted(true);
-    setIsRegistered(localStorage.getItem("isRegistered") === "true");
+    const checkRegistration = () => {
+      setIsRegistered(localStorage.getItem("isRegistered") === "true");
+    };
+    checkRegistration();
+    window.addEventListener("isRegisteredChange", checkRegistration);
+    return () => {
+      window.removeEventListener("isRegisteredChange", checkRegistration);
+    };
   }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      setIsRegistered(localStorage.getItem("isRegistered") === "true");
+    }
+  }, [pathname, mounted]);
 
   const isHiddenRoute = 
     pathname.startsWith("/venue/") ||
     pathname.startsWith("/booking/") ||
     pathname.startsWith("/payment/") ||
     pathname.startsWith("/payment-success") ||
-    pathname.startsWith("/login") ||
+    pathname.startsWith("/admin") ||
+    (pathname.startsWith("/login") && mounted && !isRegistered) ||
     (pathname === "/" && mounted && !isRegistered);
 
   useEffect(() => {

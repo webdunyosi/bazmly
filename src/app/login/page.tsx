@@ -604,6 +604,9 @@ export default function LoginPage() {
     setStep(1);
     setActiveModal(null);
     showToast("Akkauntdan chiqildi.");
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("isRegisteredChange"));
+    }
   };
 
   const filteredLanguages = LANGUAGES.filter((l) =>
@@ -1945,7 +1948,7 @@ export default function LoginPage() {
             <>
               <Navbar />
 
-              <main className="flex-1 flex flex-col items-center justify-start py-8 px-4 pb-10 max-w-md mx-auto w-full">
+              <main className="flex-1 flex flex-col items-center justify-start py-8 px-4 pb-0 max-w-md mx-auto w-full">
                 {/* Header Title */}
                 <h1 className={`text-xl font-black mb-6 ${isDark ? "text-white" : "text-zinc-900"}`}>
                   Sozlamalar
