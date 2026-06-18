@@ -3784,7 +3784,7 @@ export default function LoginPage() {
 
                     <button
                       onClick={handleCompletePartnerRegistration}
-                      className="w-full flex items-center justify-center gap-2 rounded-[20px] bg-[#FF5A00] hover:bg-[#E04F00] text-white font-bold text-sm shadow-lg hover:shadow-primary/20 transition-all mt-6 cursor-pointer"
+                      className="w-full py-4 flex items-center justify-center gap-2 rounded-[20px] bg-[#FF5A00] hover:bg-[#E04F00] text-white font-bold text-sm shadow-lg hover:shadow-primary/20 transition-all mt-6 cursor-pointer"
                     >
                       Admin panelga o'tish <ArrowRight className="h-4 w-4" />
                     </button>
